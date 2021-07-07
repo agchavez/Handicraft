@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.indigo,
         floatingActionButtonTheme:
-            FloatingActionButtonThemeData(backgroundColor: Colors.indigo),
+            FloatingActionButtonThemeData(backgroundColor: Colors.white24),
       ),
     );
   }
