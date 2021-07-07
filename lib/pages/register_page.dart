@@ -9,7 +9,8 @@ class RegisterPage extends StatefulWidget {
 }
 
 final formkey = GlobalKey<FormState>();
-bool _typeAcount = false;
+final form2key = GlobalKey<FormState>();
+bool _typeAcount = false, _showpasword = true;
 
 class _RegisterPageState extends State<RegisterPage> {
   Size size = Size(1000, 5000);
@@ -27,27 +28,34 @@ class _RegisterPageState extends State<RegisterPage> {
             SizedBox(
               height: size.height * 0.05,
             ),
+            _createImg(),
             _createForm(),
             _createSelect(),
             SizedBox(
               height: 10,
             ),
+            if (_typeAcount) _createFormCompanies(),
+            SizedBox(
+              height: 20,
+            ),
             _createBottom(context),
             SizedBox(
               height: 20,
             ),
-            Container(
-              margin: EdgeInsets.only(left: size.height * 0.15),
+            Center(
               child: GestureDetector(
                 onTap: () {
-                  Navigator.pushReplacementNamed(context, 'home');
+                  Navigator.pushReplacementNamed(context, 'login');
                 },
                 child: Container(
                     child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("No account?", style: TextStyle(fontSize: 16)),
+                    Text("you already have an account?",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16)),
                     Text(
-                      " Create One",
+                      " Login",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                     )
@@ -77,12 +85,26 @@ privacy policy.
   Widget _createLog() {
     return Column(
       children: [
-        Image(height: size.height * 0.12, image: AssetImage('assets/logo.png')),
+        Image(height: size.height * 0.08, image: AssetImage('assets/logo.png')),
         Text(
           "Products that you will love.",
           style: TextStyle(color: Colors.grey[600], fontSize: 15),
         )
       ],
+    );
+  }
+
+  Widget _createImg() {
+    return Container(
+      width: size.width * 0.3,
+      child: ClipRRect(
+          borderRadius: BorderRadius.circular(90),
+          child: FadeInImage(
+              height: 120,
+              width: 140,
+              fit: BoxFit.fitHeight,
+              placeholder: AssetImage("assets/Spinner-1s-200px.gif"),
+              image: _mostrarFoto(""))),
     );
   }
 
@@ -104,7 +126,10 @@ privacy policy.
               SizedBox(
                 height: 10,
               ),
-              if (_typeAcount) _createPassword()
+              _createPassword(),
+              SizedBox(
+                height: 10,
+              ),
             ],
           )),
     );
@@ -113,7 +138,8 @@ privacy policy.
   Widget _createName() {
     String nombres;
     return Container(
-        width: size.width * 0.8,
+        width: size.width * 0.7,
+        height: 50,
         padding: EdgeInsets.symmetric(horizontal: 10.0),
         child: TextFormField(
           style: TextStyle(decorationColor: Colors.white),
@@ -131,7 +157,8 @@ privacy policy.
   Widget _createLastName() {
     String nombres;
     return Container(
-        width: size.width * 0.8,
+        width: size.width * 0.7,
+        height: 50,
         padding: EdgeInsets.symmetric(horizontal: 10.0),
         child: TextFormField(
           style: TextStyle(decorationColor: Colors.white),
@@ -149,7 +176,8 @@ privacy policy.
   Widget _createEmail() {
     String nombres;
     return Container(
-        width: size.width * 0.8,
+        width: size.width * 0.7,
+        height: 50,
         padding: EdgeInsets.symmetric(horizontal: 10.0),
         child: TextFormField(
           style: TextStyle(decorationColor: Colors.white),
@@ -167,12 +195,35 @@ privacy policy.
   Widget _createPassword() {
     String nombres;
     return Container(
-        width: size.width * 0.8,
+        width: size.width * 0.7,
+        height: 50,
         padding: EdgeInsets.symmetric(horizontal: 10.0),
         child: TextFormField(
+          obscureText: _showpasword,
           style: TextStyle(decorationColor: Colors.white),
           keyboardType: TextInputType.name,
           decoration: InputDecoration(
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.black,
+              ),
+            ),
+            suffixIcon: GestureDetector(
+              child: _showpasword
+                  ? Icon(
+                      Icons.lock,
+                      color: Colors.black,
+                    )
+                  : Icon(
+                      Icons.lock_open,
+                      color: Colors.black,
+                    ),
+              onTap: () => {
+                setState(() {
+                  _showpasword = !_showpasword;
+                })
+              },
+            ),
             border: OutlineInputBorder(
                 borderSide: BorderSide(width: 100, color: Colors.white10),
                 borderRadius: BorderRadius.circular(7.0)),
@@ -183,24 +234,27 @@ privacy policy.
   }
 
   Widget _createSelect() {
-    return MergeSemantics(
-      child: ListTile(
-        horizontalTitleGap: 10.0,
-        title: const Text('Compañia'),
-        trailing: CupertinoSwitch(
-          activeColor: Colors.black,
-          value: _typeAcount,
-          onChanged: (bool value) {
-            setState(() {
-              _typeAcount = value;
-            });
-          },
-        ),
-        onTap: () {
-          setState(() {
-            _typeAcount = !_typeAcount;
-          });
-        },
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: size.width * 0.18),
+      child: Row(
+        children: [
+          Text(
+            "Company",
+            style: TextStyle(fontSize: 18),
+          ),
+          SizedBox(
+            width: 15,
+          ),
+          CupertinoSwitch(
+            activeColor: Colors.black,
+            value: _typeAcount,
+            onChanged: (bool value) {
+              setState(() {
+                _typeAcount = value;
+              });
+            },
+          ),
+        ],
       ),
     );
   }
@@ -222,5 +276,41 @@ privacy policy.
       textColor: Colors.white,
       onPressed: () => print("login"),
     );
+  }
+
+  Widget _createFormCompanies() {
+    return Container(
+      child: Form(
+          key: form2key,
+          child: Column(
+            children: [_createNameCompanie()],
+          )),
+    );
+  }
+
+  Widget _createNameCompanie() {
+    return Container(
+        width: size.width * 0.7,
+        height: 50,
+        padding: EdgeInsets.symmetric(horizontal: 10.0),
+        child: TextFormField(
+            style: TextStyle(decorationColor: Colors.white),
+            keyboardType: TextInputType.name,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                  borderSide: BorderSide(width: 100, color: Colors.white10),
+                  borderRadius: BorderRadius.circular(7.0)),
+              hintText: 'Name company',
+            )));
+  }
+
+  _mostrarFoto(data) {
+    if (data == '' || data.fotoUrl == null) {
+      return AssetImage('assets/unnamed.png');
+    } else {
+      return NetworkImage(
+        data.fotoUrl,
+      );
+    }
   }
 }

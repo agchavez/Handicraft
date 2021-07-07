@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Handicraft',
-      initialRoute: 'home',
+      initialRoute: 'login',
       routes: {
         'home': (BuildContext context) => HomePage(),
         'register': (BuildContext context) => RegisterPage(),
