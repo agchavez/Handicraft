@@ -1,5 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:handicraft_app/models/acount_user.dart';
+import 'package:path_provider/path_provider.dart';
+
+import 'package:handicraft_app/utils/util.dart' as utils;
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -10,7 +16,9 @@ class RegisterPage extends StatefulWidget {
 
 final formkey = GlobalKey<FormState>();
 final form2key = GlobalKey<FormState>();
-bool _typeAcount = false, _showpasword = true;
+File? foto, newImage;
+bool _typeAcount = false, _showpasword = true, check = false;
+UserAcountModel user = new UserAcountModel();
 
 class _RegisterPageState extends State<RegisterPage> {
   Size size = Size(1000, 5000);
@@ -25,10 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
               height: size.height * 0.14,
             ),
             _createLog(),
-            SizedBox(
-              height: size.height * 0.05,
-            ),
-            _createImg(),
+            _createImg(context),
             _createForm(),
             _createSelect(),
             SizedBox(
@@ -38,7 +43,11 @@ class _RegisterPageState extends State<RegisterPage> {
             SizedBox(
               height: 20,
             ),
-            _createBottom(context),
+            !check
+                ? _createBottom(context)
+                : CircularProgressIndicator(
+                    color: Colors.black,
+                  ),
             SizedBox(
               height: 20,
             ),
@@ -94,17 +103,23 @@ privacy policy.
     );
   }
 
-  Widget _createImg() {
-    return Container(
-      width: size.width * 0.3,
-      child: ClipRRect(
-          borderRadius: BorderRadius.circular(90),
-          child: FadeInImage(
-              height: 120,
-              width: 140,
-              fit: BoxFit.fitHeight,
-              placeholder: AssetImage("assets/Spinner-1s-200px.gif"),
-              image: _mostrarFoto(""))),
+  Widget _createImg(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        _navigateAndDisplaySelection(context);
+        //Navigator.pushNamed(context, "example");
+      },
+      child: Container(
+        width: size.width * 0.4,
+        child: ClipRRect(
+            borderRadius: BorderRadius.circular(90),
+            child: FadeInImage(
+                height: 120,
+                width: 140,
+                fit: BoxFit.fitHeight,
+                placeholder: AssetImage("assets/Spinner-1s-200px.gif"),
+                image: _mostrarFoto(""))),
+      ),
     );
   }
 
@@ -136,67 +151,98 @@ privacy policy.
   }
 
   Widget _createName() {
-    String nombres;
     return Container(
         width: size.width * 0.7,
-        height: 50,
+        height: size.height * 0.085,
         padding: EdgeInsets.symmetric(horizontal: 10.0),
         child: TextFormField(
-          style: TextStyle(decorationColor: Colors.white),
-          keyboardType: TextInputType.name,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-                borderSide: BorderSide(width: 100, color: Colors.white10),
-                borderRadius: BorderRadius.circular(7.0)),
-            hintText: 'Name',
-          ),
-          onSaved: (value1) => nombres = value1.toString(),
-        ));
+            style: TextStyle(decorationColor: Colors.white),
+            keyboardType: TextInputType.name,
+            decoration: InputDecoration(
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.black,
+                ),
+              ),
+              border: OutlineInputBorder(
+                  borderSide: BorderSide(width: 100, color: Colors.white10),
+                  borderRadius: BorderRadius.circular(7.0)),
+              hintText: 'Name',
+            ),
+            onSaved: (value) => user.firstname = value,
+            validator: (value) {
+              if (value!.isEmpty || utils.isNumeric(value)) {
+                return 'Campo obligatorio';
+              } else {
+                return null;
+              }
+            }));
   }
 
   Widget _createLastName() {
-    String nombres;
     return Container(
         width: size.width * 0.7,
-        height: 50,
+        height: size.height * 0.085,
         padding: EdgeInsets.symmetric(horizontal: 10.0),
         child: TextFormField(
           style: TextStyle(decorationColor: Colors.white),
           keyboardType: TextInputType.name,
           decoration: InputDecoration(
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.black,
+              ),
+            ),
             border: OutlineInputBorder(
                 borderSide: BorderSide(width: 100, color: Colors.white10),
                 borderRadius: BorderRadius.circular(7.0)),
             hintText: 'Last name',
           ),
-          onSaved: (value1) => nombres = value1.toString(),
+          onSaved: (value) => user.lastname = value,
+          validator: (value) {
+            if (value!.isEmpty || utils.isNumeric(value)) {
+              return 'Campo obligatorio';
+            } else {
+              return null;
+            }
+          },
         ));
   }
 
   Widget _createEmail() {
-    String nombres;
     return Container(
         width: size.width * 0.7,
-        height: 50,
+        height: size.height * 0.085,
         padding: EdgeInsets.symmetric(horizontal: 10.0),
         child: TextFormField(
           style: TextStyle(decorationColor: Colors.white),
           keyboardType: TextInputType.name,
           decoration: InputDecoration(
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.black,
+              ),
+            ),
             border: OutlineInputBorder(
                 borderSide: BorderSide(width: 100, color: Colors.white10),
                 borderRadius: BorderRadius.circular(7.0)),
             hintText: 'Email',
           ),
-          onSaved: (value1) => nombres = value1.toString(),
+          onSaved: (value) => {user.email = value.toString(), print("object")},
+          validator: (value) {
+            if (!utils.validatorEmail(value.toString())) {
+              return 'Correo no valido';
+            } else {
+              return null;
+            }
+          },
         ));
   }
 
   Widget _createPassword() {
-    String nombres;
     return Container(
         width: size.width * 0.7,
-        height: 50,
+        height: size.height * 0.085,
         padding: EdgeInsets.symmetric(horizontal: 10.0),
         child: TextFormField(
           obscureText: _showpasword,
@@ -229,7 +275,14 @@ privacy policy.
                 borderRadius: BorderRadius.circular(7.0)),
             hintText: 'Password',
           ),
-          onSaved: (value1) => nombres = value1.toString(),
+          onSaved: (value1) => user.password = value1,
+          validator: (value) {
+            if (value!.isEmpty) {
+              return 'Contraseña obligatoria';
+            } else {
+              return null;
+            }
+          },
         ));
   }
 
@@ -274,7 +327,7 @@ privacy policy.
       elevation: 2.0,
       color: Colors.black,
       textColor: Colors.white,
-      onPressed: () => print("login"),
+      onPressed: () => _createAcount(),
     );
   }
 
@@ -304,6 +357,22 @@ privacy policy.
             )));
   }
 
+  _createAcount() {
+    setState(() {
+      check = !check;
+    });
+    if (!formkey.currentState!.validate()) {
+      setState(() {
+        check = !check;
+      });
+      return;
+    }
+    formkey.currentState!.save();
+    setState(() {
+      check = !check;
+    });
+  }
+
   _mostrarFoto(data) {
     if (data == '' || data.fotoUrl == null) {
       return AssetImage('assets/unnamed.png');
@@ -312,5 +381,13 @@ privacy policy.
         data.fotoUrl,
       );
     }
+  }
+
+  _navigateAndDisplaySelection(BuildContext context) async {
+    // Navigator.push returns a Future that completes after calling
+    // // Navigator.pop on the Selection Screen.
+    Directory tempDir = await getApplicationDocumentsDirectory();
+    print(tempDir);
+    String tempPath = tempDir.path;
   }
 }
