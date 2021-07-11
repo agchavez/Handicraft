@@ -1,9 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/acount_user.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:custom_switch_button/custom_switch_button.dart';
 
 import 'package:handicraft_app/utils/util.dart' as utils;
 
@@ -19,6 +20,7 @@ final form2key = GlobalKey<FormState>();
 File? foto, newImage;
 bool _typeAcount = false, _showpasword = true, check = false;
 UserAcountModel user = new UserAcountModel();
+String _countryValue = '', _stateValue = '';
 
 class _RegisterPageState extends State<RegisterPage> {
   Size size = Size(1000, 5000);
@@ -33,8 +35,17 @@ class _RegisterPageState extends State<RegisterPage> {
               height: size.height * 0.14,
             ),
             _createLog(),
+            SizedBox(
+              height: 10,
+            ),
             _createImg(context),
+            SizedBox(
+              height: 10,
+            ),
             _createForm(),
+            SizedBox(
+              height: 10,
+            ),
             _createSelect(),
             SizedBox(
               height: 10,
@@ -49,7 +60,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     color: Colors.black,
                   ),
             SizedBox(
-              height: 20,
+              height: 1.50,
             ),
             Center(
               child: GestureDetector(
@@ -82,7 +93,7 @@ you accept Handicraft's terms of use and
 privacy policy. 
             """,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey[600]),
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
               ),
             )
           ],
@@ -94,7 +105,7 @@ privacy policy.
   Widget _createLog() {
     return Column(
       children: [
-        Image(height: size.height * 0.08, image: AssetImage('assets/logo.png')),
+        Image(height: size.height * 0.07, image: AssetImage('assets/logo.png')),
         Text(
           "Products that you will love.",
           style: TextStyle(color: Colors.grey[600], fontSize: 15),
@@ -145,6 +156,7 @@ privacy policy.
               SizedBox(
                 height: 10,
               ),
+              _createPhoneNumber()
             ],
           )),
     );
@@ -152,27 +164,36 @@ privacy policy.
 
   Widget _createName() {
     return Container(
-        width: size.width * 0.7,
-        height: size.height * 0.085,
-        padding: EdgeInsets.symmetric(horizontal: 10.0),
+        width: size.width * 0.65,
+        padding: EdgeInsets.symmetric(vertical: 0.0),
         child: TextFormField(
+            scrollPadding: EdgeInsets.symmetric(vertical: 0.0),
             style: TextStyle(decorationColor: Colors.white),
             keyboardType: TextInputType.name,
             decoration: InputDecoration(
-              focusedBorder: OutlineInputBorder(
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
                 borderSide: BorderSide(
+                  width: 1.5,
+                  color: Colors.black,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide(
+                  width: 1.5,
                   color: Colors.black,
                 ),
               ),
               border: OutlineInputBorder(
                   borderSide: BorderSide(width: 100, color: Colors.white10),
-                  borderRadius: BorderRadius.circular(7.0)),
-              hintText: 'Name',
+                  borderRadius: BorderRadius.circular(10.0)),
+              hintText: 'Nombre',
             ),
             onSaved: (value) => user.firstname = value,
             validator: (value) {
               if (value!.isEmpty || utils.isNumeric(value)) {
-                return 'Campo obligatorio';
+                return '';
               } else {
                 return null;
               }
@@ -181,22 +202,29 @@ privacy policy.
 
   Widget _createLastName() {
     return Container(
-        width: size.width * 0.7,
-        height: size.height * 0.085,
-        padding: EdgeInsets.symmetric(horizontal: 10.0),
+        width: size.width * 0.65,
         child: TextFormField(
           style: TextStyle(decorationColor: Colors.white),
           keyboardType: TextInputType.name,
           decoration: InputDecoration(
-            focusedBorder: OutlineInputBorder(
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide(
+                width: 1.5,
+                color: Colors.black,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                width: 1.5,
                 color: Colors.black,
               ),
             ),
             border: OutlineInputBorder(
-                borderSide: BorderSide(width: 100, color: Colors.white10),
-                borderRadius: BorderRadius.circular(7.0)),
-            hintText: 'Last name',
+                borderSide: BorderSide(width: 1.5, color: Colors.white10),
+                borderRadius: BorderRadius.circular(10.0)),
+            hintText: 'Apellido',
           ),
           onSaved: (value) => user.lastname = value,
           validator: (value) {
@@ -211,22 +239,29 @@ privacy policy.
 
   Widget _createEmail() {
     return Container(
-        width: size.width * 0.7,
-        height: size.height * 0.085,
-        padding: EdgeInsets.symmetric(horizontal: 10.0),
+        width: size.width * 0.65,
         child: TextFormField(
           style: TextStyle(decorationColor: Colors.white),
           keyboardType: TextInputType.name,
           decoration: InputDecoration(
-            focusedBorder: OutlineInputBorder(
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide(
+                width: 1.5,
+                color: Colors.black,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                width: 1.5,
                 color: Colors.black,
               ),
             ),
             border: OutlineInputBorder(
                 borderSide: BorderSide(width: 100, color: Colors.white10),
-                borderRadius: BorderRadius.circular(7.0)),
-            hintText: 'Email',
+                borderRadius: BorderRadius.circular(10.0)),
+            hintText: 'Correo electronico',
           ),
           onSaved: (value) => {user.email = value.toString(), print("object")},
           validator: (value) {
@@ -241,16 +276,16 @@ privacy policy.
 
   Widget _createPassword() {
     return Container(
-        width: size.width * 0.7,
-        height: size.height * 0.085,
-        padding: EdgeInsets.symmetric(horizontal: 10.0),
+        width: size.width * 0.65,
         child: TextFormField(
           obscureText: _showpasword,
           style: TextStyle(decorationColor: Colors.white),
           keyboardType: TextInputType.name,
           decoration: InputDecoration(
-            focusedBorder: OutlineInputBorder(
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide(
+                width: 1.5,
                 color: Colors.black,
               ),
             ),
@@ -272,8 +307,8 @@ privacy policy.
             ),
             border: OutlineInputBorder(
                 borderSide: BorderSide(width: 100, color: Colors.white10),
-                borderRadius: BorderRadius.circular(7.0)),
-            hintText: 'Password',
+                borderRadius: BorderRadius.circular(10.0)),
+            hintText: 'Contraseña',
           ),
           onSaved: (value1) => user.password = value1,
           validator: (value) {
@@ -298,14 +333,24 @@ privacy policy.
           SizedBox(
             width: 15,
           ),
-          CupertinoSwitch(
-            activeColor: Colors.black,
-            value: _typeAcount,
-            onChanged: (bool value) {
+          GestureDetector(
+            onTap: () {
               setState(() {
-                _typeAcount = value;
+                _typeAcount = !_typeAcount;
               });
             },
+            child: Container(
+              decoration: BoxDecoration(
+                  border: Border.all(width: 1.5, color: Colors.black),
+                  borderRadius: BorderRadius.circular(10)),
+              child: CustomSwitchButton(
+                backgroundColor: Colors.white10,
+                unCheckedColor: Colors.black,
+                animationDuration: Duration(milliseconds: 400),
+                checkedColor: Colors.black,
+                checked: _typeAcount,
+              ),
+            ),
           ),
         ],
       ),
@@ -313,21 +358,24 @@ privacy policy.
   }
 
   Widget _createBottom(BuildContext context) {
-    return RaisedButton(
-      child: Container(
-          width: size.width * 0.6,
-          padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
-          child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Registrarse'),
-              ])),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
-      elevation: 2.0,
-      color: Colors.black,
-      textColor: Colors.white,
-      onPressed: () => _createAcount(),
+    return Container(
+      width: size.width * 0.65,
+      child: RaisedButton(
+        child: Container(
+            padding: EdgeInsets.symmetric(vertical: 15.0),
+            child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Sign Up'),
+                ])),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        elevation: 2.0,
+        color: Colors.black,
+        textColor: Colors.white,
+        onPressed: () => _createAcount(),
+      ),
     );
   }
 
@@ -336,28 +384,158 @@ privacy policy.
       child: Form(
           key: form2key,
           child: Column(
-            children: [_createNameCompanie()],
+            children: [
+              _createNameCompanie(),
+              SizedBox(
+                height: 10,
+              ),
+              _createCountry(),
+              SizedBox(
+                height: 10,
+              ),
+              _createState()
+            ],
           )),
     );
   }
 
   Widget _createNameCompanie() {
     return Container(
-        width: size.width * 0.7,
-        height: 50,
-        padding: EdgeInsets.symmetric(horizontal: 10.0),
+        width: size.width * 0.65,
         child: TextFormField(
-            style: TextStyle(decorationColor: Colors.white),
+            style: TextStyle(
+              decorationColor: Colors.white,
+            ),
             keyboardType: TextInputType.name,
             decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide(
+                  width: 1.5,
+                  color: Colors.black,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide(
+                  width: 1.5,
+                  color: Colors.black,
+                ),
+              ),
               border: OutlineInputBorder(
                   borderSide: BorderSide(width: 100, color: Colors.white10),
-                  borderRadius: BorderRadius.circular(7.0)),
+                  borderRadius: BorderRadius.circular(10.0)),
               hintText: 'Name company',
             )));
   }
 
-  _createAcount() {
+  Widget _createPhoneNumber() {
+    return Container(
+        width: size.width * 0.65,
+        child: TextFormField(
+            style: TextStyle(
+              decorationColor: Colors.white,
+            ),
+            keyboardType: TextInputType.phone,
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide(
+                  width: 1.5,
+                  color: Colors.black,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide(
+                  width: 1.5,
+                  color: Colors.black,
+                ),
+              ),
+              border: OutlineInputBorder(
+                  borderSide: BorderSide(width: 100, color: Colors.white10),
+                  borderRadius: BorderRadius.circular(10.0)),
+              hintText: 'Numero de telefono',
+            )));
+  }
+
+  Widget _createCountry() {
+    return Container(
+      width: size.width * 0.65,
+      height: 58,
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(width: 1.5, color: Colors.black)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("Ciudad"),
+          Container(
+            child: DropdownButton<String>(
+                value: _countryValue,
+                icon: Icon(Icons.arrow_drop_down),
+                iconSize: 42,
+                underline: SizedBox(
+                  width: 30,
+                ),
+                onChanged: (newValue) {
+                  setState(() {
+                    _countryValue = newValue.toString();
+                  });
+                },
+                items: <String>['', 'La Paz', 'Comayagua', 'Cortes', 'Four']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _createState() {
+    return Container(
+      width: size.width * 0.65,
+      height: 58,
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(width: 1.5, color: Colors.black)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("Departamento"),
+          DropdownButton<String>(
+              value: _stateValue,
+              icon: Icon(Icons.arrow_drop_down),
+              iconSize: 42,
+              underline: SizedBox(
+                width: 30,
+              ),
+              onChanged: (newValue) {
+                setState(() {
+                  _stateValue = newValue.toString();
+                });
+              },
+              items: <String>['', 'La Paz', 'Marcala', 'Guajiquiro', 'Tutule']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList()),
+        ],
+      ),
+    );
+  }
+
+  _createAcount() async {
     setState(() {
       check = !check;
     });
@@ -368,9 +546,6 @@ privacy policy.
       return;
     }
     formkey.currentState!.save();
-    setState(() {
-      check = !check;
-    });
   }
 
   _mostrarFoto(data) {
@@ -383,11 +558,5 @@ privacy policy.
     }
   }
 
-  _navigateAndDisplaySelection(BuildContext context) async {
-    // Navigator.push returns a Future that completes after calling
-    // // Navigator.pop on the Selection Screen.
-    Directory tempDir = await getApplicationDocumentsDirectory();
-    print(tempDir);
-    String tempPath = tempDir.path;
-  }
+  _navigateAndDisplaySelection(BuildContext context) async {}
 }
