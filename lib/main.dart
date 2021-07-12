@@ -1,3 +1,4 @@
+// @dart=2.9
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/pages/home_page.dart';
 import 'package:handicraft_app/pages/login_page.dart';
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Handicraft',
-      initialRoute: 'home',
+      initialRoute: 'login',
       routes: {
         'home': (BuildContext context) => HomePage(),
         'register': (BuildContext context) => RegisterPage(),
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.indigo,
         floatingActionButtonTheme:
-            FloatingActionButtonThemeData(backgroundColor: Colors.indigo),
+            FloatingActionButtonThemeData(backgroundColor: Colors.white24),
       ),
     );
   }
