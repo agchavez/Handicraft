@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1042382277099",
+    "project_id": "handicraft-app",
+    "storage_bucket": "handicraft-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1042382277099:android:a35419d4681a8b671871ae",
+        "android_client_info": {
+          "package_name": "com.example.handicraft_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1042382277099-el6022f9e4bn0g88kf99jdiqrsjdltud.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFjsEXzOB2CXZJgkwu5_zHi9jB2JOq6c0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1042382277099-el6022f9e4bn0g88kf99jdiqrsjdltud.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

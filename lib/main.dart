@@ -1,9 +1,13 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+
 import 'package:handicraft_app/pages/home_page.dart';
 import 'package:handicraft_app/pages/login_page.dart';
 import 'package:handicraft_app/pages/register_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -15,7 +19,7 @@ class MyApp extends StatelessWidget {
       title: 'Handicraft',
       initialRoute: 'home',
       routes: {
-        'home': (BuildContext context) => HomePage(),
+        'home': (BuildContext context) => MainExpandableNavBar(),
         'register': (BuildContext context) => RegisterPage(),
         'login': (BuildContext context) => LoginPage(),
       },
