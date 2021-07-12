@@ -6,8 +6,6 @@ import 'package:handicraft_app/pages/login_page.dart';
 import 'package:handicraft_app/pages/register_page.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
