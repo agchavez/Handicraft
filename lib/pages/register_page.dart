@@ -71,11 +71,11 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("you already have an account?",
+                    Text("ya tienes una cuenta?",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16)),
                     Text(
-                      " Login",
+                      " Iniciar Sesión",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                     )
@@ -88,12 +88,12 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             Container(
               child: Text(
-                """By clicking log in or continue with google, 
-you accept Handicraft's terms of use and 
-privacy policy. 
+                """Al hacer clic en iniciar sesión o continuar con google,
+acepta los términos de uso de Handicraft y
+política de privacidad. 
             """,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                style: TextStyle(color: Colors.grey[600], fontSize: 10),
               ),
             )
           ],
@@ -193,7 +193,7 @@ privacy policy.
             onSaved: (value) => user.firstname = value,
             validator: (value) {
               if (value!.isEmpty || utils.isNumeric(value)) {
-                return '';
+                return 'Campo obligatorio';
               } else {
                 return null;
               }
@@ -261,12 +261,12 @@ privacy policy.
             border: OutlineInputBorder(
                 borderSide: BorderSide(width: 100, color: Colors.white10),
                 borderRadius: BorderRadius.circular(10.0)),
-            hintText: 'Correo electronico',
+            hintText: 'Correo electrónico',
           ),
           onSaved: (value) => {user.email = value.toString(), print("object")},
           validator: (value) {
             if (!utils.validatorEmail(value.toString())) {
-              return 'Correo no valido';
+              return 'Correo no válido';
             } else {
               return null;
             }
@@ -327,7 +327,7 @@ privacy policy.
       child: Row(
         children: [
           Text(
-            "Company",
+            "Empresa",
             style: TextStyle(fontSize: 18),
           ),
           SizedBox(
@@ -367,7 +367,7 @@ privacy policy.
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Sign Up'),
+                  Text('Registrarme'),
                 ])),
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
