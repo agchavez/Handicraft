@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:handicraft_app/provider/google_sign_in.dart';
+import 'package:provider/provider.dart';
 
 const _cardColor = Color(0xFFFFFF);
 const _cardColorExpanded = Color(0X000000);
@@ -239,7 +241,10 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                               elevation: 2.0,
                               color: Colors.white,
                               textColor: Colors.black,
-                              onPressed: () {},
+                              onPressed: () {
+                                final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
+                                provider.googleLogin();
+                              },
                             ),
                           ))
                     ],
