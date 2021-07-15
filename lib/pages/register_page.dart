@@ -5,8 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/acount_user.dart';
 import 'package:custom_switch_button/custom_switch_button.dart';
+import 'package:handicraft_app/provider/auth_service.dart';
 
 import 'package:handicraft_app/utils/util.dart' as utils;
+import 'package:provider/provider.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -574,6 +576,13 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
     formkey.currentState.save();
+
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final resp = await authService.register(user);
+    print(resp);
+    setState(() {
+      check = !check;
+    });
   }
 
   _mostrarFoto(data) {

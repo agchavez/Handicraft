@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/login_user.dart';
+import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/utils/util.dart' as utils;
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -249,7 +251,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  _logIn() {
+  _logIn() async {
     setState(() {
       check = !check;
     });
@@ -260,6 +262,8 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     formkey.currentState.save();
+    final authService = Provider.of<AuthService>(context);
+    final resp = await authService.login("", "");
     setState(() {
       check = !check;
     });

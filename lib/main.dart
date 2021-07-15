@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:handicraft_app/pages/home_page.dart';
 import 'package:handicraft_app/pages/login_page.dart';
 import 'package:handicraft_app/pages/register_page.dart';
+import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/provider/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => AuthService()),
         ChangeNotifierProvider(create: (context) => GoogleSignInProvider())
       ],
       child: MaterialApp(
