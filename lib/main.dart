@@ -1,4 +1,3 @@
-
 import 'package:firebase_core/firebase_core.dart';
 
 // @dart=2.9
@@ -18,8 +17,11 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => ChangeNotifierProvider(
-      create: (context) => GoogleSignInProvider(),
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => GoogleSignInProvider())
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Handicraft',
@@ -34,9 +36,9 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primaryColor: Colors.indigo,
           floatingActionButtonTheme:
-          FloatingActionButtonThemeData(backgroundColor: Colors.indigo),
+              FloatingActionButtonThemeData(backgroundColor: Colors.indigo),
         ),
-
       ),
-  );
+    );
+  }
 }

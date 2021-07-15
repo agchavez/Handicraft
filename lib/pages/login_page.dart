@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/login_user.dart';
 import 'package:handicraft_app/utils/util.dart' as utils;
 
-
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -40,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
                     color: Colors.black,
                   ),
             SizedBox(
-              height: 20,
+              height: size.height * 0.05,
             ),
             Center(
               child: GestureDetector(
@@ -78,6 +76,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             Container(
+              width: size.width * 0.74,
               child: Text(
                 "Al hacer clic en iniciar sesión o continuar con google, acepta los términos de uso de Handicraft y política de privacidad.",
                 textAlign: TextAlign.center,
@@ -101,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             Image(
                 height: size.height * 0.06,
-                image: AssetImage('assets/logo.png')),
+                image: AssetImage('assets/images/logo.png')),
             Text(
               "Products that you will love.",
               style: TextStyle(color: Colors.grey[600], fontSize: 15),
@@ -211,7 +210,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               onSaved: (login) => login_user.password = login,
               validator: (value) {
-                if (value!.isEmpty) {
+                if (value.isEmpty) {
                   return 'Correo electrónico';
                 } else {
                   return null;
@@ -254,13 +253,13 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       check = !check;
     });
-    if (!formkey.currentState!.validate()) {
+    if (!formkey.currentState.validate()) {
       setState(() {
         check = !check;
       });
       return;
     }
-    formkey.currentState!.save();
+    formkey.currentState.save();
     setState(() {
       check = !check;
     });

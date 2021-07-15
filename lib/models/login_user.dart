@@ -7,8 +7,8 @@ String loginAcountModelToJson(LoginAcountModel data) =>
     json.encode(data.toJson());
 
 class LoginAcountModel {
-  String? email;
-  String? password;
+  String email;
+  String password;
 
   LoginAcountModel({
     this.email,

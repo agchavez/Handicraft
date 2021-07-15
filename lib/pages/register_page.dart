@@ -9,16 +9,13 @@ import 'package:custom_switch_button/custom_switch_button.dart';
 import 'package:handicraft_app/utils/util.dart' as utils;
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({Key? key}) : super(key: key);
-
-
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
 
 final formkey = GlobalKey<FormState>();
 final form2key = GlobalKey<FormState>();
-File? foto, newImage;
+File foto, newImage;
 bool _typeAcount = false, _showpasword = true, check = false;
 UserAcountModel user = new UserAcountModel();
 String _countryValue = 'ciudad', _stateValue = '';
@@ -61,7 +58,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     color: Colors.black,
                   ),
             SizedBox(
-              height: 1.50,
+              height: 15,
             ),
             Center(
               child: GestureDetector(
@@ -88,13 +85,14 @@ class _RegisterPageState extends State<RegisterPage> {
               height: 10,
             ),
             Container(
+              width: size.width * 0.73,
               child: Text(
                 """Al hacer clic en iniciar sesión o continuar con google,
-acepta los términos de uso de Handicraft y
-política de privacidad. 
+            acepta los términos de uso de Handicraft y
+            política de privacidad. 
             """,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey[600], fontSize: 10),
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
               ),
             )
           ],
@@ -106,7 +104,9 @@ política de privacidad.
   Widget _createLog() {
     return Column(
       children: [
-        Image(height: size.height * 0.07, image: AssetImage('assets/logo.png')),
+        Image(
+            height: size.height * 0.07,
+            image: AssetImage('assets/images/logo.png')),
         Text(
           "Products that you will love.",
           style: TextStyle(color: Colors.grey[600], fontSize: 15),
@@ -129,7 +129,7 @@ política de privacidad.
                 height: 120,
                 width: 140,
                 fit: BoxFit.fitHeight,
-                placeholder: AssetImage("assets/Spinner-1s-200px.gif"),
+                placeholder: AssetImage("assets/images/Spinner-1s-200px.gif"),
                 image: _mostrarFoto(""))),
       ),
     );
@@ -193,7 +193,7 @@ política de privacidad.
             ),
             onSaved: (value) => user.firstname = value,
             validator: (value) {
-              if (value!.isEmpty || utils.isNumeric(value)) {
+              if (value.isEmpty || utils.isNumeric(value)) {
                 return 'Campo obligatorio';
               } else {
                 return null;
@@ -229,7 +229,7 @@ política de privacidad.
           ),
           onSaved: (value) => user.lastname = value,
           validator: (value) {
-            if (value!.isEmpty || utils.isNumeric(value)) {
+            if (value.isEmpty || utils.isNumeric(value)) {
               return 'Campo obligatorio';
             } else {
               return null;
@@ -313,7 +313,7 @@ política de privacidad.
           ),
           onSaved: (value1) => user.password = value1,
           validator: (value) {
-            if (value!.isEmpty) {
+            if (value.isEmpty) {
               return 'Contraseña obligatoria';
             } else {
               return null;
@@ -404,6 +404,13 @@ política de privacidad.
     return Container(
         width: size.width * 0.65,
         child: TextFormField(
+            validator: (value) {
+              if (value.isEmpty || utils.isNumeric(value)) {
+                return 'Campo obligatorio';
+              } else {
+                return null;
+              }
+            },
             style: TextStyle(
               decorationColor: Colors.white,
             ),
@@ -434,6 +441,14 @@ política de privacidad.
     return Container(
         width: size.width * 0.65,
         child: TextFormField(
+            validator: (value) {
+              print(value.length);
+              if (value.length != 8) {
+                return "Numero no valido";
+              } else {
+                return null;
+              }
+            },
             style: TextStyle(
               decorationColor: Colors.white,
             ),
@@ -470,7 +485,7 @@ política de privacidad.
           borderRadius: BorderRadius.circular(10),
           border: Border.all(width: 1.5, color: Colors.black)),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Container(
             child: DropdownButton<String>(
@@ -544,18 +559,26 @@ política de privacidad.
     setState(() {
       check = !check;
     });
-    if (!formkey.currentState!.validate()) {
+    if (!formkey.currentState.validate()) {
+      if (_typeAcount) {
+        if (form2key.currentState.validate()) {
+          setState(() {
+            check = !check;
+          });
+          return;
+        }
+      }
       setState(() {
         check = !check;
       });
       return;
     }
-    formkey.currentState!.save();
+    formkey.currentState.save();
   }
 
   _mostrarFoto(data) {
     if (data == '' || data.fotoUrl == null) {
-      return AssetImage('assets/unnamed.png');
+      return AssetImage('assets/images/unnamed.png');
     } else {
       return NetworkImage(
         data.fotoUrl,

@@ -11,10 +11,10 @@ String userAcountModelToJson(UserAcountModel data) =>
     json.encode(data.toJson());
 
 class UserAcountModel {
-  String? firstname;
-  String? lastname;
-  String? email;
-  String? password;
+  String firstname;
+  String lastname;
+  String email;
+  String password;
 
   UserAcountModel({
     this.firstname,

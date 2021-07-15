@@ -242,7 +242,9 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                               color: Colors.white,
                               textColor: Colors.black,
                               onPressed: () {
-                                final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
+                                final provider =
+                                    Provider.of<GoogleSignInProvider>(context,
+                                        listen: false);
                                 provider.googleLogin();
                               },
                             ),
