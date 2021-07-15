@@ -11,6 +11,7 @@ import 'package:handicraft_app/utils/util.dart' as utils;
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
 
+
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
