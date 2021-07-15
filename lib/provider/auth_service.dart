@@ -16,6 +16,12 @@ class AuthService with ChangeNotifier {
     try {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
           email: user.email, password: user.password);
+      if (userCredential.user != null) {
+        storage.setValue(userCredential.user.uid, "uid");
+        return true;
+      } else {
+        return false;
+      }
     } on FirebaseAuthException catch (e) {
       print(e);
       if (e.code == 'weak-password') {
@@ -23,9 +29,10 @@ class AuthService with ChangeNotifier {
       } else if (e.code == 'email-already-in-use') {
         print('The account already exists for that email.');
       }
+
+      return false;
     } catch (e) {
-      print(e);
+      return false;
     }
-    return true;
   }
 }
