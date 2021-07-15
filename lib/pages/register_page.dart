@@ -20,7 +20,7 @@ final form2key = GlobalKey<FormState>();
 File? foto, newImage;
 bool _typeAcount = false, _showpasword = true, check = false;
 UserAcountModel user = new UserAcountModel();
-String _countryValue = '', _stateValue = '';
+String _countryValue = 'ciudad', _stateValue = '';
 
 class _RegisterPageState extends State<RegisterPage> {
   Size size = Size(1000, 5000);
@@ -469,9 +469,8 @@ política de privacidad.
           borderRadius: BorderRadius.circular(10),
           border: Border.all(width: 1.5, color: Colors.black)),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text("Ciudad"),
           Container(
             child: DropdownButton<String>(
                 value: _countryValue,
@@ -485,8 +484,13 @@ política de privacidad.
                     _countryValue = newValue.toString();
                   });
                 },
-                items: <String>['', 'La Paz', 'Comayagua', 'Cortes', 'Four']
-                    .map<DropdownMenuItem<String>>((String value) {
+                items: <String>[
+                  'ciudad',
+                  'La Paz',
+                  'Francisco Morazan',
+                  'Cortes',
+                  'Four'
+                ].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
