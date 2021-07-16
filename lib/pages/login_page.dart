@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/login_user.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
+import 'package:handicraft_app/utils/alerts.dart';
 import 'package:handicraft_app/utils/util.dart' as utils;
 import 'package:provider/provider.dart';
 
@@ -158,8 +159,7 @@ class _LoginPageState extends State<LoginPage> {
                 borderRadius: BorderRadius.circular(10.0)),
             hintText: 'Correo electrónico',
           ),
-          onSaved: (value) =>
-              {login_user.email = value.toString(), print("object")},
+          onSaved: (value) => {login_user.email = value.toString()},
           validator: (value) {
             if (!utils.validatorEmail(value.toString())) {
               return 'Correo no válido';
@@ -262,10 +262,16 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     formkey.currentState.save();
-    final authService = Provider.of<AuthService>(context);
-    final resp = await authService.login("", "");
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final resp = await authService.login(login_user.email, login_user.password);
     setState(() {
       check = !check;
     });
+    if (resp) {
+      Navigator.popAndPushNamed(context, "home");
+    } else {
+      showAlert(
+          context, "Error", "Datos incorrectos - Verifique la informacion");
+    }
   }
 }

@@ -7,7 +7,7 @@ class StorageService {
   // Read value
   // String value = await storage.read(key: key);
 
-  Future<dynamic> setValue(String value, String key) async {
+  Future<bool> setValue(String value, String key) async {
     try {
       await storage.write(key: key, value: value);
       return true;
@@ -16,7 +16,7 @@ class StorageService {
     }
   }
 
-  Future<dynamic> getValue(String key) async {
+  Future<String> getValue(String key) async {
     try {
       final value = await storage.read(key: key);
       return value;
@@ -30,7 +30,7 @@ class StorageService {
       await storage.delete(key: key);
       return true;
     } catch (e) {
-      return "";
+      return false;
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:handicraft_app/models/acount_user.dart';
+import 'package:handicraft_app/models/login_user.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 
 class AuthService with ChangeNotifier {
@@ -8,11 +9,22 @@ class AuthService with ChangeNotifier {
   final storage = new StorageService();
 
   Future<bool> login(String email, String password) async {
-    return true;
+    print("login");
+    try {
+      UserCredential userCredential = await auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      if (userCredential.user != null) {
+        storage.setValue(userCredential.user.uid, "uid");
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<bool> register(UserAcountModel user) async {
-    print(user.toString());
     try {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
           email: user.email, password: user.password);
@@ -31,8 +43,6 @@ class AuthService with ChangeNotifier {
       }
 
       return false;
-    } catch (e) {
-      return false;
-    }
+    } catch (e) {}
   }
 }
