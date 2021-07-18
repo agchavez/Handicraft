@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -7,6 +6,11 @@ import 'package:handicraft_app/models/acount_user.dart';
 import 'package:custom_switch_button/custom_switch_button.dart';
 
 import 'package:handicraft_app/utils/util.dart' as utils;
+//import 'package:handicraft_app/widgets/image.dart' as imageWid;
+
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -21,6 +25,15 @@ UserAcountModel user = new UserAcountModel();
 String _countryValue = 'ciudad', _stateValue = '';
 
 class _RegisterPageState extends State<RegisterPage> {
+  List<PickedFile> _tempimageFileList;
+
+  set _imageFile(PickedFile value) {
+    _tempimageFileList = value == null ? null : [value];
+    print(_tempimageFileList);
+  }
+
+  File _image;
+  final picker = ImagePicker();
   Size size = Size(1000, 5000);
   @override
   Widget build(BuildContext context) {
@@ -36,7 +49,37 @@ class _RegisterPageState extends State<RegisterPage> {
             SizedBox(
               height: 10,
             ),
-            _createImg(context),
+            //_createImg(context),
+            //SizedBox(
+            //height: 10,
+            //),
+            /* */
+
+            Center(
+              child: GestureDetector(
+                onTap: () {
+                  _showPicker(context);
+                },
+                child: CircleAvatar(
+                  radius: 55,
+                  backgroundColor: Colors.black,
+                  child: _tempimageFileList != null
+                      ? _previewImages()
+                      : Container(
+                          decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(50)),
+                          width: 100,
+                          height: 100,
+                          child: Icon(
+                            Icons.camera_alt,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                ),
+              ),
+            ),
+            /* */
             SizedBox(
               height: 10,
             ),
@@ -115,7 +158,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _createImg(BuildContext context) {
+  /*Widget _createImg(BuildContext context) {
     return GestureDetector(
       onTap: () async {
         _navigateAndDisplaySelection(context);
@@ -133,8 +176,144 @@ class _RegisterPageState extends State<RegisterPage> {
                 image: _mostrarFoto(""))),
       ),
     );
+  }*/
+
+/*IMAGEN*/
+
+  Future<void> retrieveLostData() async {
+    final LostData response = await picker.getLostData();
+    if (response.isEmpty) {
+      return;
+    }
+    if (response.file != null) {
+      if (response.type == RetrieveType.image) {
+        setState(() {
+          _imageFile = response.file;
+        });
+      }
+    } else {
+      return;
+    }
   }
 
+  Widget _previewImages() {
+    if (_tempimageFileList != null) {
+      return Container(
+          decoration: BoxDecoration(
+              color: Colors.grey[200], borderRadius: BorderRadius.circular(50)),
+          child: Semantics(
+              child: ListView.builder(
+                padding: EdgeInsets.symmetric(),
+                key: UniqueKey(),
+                itemBuilder: (context, index) {
+                  // Why network for web?
+                  // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
+                  return Semantics(
+                    label: 'image_picker_example_picked_image',
+                    child: Image.file(_image, fit: BoxFit.fitHeight),
+                  );
+                },
+                itemCount: _tempimageFileList.length,
+              ),
+              label: 'image_picker_example_picked_images'));
+    } else {
+      return const Text(
+        'You have not yet picked an image.',
+        textAlign: TextAlign.center,
+      );
+    }
+  }
+
+  _imgFromCamera() async {
+    print('here');
+    final pickedFile =
+        await picker.getImage(source: ImageSource.camera, imageQuality: 50);
+    _imageFile = pickedFile;
+    await _cropImage();
+  }
+
+  _imgFromGallery() async {
+    final pickedFile =
+        await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
+    _imageFile = pickedFile;
+    await _cropImage();
+  }
+
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Photo Library'),
+                      onTap: () {
+                        _imgFromGallery();
+                        Navigator.of(context).pop();
+                      }),
+                  new ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Camera'),
+                    onTap: () {
+                      _imgFromCamera();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  Future<Null> _cropImage() async {
+    File croppedFile = await ImageCropper.cropImage(
+        sourcePath: _tempimageFileList[0].path,
+        cropStyle: CropStyle.circle,
+        aspectRatioPresets: Platform.isAndroid
+            ? [
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio16x9
+              ]
+            : [
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio5x3,
+                CropAspectRatioPreset.ratio5x4,
+                CropAspectRatioPreset.ratio7x5,
+                CropAspectRatioPreset.ratio16x9
+              ],
+        androidUiSettings: AndroidUiSettings(
+          toolbarTitle: 'Cropper',
+          toolbarColor: Colors.black,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false,
+        ),
+        iosUiSettings:
+            IOSUiSettings(title: 'Cropper', minimumAspectRatio: 1.0));
+    if (croppedFile != null) {
+      setState(() {
+        _image = croppedFile;
+      });
+    }
+  }
+
+  void _clearImage() {
+    setState(() {
+      _image = null;
+    });
+  }
+
+/**/
   Widget _createForm() {
     return SingleChildScrollView(
       child: Form(
