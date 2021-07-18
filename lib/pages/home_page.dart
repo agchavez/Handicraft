@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/provider/google_sign_in.dart';
+import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:provider/provider.dart';
 
 const _cardColor = Color(0xFFFFFF);
@@ -20,12 +21,18 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
   AnimationController _controller;
   bool _expanded = false;
   double _currentHeight = _minHeigth;
+  String uid = "";
 
   @override
   void initState() {
     super.initState();
+
     _controller = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 600));
+  }
+
+  _getuid() async {
+    uid = await StorageService().getValue("uid");
   }
 
   @override
@@ -36,10 +43,33 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
 
   @override
   Widget build(BuildContext context) {
+    _getuid();
     final size = MediaQuery.of(context).size;
-    final menuWidth = size.width * 0.8;
+
     return Scaffold(
-        body: Stack(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          actions: [
+            GestureDetector(
+              onTap: () async => {
+                print(uid),
+                if (await StorageService().setValue("", "uid"))
+                  {setState(() {})}
+              },
+              child: CircleAvatar(
+                backgroundColor: Colors.transparent,
+                child: Image(
+                  image: AssetImage("assets/images/unnamed.png"),
+                ),
+              ),
+            )
+          ],
+        ),
+        body: _body(size));
+  }
+
+  Widget _body(size) {
+    return Stack(
       children: [
         ListView.builder(
             padding: const EdgeInsets.only(bottom: _minHeigth),
@@ -55,63 +85,69 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                 ),
               );
             }),
-        GestureDetector(
-            onVerticalDragUpdate: _expanded
-                ? (details) {
-                    setState(() {
-                      final newHeight = _currentHeight - details.delta.dy;
-                      _controller.value = _currentHeight / _maxHeight;
-                      _currentHeight = newHeight.clamp(_minHeigth, _maxHeight);
-                    });
-                  }
-                : null,
-            onVerticalDragEnd: _expanded
-                ? (details) {
-                    if (_currentHeight < _maxHeight / 2) {
-                      _controller.reverse();
-                      _expanded = false;
-                    } else {
-                      _expanded = true;
-                      _controller.forward(from: _currentHeight / _maxHeight);
-                      _currentHeight = _maxHeight;
-                    }
-                  }
-                : null,
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, snapshot) {
-                final value =
-                    const ElasticInOutCurve(0.7).transform(_controller.value);
-                return Stack(
-                  children: [
-                    Positioned(
-                      height: lerpDouble(_minHeigth, _currentHeight, value),
-                      left:
-                          lerpDouble(size.width / 2 - menuWidth / 2, 0, value),
-                      width: lerpDouble(menuWidth, size.width, value),
-                      bottom: lerpDouble(30.0, 0.0, value),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: _expanded ? Colors.white : Colors.black,
-                          borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20),
-                              bottom: Radius.circular(
-                                lerpDouble(20.0, 0.0, value),
-                              )),
-                        ),
-                        child: _expanded
-                            ? Opacity(
-                                opacity: _controller.value,
-                                child: _buildExpandedContent())
-                            : _buildMenuContent(),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ))
+        uid == "" ? createAccountMenu(size) : Center()
       ],
-    ));
+    );
+  }
+
+  Widget createNavbar() {}
+
+  Widget createAccountMenu(size) {
+    final menuWidth = size.width * 0.8;
+    return GestureDetector(
+        onVerticalDragUpdate: _expanded
+            ? (details) {
+                setState(() {
+                  final newHeight = _currentHeight - details.delta.dy;
+                  _controller.value = _currentHeight / _maxHeight;
+                  _currentHeight = newHeight.clamp(_minHeigth, _maxHeight);
+                });
+              }
+            : null,
+        onVerticalDragEnd: _expanded
+            ? (details) {
+                if (_currentHeight < _maxHeight / 2) {
+                  _controller.reverse();
+                  _expanded = false;
+                } else {
+                  _expanded = true;
+                  _controller.forward(from: _currentHeight / _maxHeight);
+                  _currentHeight = _maxHeight;
+                }
+              }
+            : null,
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, snapshot) {
+            final value =
+                const ElasticInOutCurve(0.7).transform(_controller.value);
+            return Stack(
+              children: [
+                Positioned(
+                  height: lerpDouble(_minHeigth, _currentHeight, value),
+                  left: lerpDouble(size.width / 2 - menuWidth / 2, 0, value),
+                  width: lerpDouble(menuWidth, size.width, value),
+                  bottom: lerpDouble(30.0, 0.0, value),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: _expanded ? Colors.white : Colors.black,
+                      borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20),
+                          bottom: Radius.circular(
+                            lerpDouble(20.0, 0.0, value),
+                          )),
+                    ),
+                    child: _expanded
+                        ? Opacity(
+                            opacity: _controller.value,
+                            child: _buildExpandedContent())
+                        : _buildMenuContent(),
+                  ),
+                ),
+              ],
+            );
+          },
+        ));
   }
 
   Widget _buildExpandedContent() {
