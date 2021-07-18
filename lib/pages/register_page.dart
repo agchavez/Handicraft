@@ -148,8 +148,9 @@ class _RegisterPageState extends State<RegisterPage> {
     return Column(
       children: [
         Image(
-            height: size.height * 0.07,
-            image: AssetImage('assets/images/logo.png')),
+          height: size.height * 0.07,
+          image: AssetImage('assets/images/logo.png'),
+        ),
         Text(
           "Products that you will love.",
           style: TextStyle(color: Colors.grey[600], fontSize: 15),
@@ -200,18 +201,30 @@ class _RegisterPageState extends State<RegisterPage> {
     if (_tempimageFileList != null) {
       return Container(
           decoration: BoxDecoration(
-              color: Colors.grey[200], borderRadius: BorderRadius.circular(50)),
+              //shape: BoxShape.circle,
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(50)),
           child: Semantics(
+              image: true,
               child: ListView.builder(
                 padding: EdgeInsets.symmetric(),
                 key: UniqueKey(),
                 itemBuilder: (context, index) {
                   // Why network for web?
                   // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
+                  print(_image);
                   return Semantics(
-                    label: 'image_picker_example_picked_image',
-                    child: Image.file(_image, fit: BoxFit.fitHeight),
-                  );
+                      label: 'image_picker_example_picked_image',
+                      // child: CircleAvatar(),
+                      child: ClipOval(
+                          child: new SizedBox(
+                        width: 100,
+                        height: 110,
+                        child: Image.file(
+                          _image,
+                          fit: BoxFit.fill,
+                        ),
+                      )));
                 },
                 itemCount: _tempimageFileList.length,
               ),
