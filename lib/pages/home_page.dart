@@ -2,6 +2,10 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:handicraft_app/pages/menssange_pages.dart';
+import 'package:handicraft_app/pages/notification_page.dart';
+import 'package:handicraft_app/pages/products_pages.dart';
+import 'package:handicraft_app/pages/profile_page.dart';
 import 'package:handicraft_app/provider/google_sign_in.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +26,15 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
   bool _expanded = false;
   double _currentHeight = _minHeigth;
   String uid = "";
+
+  static const TextStyle optionStyle =
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    print(index);
+  }
 
   @override
   void initState() {
@@ -47,50 +60,175 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          actions: [
-            GestureDetector(
-              onTap: () async => {
-                print(uid),
-                if (await StorageService().setValue("", "uid"))
-                  {setState(() {})}
-              },
-              child: CircleAvatar(
-                backgroundColor: Colors.transparent,
-                child: Image(
-                  image: AssetImage("assets/images/unnamed.png"),
+      floatingActionButton: uid != ""
+          ? Container(
+              margin: EdgeInsets.only(bottom: 15),
+              width: 50,
+              height: 50,
+              child: FittedBox(
+                child: FloatingActionButton(
+                  elevation: 3,
+                  backgroundColor: Colors.white,
+                  onPressed: () {},
+                  child: Icon(
+                    Icons.add,
+                    size: 30,
+                    color: Colors.black,
+                  ),
                 ),
               ),
             )
-          ],
-        ),
-        body: _body(size));
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      body: SafeArea(child: _body(size)),
+    );
+  }
+
+  Widget pages() {
+    switch (_selectedIndex) {
+      case 0:
+        return ProductsPages();
+      case 1:
+        return MenssagePages();
+      case 2:
+        return NotificationPage();
+      case 3:
+        return PorfilePage();
+      default:
+    }
   }
 
   Widget _body(size) {
     return Stack(
       children: [
-        ListView.builder(
-            padding: const EdgeInsets.only(bottom: _minHeigth),
-            itemCount: 5,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Container(
-                  height: 300,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.primaries[index % Colors.primaries.length]),
-                ),
-              );
-            }),
-        uid == "" ? createAccountMenu(size) : Center()
+        pages(),
+        uid == "" ? createAccountMenu(size) : createNavbar(size)
       ],
     );
   }
 
-  Widget createNavbar() {}
+  Widget createNavbar(size) {
+    final menuWidth = size.width * 0.8;
+    return Positioned(
+        top: size.height * 0.865,
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+          child: BottomAppBar(
+            elevation: 0,
+            color: Colors.transparent,
+            notchMargin: 10,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              height: 53,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      MaterialButton(
+                        onPressed: () {
+                          setState(() {
+                            _selectedIndex = 0;
+                          });
+                        },
+                        minWidth: 50,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.home_outlined,
+                              color: _selectedIndex == 0
+                                  ? Colors.white
+                                  : Colors.grey,
+                            )
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: 25,
+                      ),
+                      MaterialButton(
+                        onPressed: () {
+                          setState(() {
+                            _selectedIndex = 1;
+                          });
+                        },
+                        minWidth: 50,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.messenger_rounded,
+                              color: _selectedIndex == 1
+                                  ? Colors.white
+                                  : Colors.grey,
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    width: 70,
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      MaterialButton(
+                        onPressed: () {
+                          setState(() {
+                            _selectedIndex = 2;
+                          });
+                        },
+                        minWidth: 50,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.notifications_outlined,
+                              color: _selectedIndex == 2
+                                  ? Colors.white
+                                  : Colors.grey,
+                            )
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: 25,
+                      ),
+                      MaterialButton(
+                        onPressed: () {
+                          setState(() {
+                            _selectedIndex = 3;
+                          });
+                        },
+                        minWidth: 50,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
+                              maxRadius: 18,
+                              child: Text('Ag'),
+                              backgroundColor: _selectedIndex == 3
+                                  ? Colors.white
+                                  : Colors.grey,
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
+        ));
+  }
 
   Widget createAccountMenu(size) {
     final menuWidth = size.width * 0.8;

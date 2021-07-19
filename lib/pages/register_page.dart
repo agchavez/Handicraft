@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -10,6 +9,11 @@ import 'package:handicraft_app/utils/alerts.dart';
 
 import 'package:handicraft_app/utils/util.dart' as utils;
 import 'package:provider/provider.dart';
+import 'package:handicraft_app/widgets/image.dart';
+//import 'package:handicraft_app/widgets/image.dart' as imageWid;
+
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:image_picker/image_picker.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -24,6 +28,7 @@ UserAcountModel user = new UserAcountModel();
 String _countryValue = 'ciudad', _stateValue = '';
 
 class _RegisterPageState extends State<RegisterPage> {
+  final picker = ImagePicker();
   Size size = Size(1000, 5000);
   @override
   Widget build(BuildContext context) {
@@ -39,7 +44,38 @@ class _RegisterPageState extends State<RegisterPage> {
             SizedBox(
               height: 10,
             ),
-            _createImg(context),
+            //_createImg(context),
+            //SizedBox(
+            //height: 10,
+            //),
+            /* */
+
+            Center(
+              child: GestureDetector(
+                onTap: () {
+                  showPicker(context);
+                },
+                child: CircleAvatar(
+                  radius: 55,
+                  backgroundColor: Colors.transparent,
+                  child: tempimageFileList != null
+                      ? previewImages()
+                      : Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(width: 1, color: Colors.black),
+                              borderRadius: BorderRadius.circular(50)),
+                          width: 100,
+                          height: 100,
+                          child: Icon(
+                            Icons.camera_alt,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                ),
+              ),
+            ),
+            /* */
             SizedBox(
               height: 10,
             ),
@@ -104,12 +140,43 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  void showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Photo Library'),
+                      onTap: () {
+                        _imgFromGallery();
+                        Navigator.of(context).pop();
+                      }),
+                  new ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Camera'),
+                    onTap: () {
+                      _imgFromCamera();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
   Widget _createLog() {
     return Column(
       children: [
         Image(
-            height: size.height * 0.07,
-            image: AssetImage('assets/images/logo.png')),
+          height: size.height * 0.07,
+          image: AssetImage('assets/images/logo.png'),
+        ),
         Text(
           "Products that you will love.",
           style: TextStyle(color: Colors.grey[600], fontSize: 15),
@@ -118,7 +185,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _createImg(BuildContext context) {
+  /*Widget _createImg(BuildContext context) {
     return GestureDetector(
       onTap: () async {
         _navigateAndDisplaySelection(context);
@@ -136,8 +203,46 @@ class _RegisterPageState extends State<RegisterPage> {
                 image: _mostrarFoto(""))),
       ),
     );
+  }*/
+
+/*IMAGEN*/
+
+  _imgFromCamera() async {
+    print('here');
+    final pickedFile =
+        await picker.getImage(source: ImageSource.camera, imageQuality: 50);
+    imageFile = pickedFile;
+    File file = await cropImage();
+    print(file);
+    if (file != null) {
+      setSt(file);
+    }
   }
 
+  _imgFromGallery() async {
+    final pickedFile =
+        await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
+    imageFile = pickedFile;
+    File file = await cropImage();
+    print(file);
+    if (file != null) {
+      setSt(file);
+    }
+  }
+
+  void setSt(File croppedFile) {
+    setState(() {
+      image = croppedFile;
+    });
+  }
+
+  void _clearImage() {
+    setState(() {
+      image = null;
+    });
+  }
+
+/**/
   Widget _createForm() {
     return SingleChildScrollView(
       child: Form(
