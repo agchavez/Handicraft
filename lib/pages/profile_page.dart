@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
+import 'package:handicraft_app/provider/auth_service.dart';
 
 class PorfilePage extends StatelessWidget {
   @override
@@ -9,6 +10,7 @@ class PorfilePage extends StatelessWidget {
         actions: [
           IconButton(
               onPressed: () async {
+                AuthService().signOut();
                 StorageService().setValue("", "uid");
                 Navigator.popAndPushNamed(context, "home");
               },
