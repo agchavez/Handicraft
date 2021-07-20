@@ -9,10 +9,10 @@ class AuthService with ChangeNotifier {
   final storage = new StorageService();
 
   Future<bool> login(String email, String password) async {
-    print("login");
     try {
       UserCredential userCredential = await auth.signInWithEmailAndPassword(
           email: email, password: password);
+      print(userCredential.user);
       if (userCredential.user != null) {
         storage.setValue(userCredential.user.uid, "uid");
         return true;
@@ -43,6 +43,8 @@ class AuthService with ChangeNotifier {
       }
 
       return false;
-    } catch (e) {}
+    } catch (e) {
+      return false;
+    }
   }
 }

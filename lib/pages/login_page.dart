@@ -105,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: size.height * 0.06,
                 image: AssetImage('assets/images/logo.png')),
             Text(
-              "Products that you will love.",
+              "Productos que te encantarán.",
               style: TextStyle(color: Colors.grey[600], fontSize: 15),
             )
           ],

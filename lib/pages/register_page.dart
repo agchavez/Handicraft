@@ -25,7 +25,7 @@ final form2key = GlobalKey<FormState>();
 File foto, newImage;
 bool _typeAcount = false, _showpasword = true, check = false;
 UserAcountModel user = new UserAcountModel();
-String _countryValue = 'ciudad', _stateValue = '';
+String _countryValue = 'ciudad', _stateValue = 'Departamento';
 
 class _RegisterPageState extends State<RegisterPage> {
   final picker = ImagePicker();
@@ -178,7 +178,7 @@ class _RegisterPageState extends State<RegisterPage> {
           image: AssetImage('assets/images/logo.png'),
         ),
         Text(
-          "Products that you will love.",
+          "Productos que te encantarán.",
           style: TextStyle(color: Colors.grey[600], fontSize: 15),
         )
       ],
@@ -587,22 +587,19 @@ class _RegisterPageState extends State<RegisterPage> {
     return Container(
       width: size.width * 0.65,
       height: 58,
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 5),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(width: 1.5, color: Colors.black)),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Container(
             child: DropdownButton<String>(
                 value: _countryValue,
                 icon: Icon(Icons.arrow_drop_down),
-                iconSize: 42,
-                underline: SizedBox(
-                  width: 30,
-                ),
+                iconSize: 35,
                 onChanged: (newValue) {
                   setState(() {
                     _countryValue = newValue.toString();
@@ -612,8 +609,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   'ciudad',
                   'La Paz',
                   'Francisco Morazan',
-                  'Cortes',
-                  'Four'
+                  'Cortes'
                 ].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
@@ -630,34 +626,36 @@ class _RegisterPageState extends State<RegisterPage> {
     return Container(
       width: size.width * 0.65,
       height: 58,
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(width: 1.5, color: Colors.black)),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Text("Departamento"),
-          DropdownButton<String>(
-              value: _stateValue,
-              icon: Icon(Icons.arrow_drop_down),
-              iconSize: 42,
-              underline: SizedBox(
-                width: 30,
-              ),
-              onChanged: (newValue) {
-                setState(() {
-                  _stateValue = newValue.toString();
-                });
-              },
-              items: <String>['', 'La Paz', 'Marcala', 'Guajiquiro', 'Tutule']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList()),
+          Container(
+            child: DropdownButton<String>(
+                value: _stateValue,
+                icon: Icon(Icons.arrow_drop_down),
+                iconSize: 35,
+                onChanged: (newValue) {
+                  setState(() {
+                    _stateValue = newValue.toString();
+                  });
+                },
+                items: <String>[
+                  'Departamento',
+                  'La Paz',
+                  'Marcala',
+                  'Guajiquiro',
+                  'Tutule'
+                ].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList()),
+          ),
         ],
       ),
     );

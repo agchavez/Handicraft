@@ -1,8 +1,10 @@
+import 'dart:ffi';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/pages/menssange_pages.dart';
+import 'package:handicraft_app/pages/newProduct_page.dart';
 import 'package:handicraft_app/pages/notification_page.dart';
 import 'package:handicraft_app/pages/products_pages.dart';
 import 'package:handicraft_app/pages/profile_page.dart';
@@ -39,7 +41,6 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
   @override
   void initState() {
     super.initState();
-
     _controller = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 600));
   }
@@ -69,10 +70,14 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                 child: FloatingActionButton(
                   elevation: 3,
                   backgroundColor: Colors.white,
-                  onPressed: () {},
+                  onPressed: () {
+                    setState(() {
+                      _selectedIndex = 4;
+                    });
+                  },
                   child: Icon(
                     Icons.add,
-                    size: 30,
+                    size: 40,
                     color: Colors.black,
                   ),
                 ),
@@ -94,6 +99,8 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
         return NotificationPage();
       case 3:
         return PorfilePage();
+      case 4:
+        return NewpProductPage();
       default:
     }
   }
@@ -108,11 +115,11 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
   }
 
   Widget createNavbar(size) {
-    final menuWidth = size.width * 0.8;
     return Positioned(
-        top: size.height * 0.865,
+        top: size.height * 0.86,
         child: Container(
-          margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+          margin:
+              EdgeInsets.symmetric(vertical: 5, horizontal: size.width * 0.03),
           child: BottomAppBar(
             elevation: 0,
             color: Colors.transparent,
@@ -163,7 +170,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              Icons.messenger_rounded,
+                              Icons.message_outlined,
                               color: _selectedIndex == 1
                                   ? Colors.white
                                   : Colors.grey,
@@ -174,7 +181,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                     ],
                   ),
                   SizedBox(
-                    width: 70,
+                    width: size.width * 0.14,
                   ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
