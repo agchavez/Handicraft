@@ -40,7 +40,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                   fontSize: 15,
-                  fontFamily: 'Gilroy_ExtraBold'),
+                  fontFamily: 'Montserrat'),
             ),
           ),
         ),
@@ -62,7 +62,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
                   fontWeight: FontWeight.w500,
                   color: Colors.grey[600],
                   fontSize: 15,
-                  fontFamily: 'Gilroy_ExtraBold'),
+                  fontFamily: 'Montserrat'),
             ),
           ),
           SizedBox(
@@ -344,7 +344,10 @@ class _NewpProductPageState extends State<NewpProductPage> {
           });
           _addProduct();
         },
-        child: Text("Agregar producto"),
+        child: Text(
+          "Agregar producto",
+          style: TextStyle(fontSize: 15, fontFamily: 'Montserrat'),
+        ),
       ),
     );
   }

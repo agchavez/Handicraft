@@ -86,8 +86,9 @@ Future<File> cropImage(String path) async {
               CropAspectRatioPreset.ratio16x9
             ],
       androidUiSettings: AndroidUiSettings(
-          toolbarTitle: 'Cropper',
+          toolbarTitle: 'Recortar',
           toolbarColor: Colors.black,
+          activeControlsWidgetColor: Colors.grey,
           toolbarWidgetColor: Colors.white,
           initAspectRatio: CropAspectRatioPreset.original,
           backgroundColor: Colors.black,
