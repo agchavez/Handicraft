@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:handicraft_app/models/location_model.dart';
 import 'package:handicraft_app/pages/login_page.dart';
+import 'package:handicraft_app/provider/location_service.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/utils/selectImage.dart';
 import 'package:handicraft_app/widgets/custon_input.dart';
+import 'package:provider/provider.dart';
 
 class NewpProductPage extends StatefulWidget {
   @override
@@ -13,6 +16,8 @@ class NewpProductPage extends StatefulWidget {
 
 class _NewpProductPageState extends State<NewpProductPage> {
   @override
+  LocationModel _countryValue, _cityValue, _provincesValue;
+  List<LocationModel> citys = [], contries = [], provinces = [];
   Size size;
   File image1, image2, image3, image4;
   final descripCtrl = TextEditingController();
@@ -25,9 +30,28 @@ class _NewpProductPageState extends State<NewpProductPage> {
       descError = false,
       amountError = false,
       priceErro = false;
+  LocationService locationService;
+
+  @override
+  void initState() {
+    super.initState();
+    locationService = Provider.of<LocationService>(context, listen: false);
+    _services();
+  }
+
+  _services() async {
+    await locationService.getContries().then((value) {
+      contries.addAll(value);
+      print(contries);
+    });
+    setState(() {
+      contries;
+    });
+  }
 
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -76,6 +100,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
           SizedBox(
             height: 10,
           ),
+          _createFormLocation(),
           check
               ? CircularProgressIndicator(
                   color: Colors.black,
@@ -85,6 +110,142 @@ class _NewpProductPageState extends State<NewpProductPage> {
             height: 100,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _createFormLocation() {
+    return Container(
+      child: Column(
+        children: [
+          _createContrie(),
+          SizedBox(
+            height: 10,
+          ),
+          _createProvinces(),
+          SizedBox(
+            height: 10,
+          ),
+          _createCity(),
+          SizedBox(
+            height: 10,
+          ),
+        ],
+      ),
+    );
+  }
+
+  _createContrie() {
+    return Container(
+      height: 50,
+      width: size.width * 0.9,
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(width: 2, color: Colors.black)),
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: DropdownButton<LocationModel>(
+        value: _countryValue,
+        items: contries.map((LocationModel location) {
+          return new DropdownMenuItem<LocationModel>(
+            value: location,
+            child: new Text(
+              location.name,
+              style: new TextStyle(color: Colors.black),
+            ),
+          );
+        }).toList(),
+        onChanged: (value) async {
+          _countryValue = value;
+          await locationService
+              .getProvinces(_countryValue.id)
+              .then((value) => provinces.addAll(value));
+          setState(() {});
+        },
+        isExpanded: true,
+        hint: Text("Seleccione pais"),
+        style: TextStyle(color: Colors.black, fontSize: 16),
+        icon: Icon(
+          Icons.arrow_drop_down,
+          size: 32,
+        ),
+        iconEnabledColor: Colors.black,
+      ),
+    );
+  }
+
+  Widget _createProvinces() {
+    return Container(
+      height: 50,
+      width: size.width * 0.9,
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(width: 2, color: Colors.black)),
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: DropdownButton<LocationModel>(
+        value: _provincesValue,
+        items: provinces.map((LocationModel location) {
+          return new DropdownMenuItem<LocationModel>(
+            value: location,
+            child: new Text(
+              location.name,
+              style: new TextStyle(color: Colors.black),
+            ),
+          );
+        }).toList(),
+        onChanged: (value) async {
+          _provincesValue = value;
+          await locationService
+              .getCity(_countryValue.id, _provincesValue.id)
+              .then((value) => citys.addAll(value));
+          setState(() {});
+        },
+        isExpanded: true,
+        hint: Text("Seleccione provincia"),
+        style: TextStyle(color: Colors.black, fontSize: 16),
+        icon: Icon(
+          Icons.arrow_drop_down,
+          size: 32,
+        ),
+        iconEnabledColor: Colors.black,
+      ),
+    );
+  }
+
+  Widget _createCity() {
+    return Container(
+      height: 50,
+      width: size.width * 0.9,
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(width: 2, color: Colors.black)),
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: DropdownButton<LocationModel>(
+        value: _cityValue,
+        items: citys.map((LocationModel location) {
+          return new DropdownMenuItem<LocationModel>(
+            value: location,
+            child: new Text(
+              location.name,
+              style: new TextStyle(color: Colors.black),
+            ),
+          );
+        }).toList(),
+        onChanged: (value) {
+          setState(() {
+            _cityValue = value;
+          });
+        },
+        isExpanded: true,
+        hint: Text("Seleccione ciudad"),
+        style: TextStyle(color: Colors.black, fontSize: 16),
+        icon: Icon(
+          Icons.arrow_drop_down,
+          size: 32,
+        ),
+        iconEnabledColor: Colors.black,
       ),
     );
   }
