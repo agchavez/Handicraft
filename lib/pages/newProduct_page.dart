@@ -365,12 +365,18 @@ class _NewpProductPageState extends State<NewpProductPage> {
       });
       return;
     }
+    final body = {
+      "name": nameCtrl.text,
+      "description": descripCtrl.text,
+      "price": int.parse(priceCtrl.text),
+      "quantity": int.parse(amountCtrl.text),
+    };
+    final images = [image1, image2];
+    final resp = await ProductService().addProduct(images, body);
+    print(resp);
     setState(() {
       check = false;
     });
-    // final body = {"name": descripCtrl.text, "image1": image1.path};
-    // final resp = await ProductService().addProduct(body);
-    // print(resp);
   }
 
   bool _validate() {
