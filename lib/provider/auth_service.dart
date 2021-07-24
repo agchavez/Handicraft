@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/acount_user.dart';
 import 'package:handicraft_app/models/login_user.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
@@ -24,7 +27,7 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  Future<bool> register(UserAcountModel user) async {
+  Future<bool> register(UserAccountModel user) async {
     try {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
           email: user.email, password: user.password);
@@ -48,13 +51,33 @@ class AuthService with ChangeNotifier {
     }
   }
 
+  Widget get photoURL {
+    if ( FirebaseAuth.instance.currentUser.photoURL != null ) {
+      return CircleAvatar(
+        maxRadius: 18,
+        backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser.photoURL),
+      );
+    } else {
+      String displayName = ( FirebaseAuth.instance.currentUser.displayName != null ) ? FirebaseAuth.instance.currentUser.displayName : 'Hc';
+      List names  = displayName.split(' ');
+      String initials = names[0][0] + names[1][0];
+      return CircleAvatar(
+        maxRadius: 18,
+        child: Text( initials ,
+            style: TextStyle(
+              color: Colors.white,
+            )),
+        backgroundColor: Colors.primaries[Random().nextInt(Colors.primaries.length)],
+      );
+    }
+  }
+
   Future<bool> stateAuth() async {
     User user = FirebaseAuth.instance.currentUser;
-    if ( user != null ) {
-      print( user.email );
-      return true;
-    } else {
+    if ( user == null ) {
       return false;
+    } else {
+      return true;
     }
   }
 

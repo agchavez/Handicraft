@@ -43,6 +43,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
   @override
   void initState() {
     super.initState();
+    // _verifyAuth();
     _controller = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 600));
   }
@@ -60,7 +61,6 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
 
   @override
   Widget build(BuildContext context) {
-    _verifyAuth();
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -109,127 +109,109 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
     return Stack(
       children: [
         pages(),
-        authUser ? createNavbar(size) : createAccountMenu(size),
+        createAccountMenu(size),
       ],
     );
   }
 
-  Widget createNavbar(size) {
-    return Positioned(
-        top: size.height * 0.86,
+  Widget _buildNavBarContent(size) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 5, horizontal: size.width * 0.03),
+      child: BottomAppBar(
+        elevation: 0,
+        color: Colors.transparent,
+        notchMargin: 10,
         child: Container(
-          margin:
-              EdgeInsets.symmetric(vertical: 5, horizontal: size.width * 0.03),
-          child: BottomAppBar(
-            elevation: 0,
-            color: Colors.transparent,
-            notchMargin: 10,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.all(Radius.circular(15)),
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              height: 55,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          height: 60,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      MaterialButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedIndex = 0;
-                          });
-                        },
-                        minWidth: 50,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset('assets/icons/home-icon.png', width: 17.0,)
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        width: 25,
-                      ),
-                      MaterialButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedIndex = 1;
-                          });
-                        },
-                        minWidth: 50,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset('assets/icons/message-icon.png', width: 19,)
-                          ],
-                        ),
-                      ),
-                    ],
+                  MaterialButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 0;
+                      });
+                    },
+                    minWidth: 50,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset('assets/icons/home-icon.png', width: 17.0,)
+                      ],
+                    ),
                   ),
-                  SizedBox(
-                    width: size.width * 0.17,
+                  MaterialButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 1;
+                      });
+                    },
+                    minWidth: 50,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset('assets/icons/message-icon.png', width: 19,)
+                      ],
+                    ),
                   ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      MaterialButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedIndex = 2;
-                          });
-                        },
-                        minWidth: 50,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/icons/notification-icon.png',
-                              width: 19,
-                            )
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        width: 13,
-                      ),
-                      MaterialButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedIndex = 3;
-                          });
-                        },
-                        minWidth: 50,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircleAvatar(
-                              maxRadius: 18,
-                              child: Text('JR',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),),
-                              backgroundColor: _selectedIndex == 3
-                                  ? Colors.white
-                                  : Colors.pink,
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  )
                 ],
               ),
-            ),
+              SizedBox(
+                width: 20.0
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  MaterialButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 2;
+                      });
+                    },
+                    minWidth: 50,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/icons/notification-icon.png',
+                          width: 19,
+                        )
+                      ],
+                    ),
+                  ),
+                  MaterialButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 3;
+                      });
+                    },
+                    minWidth: 50,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AuthService().photoURL
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   Widget createAccountMenu(size) {
-    final menuWidth = size.width * 0.8;
+    final menuWidth = size.width * 0.93;
     return GestureDetector(
         onVerticalDragUpdate: _expanded
             ? (details) {
@@ -263,10 +245,10 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                   height: lerpDouble(_minHeigth, _currentHeight, value),
                   left: lerpDouble(size.width / 2 - menuWidth / 2, 0, value),
                   width: lerpDouble(menuWidth, size.width, value),
-                  bottom: lerpDouble(30.0, 0.0, value),
+                  bottom: lerpDouble(15.0, 0.0, value),
                   child: GestureDetector(
                     onTap: () {
-                      if ( !_expanded ) {
+                      if ( !_expanded && !authUser) {
                         setState(() {
                           _expanded = true;
                           _currentHeight = _maxHeight;
@@ -287,7 +269,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                           ? Opacity(
                           opacity: _controller.value,
                           child: _buildExpandedContent())
-                          : _buildMenuContent(),
+                          : ( authUser ? _buildNavBarContent(size) : _buildMenuContent()) ,
                     ),
                   )
                 ),
@@ -309,10 +291,16 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
               child: Column(
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset('assets/icons/wade-minus-icon.png', width: 17.0,)
+                    ],
+                  ),
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(right: 20.0, top: 30.0),
+                        padding: const EdgeInsets.only(right: 20.0, top: 5.0),
                         child: GestureDetector(
                             onTap: () {
                               _controller.reverse();
@@ -428,7 +416,13 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                                 final provider =
                                     Provider.of<GoogleSignInProvider>(context,
                                         listen: false);
-                                provider.googleLogin();
+                                provider.googleLogin().then((value) async {
+                                  await _verifyAuth();
+                                  _controller.reverse();
+                                  _expanded = false;
+                                  setState(() {
+                                  });
+                                });
                               },
                             ),
                           ))

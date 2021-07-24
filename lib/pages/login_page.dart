@@ -13,7 +13,7 @@ class LoginPage extends StatefulWidget {
 final formkey = GlobalKey<FormState>();
 
 bool _showpasword = true, check = false;
-LoginAcountModel login_user = new LoginAcountModel();
+LoginAccountModel login_user = new LoginAccountModel();
 
 class _LoginPageState extends State<LoginPage> {
   Size size = Size(1000, 5000);
@@ -24,12 +24,27 @@ class _LoginPageState extends State<LoginPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            SafeArea(child:
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 30.0, left: 25.0),
+                    child: GestureDetector(
+                      onTap: (){
+                        Navigator.pushReplacementNamed(context, 'home');
+                      },
+                      child: Image.asset('assets/icons/back-black-icon.png', width: 10.0),
+                    )
+                  )
+                ],
+              ),
+            ),
             SizedBox(
-              height: size.height * 0.20,
+              height: size.height * 0.12,
             ),
             _logo(),
             SizedBox(
-              height: size.height * 0.09,
+              height: size.height * 0.06,
             ),
             _form(),
             SizedBox(
@@ -41,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                     color: Colors.black,
                   ),
             SizedBox(
-              height: size.height * 0.05,
+              height: size.height * 0.06,
             ),
             Center(
               child: GestureDetector(
@@ -52,16 +67,16 @@ class _LoginPageState extends State<LoginPage> {
                     child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("No tienes una cuenta?",
+                    Text("¿No tienes una cuenta?",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 16,
-                          fontFamily: 'Montserrat',
-                        )),
+                            fontSize: 16,
+                            fontFamily: 'Montserrat',
+                            decoration: TextDecoration.underline)),
                     Text(
                       " Registrarme",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 17.5),
                     ),
                   ],
                 )),
@@ -72,11 +87,15 @@ class _LoginPageState extends State<LoginPage> {
             ),
             Container(
               child: Text(
-                """Olvidaste tu contraseña?
-            """,
+                "¿Olvidaste tu contraseña?",
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey[600]),
+                style: TextStyle(
+                    color: Colors.grey[600],
+                    decoration: TextDecoration.underline),
               ),
+            ),
+            SizedBox(
+              height: 30,
             ),
             Container(
               width: size.width * 0.74,
@@ -86,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(
                     fontFamily: 'Montserrat',
                     color: Colors.grey[600],
-                    fontSize: 10),
+                    fontSize: 12),
               ),
             )
           ],
@@ -105,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: size.height * 0.06,
                 image: AssetImage('assets/images/logo.png')),
             Text(
-              "Productos que te encantarán.",
+              "¡Productos que te encantarán!.",
               style: TextStyle(color: Colors.grey[600], fontSize: 15),
             )
           ],
@@ -135,7 +154,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _email() {
     return Container(
-        width: size.width * 0.65,
+        width: size.width * 0.75,
         child: TextFormField(
           style: TextStyle(decorationColor: Colors.white),
           keyboardType: TextInputType.name,
@@ -143,14 +162,14 @@ class _LoginPageState extends State<LoginPage> {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide(
-                width: 1.5,
+                width: 2.7,
                 color: Colors.black,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide(
-                width: 1.5,
+                width: 2.5,
                 color: Colors.black,
               ),
             ),
@@ -176,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-            width: size.width * 0.65,
+            width: size.width * 0.75,
             child: TextFormField(
               obscureText: _showpasword,
               style: TextStyle(decorationColor: Colors.white),
@@ -185,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                   borderSide: BorderSide(
-                    width: 1.5,
+                    width: 2.5,
                     color: Colors.black,
                   ),
                 ),
@@ -233,8 +252,8 @@ class _LoginPageState extends State<LoginPage> {
   Widget _createBottom(BuildContext context) {
     return RaisedButton(
       child: Container(
-          width: size.width * 0.56,
-          padding: EdgeInsets.symmetric(vertical: 15.0),
+          width: size.width * 0.65,
+          padding: EdgeInsets.symmetric(vertical: 18.0),
           child: Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -255,18 +274,22 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       check = !check;
     });
+
     if (!formkey.currentState.validate()) {
       setState(() {
         check = !check;
       });
       return;
     }
+
     formkey.currentState.save();
     final authService = Provider.of<AuthService>(context, listen: false);
     final resp = await authService.login(login_user.email, login_user.password);
+
     setState(() {
       check = !check;
     });
+
     if (resp) {
       Navigator.popAndPushNamed(context, "home");
     } else {
