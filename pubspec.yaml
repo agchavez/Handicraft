@@ -23,6 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  dio: ^4.0.0
+  http:
 
   firebase_auth: ^1.1.4
   google_sign_in: ^5.0.3
