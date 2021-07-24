@@ -18,7 +18,7 @@ class CustonInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(top: 0, left: 16, right: 20),
+      padding: EdgeInsets.only(bottom: 0, left: 16, right: 20),
       margin: EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
           color: Colors.white,

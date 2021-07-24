@@ -96,6 +96,20 @@ class _NewpProductPageState extends State<NewpProductPage> {
           SizedBox(
             height: 20,
           ),
+          Container(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'Informacion del producto',
+              style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[600],
+                  fontSize: 15,
+                  fontFamily: 'Montserrat'),
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
           _createFormProduct(),
           SizedBox(
             height: 10,
@@ -135,7 +149,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
     );
   }
 
-  _createContrie() {
+  Widget _createContrie() {
     return Container(
       height: 50,
       width: size.width * 0.9,
@@ -156,6 +170,8 @@ class _NewpProductPageState extends State<NewpProductPage> {
           );
         }).toList(),
         onChanged: (value) async {
+          _provincesValue = null;
+          provinces = [];
           _countryValue = value;
           await locationService
               .getProvinces(_countryValue.id)
@@ -195,6 +211,8 @@ class _NewpProductPageState extends State<NewpProductPage> {
           );
         }).toList(),
         onChanged: (value) async {
+          citys = [];
+          _cityValue = null;
           _provincesValue = value;
           await locationService
               .getCity(_countryValue.id, _provincesValue.id)
@@ -531,10 +549,15 @@ class _NewpProductPageState extends State<NewpProductPage> {
       "description": descripCtrl.text,
       "price": int.parse(priceCtrl.text),
       "quantity": int.parse(amountCtrl.text),
+      "coin": 1,
+      "category": 1,
+      "country": _countryValue.id,
+      "province": _provincesValue.id,
+      "city": _cityValue.id,
     };
-    final images = [image1, image2];
+    final images = [image1, image2, image3, image4];
     final resp = await ProductService().addProduct(images, body);
-    print(resp);
+    print("************** $resp");
     setState(() {
       check = false;
     });

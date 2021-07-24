@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 
 import 'package:handicraft_app/global/enviroment.dart';
@@ -16,11 +14,13 @@ class ProductService with ChangeNotifier {
     List<String> imgUrl = [];
     try {
       for (var image in imges) {
-        imgUrl.add(await uploadImg(image));
+        if (image != null) {
+          imgUrl.add(await uploadImg(image));
+        }
       }
       body["images"] = imgUrl;
       print(body);
-      Response response = await dio.post('${Enviroment.apiurl}/poduct',
+      Response response = await dio.post('${Enviroment.apiurl}/product/1',
           options: Options(headers: {
             HttpHeaders.contentTypeHeader: "application/json",
           }),
