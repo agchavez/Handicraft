@@ -43,7 +43,8 @@ class _ProductsPgaesState extends State<ProductsPages> {
                 itemCount: snapshot.data.length,
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.all(12.0),
+                    padding:
+                        const EdgeInsets.only(left: 20, right: 20, bottom: 8),
                     child: Container(
                       child: _information(snapshot.data[index]),
                     ),
@@ -63,19 +64,20 @@ Widget _information(dynamic data) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
-      _image(),
+      _image(data['urlImage']),
       Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(
+            height: 1.0,
+          ),
           Text(
             data['name'],
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
           ),
           Text(
             data['location'],
-            style: TextStyle(fontWeight: FontWeight.normal, fontSize: 11),
+            style: TextStyle(fontWeight: FontWeight.normal, fontSize: 10),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -93,11 +95,13 @@ Widget _information(dynamic data) {
   );
 }
 
-Widget _image() {
+Widget _image(String url) {
   //getHttp();
   return ClipRRect(
-    child: Image(
-      image: AssetImage('assets/images/product.jpg'),
+    child: Image.network(
+      url,
+      height: 135,
+      width: 155,
     ),
     borderRadius: BorderRadius.circular(8),
   );
