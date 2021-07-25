@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert' as convert;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -789,10 +790,11 @@ class _RegisterPageState extends State<RegisterPage> {
     formkey.currentState.save();
 
     final authService = Provider.of<AuthService>(context, listen: false);
-    await authService.register(_user).then((userResponse) async {
+    await authService.register( _user ).then((userResponse) async {
       setState(() {
         check = !check;
       });
+
       Map<String ,dynamic> prepareBody = {
         'idUser': FirebaseAuth.instance.currentUser.uid,
         'firstName': _user.firstname,
@@ -802,29 +804,31 @@ class _RegisterPageState extends State<RegisterPage> {
         'photoProfile': 'https://cdn130.picsart.com/329155800062211.png?type=webp&to=min&r=640',
       };
 
-      if ( _typeAcount ) {
-        prepareBody['companyName'] = "Jorge company";
-        prepareBody['country'] = 1;
-        prepareBody['province'] = 1;
-        prepareBody['city'] = 1;
-      }
+      // if ( _typeAcount ) {
+      //   prepareBody["companyName"] = "Jorge company";
+      //   prepareBody["country"] = 1;
+      //   prepareBody["province"] = 1;
+      //   prepareBody["city"] = 1;
+      // }
 
-      final url = Uri.parse(
-       _typeAcount ? 'https://hechoencasa-backend.herokuapp.com/user/user-company'
-           : 'https://hechoencasa-backend.herokuapp.com/user');
+      final url = Uri.parse("http://192.168.1.106:5000/user/user-company");
 
-      await http.post(url, body: {
-        "idUser": "ID13141122222328",
+      // _typeAcount ?   : 'https://hechoencasa-backend.herokuapp.com/user'
+      await http.post(url, body: convert.jsonEncode({
+        "idUser": "idUsuario222",
         "firstName": "Jrui2z",
         "lastName": "Jaeger",
-        "email": "Correo@gmail.com",
+        "email": "Correo222@gmail.com",
         "phoneNumber": "98899889",
         "photoProfile": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzwKAip4zTU9t-aWwRZuLHFbyRJdKMdsCK9sgiR0APj52jlSZfroKySpcTS27vWdsy57o&usqp=CAU",
         "companyName": "compania",
         "country": 1,
         "province": 2,
         "city": 3
-      }).then((value) => print(value));
+      })).then((value) {
+        print('response');
+        print(value);
+      }).catchError( (error) => print(error));
     });
 
     _mostrarFoto(data) {
