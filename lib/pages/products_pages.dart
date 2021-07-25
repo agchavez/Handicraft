@@ -13,23 +13,16 @@ class _ProductsPgaesState extends State<ProductsPages> {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Colors.white,
+          bottomOpacity: 0.0,
+          elevation: 0.0,
           actions: [
             Container(
-              margin: EdgeInsets.only(right: 10),
-              child: IconButton(
-                onPressed: () {
-                  print("search");
-                },
-                icon: Icon(
-                  Icons.search,
-                  size: 35,
-                  color: Colors.black,
-                ),
-              ),
+              margin: EdgeInsets.only(right: 22),
+              child: Image.asset('assets/icons/search-black-icon.png', width: 20),
             )
           ],
           title:
-              Image(width: 150, image: AssetImage('assets/images/logo.png'))),
+              Image(width: 140, image: AssetImage('assets/images/logo.png'))),
       body: ListView.builder(
           padding: const EdgeInsets.only(bottom: 50),
           itemCount: 5,

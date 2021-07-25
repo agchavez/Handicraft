@@ -47,4 +47,18 @@ class AuthService with ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> stateAuth() async {
+    User user = FirebaseAuth.instance.currentUser;
+    if ( user != null ) {
+      print( user.email );
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> signOut() async {
+    await FirebaseAuth.instance.signOut();
+  }
 }

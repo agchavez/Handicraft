@@ -9,13 +9,14 @@ import 'package:handicraft_app/pages/notification_page.dart';
 import 'package:handicraft_app/pages/products_pages.dart';
 import 'package:handicraft_app/pages/profile_page.dart';
 import 'package:handicraft_app/provider/google_sign_in.dart';
+import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:provider/provider.dart';
 
 const _cardColor = Color(0xFFFFFF);
 const _cardColorExpanded = Color(0X000000);
 const _maxHeight = 380.0;
-const _minHeigth = 70.0;
+const _minHeigth = 60.0;
 
 class MainExpandableNavBar extends StatefulWidget {
   @override
@@ -27,6 +28,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
   AnimationController _controller;
   bool _expanded = false;
   double _currentHeight = _minHeigth;
+  bool authUser = false;
   String uid = "";
 
   static const TextStyle optionStyle =
@@ -45,7 +47,8 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
         vsync: this, duration: const Duration(milliseconds: 600));
   }
 
-  _getuid() async {
+  _verifyAuth() async {
+    authUser = await AuthService().stateAuth();
     uid = await StorageService().getValue("uid");
   }
 
@@ -57,16 +60,17 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
 
   @override
   Widget build(BuildContext context) {
-    _getuid();
+    _verifyAuth();
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      floatingActionButton: uid != ""
+      floatingActionButton: authUser
           ? Container(
-              margin: EdgeInsets.only(bottom: 15),
-              width: 50,
-              height: 50,
+              margin: EdgeInsets.only(bottom: 25),
+              width: 60,
+              height: 60,
               child: FittedBox(
+                alignment: Alignment.center,
                 child: FloatingActionButton(
                   elevation: 3,
                   backgroundColor: Colors.white,
@@ -75,11 +79,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                       _selectedIndex = 4;
                     });
                   },
-                  child: Icon(
-                    Icons.add,
-                    size: 40,
-                    color: Colors.black,
-                  ),
+                  child: Image.asset('assets/icons/plus-icon.png', width: 15.0,)
                 ),
               ),
             )
@@ -109,7 +109,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
     return Stack(
       children: [
         pages(),
-        uid == "" ? createAccountMenu(size) : createNavbar(size)
+        authUser ? createNavbar(size) : createAccountMenu(size),
       ],
     );
   }
@@ -127,10 +127,10 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.black,
-                borderRadius: BorderRadius.all(Radius.circular(20)),
+                borderRadius: BorderRadius.all(Radius.circular(15)),
               ),
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              height: 53,
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              height: 55,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -147,12 +147,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.home_outlined,
-                              color: _selectedIndex == 0
-                                  ? Colors.white
-                                  : Colors.grey,
-                            )
+                            Image.asset('assets/icons/home-icon.png', width: 17.0,)
                           ],
                         ),
                       ),
@@ -169,19 +164,14 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.message_outlined,
-                              color: _selectedIndex == 1
-                                  ? Colors.white
-                                  : Colors.grey,
-                            )
+                            Image.asset('assets/icons/message-icon.png', width: 19,)
                           ],
                         ),
                       ),
                     ],
                   ),
                   SizedBox(
-                    width: size.width * 0.14,
+                    width: size.width * 0.17,
                   ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,17 +186,15 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.notifications_outlined,
-                              color: _selectedIndex == 2
-                                  ? Colors.white
-                                  : Colors.grey,
+                            Image.asset(
+                              'assets/icons/notification-icon.png',
+                              width: 19,
                             )
                           ],
                         ),
                       ),
                       SizedBox(
-                        width: 25,
+                        width: 13,
                       ),
                       MaterialButton(
                         onPressed: () {
@@ -220,10 +208,13 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                           children: [
                             CircleAvatar(
                               maxRadius: 18,
-                              child: Text('Ag'),
+                              child: Text('JR',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),),
                               backgroundColor: _selectedIndex == 3
                                   ? Colors.white
-                                  : Colors.grey,
+                                  : Colors.pink,
                             )
                           ],
                         ),
@@ -273,21 +264,32 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                   left: lerpDouble(size.width / 2 - menuWidth / 2, 0, value),
                   width: lerpDouble(menuWidth, size.width, value),
                   bottom: lerpDouble(30.0, 0.0, value),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: _expanded ? Colors.white : Colors.black,
-                      borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(20),
-                          bottom: Radius.circular(
-                            lerpDouble(20.0, 0.0, value),
-                          )),
+                  child: GestureDetector(
+                    onTap: () {
+                      if ( !_expanded ) {
+                        setState(() {
+                          _expanded = true;
+                          _currentHeight = _maxHeight;
+                          _controller.forward(from: 0.0);
+                        });
+                      }
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: _expanded ? Colors.white : Colors.black,
+                        borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                            bottom: Radius.circular(
+                              lerpDouble(20.0, 0.0, value),
+                            )),
+                      ),
+                      child: _expanded
+                          ? Opacity(
+                          opacity: _controller.value,
+                          child: _buildExpandedContent())
+                          : _buildMenuContent(),
                     ),
-                    child: _expanded
-                        ? Opacity(
-                            opacity: _controller.value,
-                            child: _buildExpandedContent())
-                        : _buildMenuContent(),
-                  ),
+                  )
                 ),
               ],
             );
@@ -474,22 +476,14 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        GestureDetector(
-            onTap: () {
-              setState(() {
-                _expanded = true;
-                _currentHeight = _maxHeight;
-                _controller.forward(from: 0.0);
-              });
-            },
-            child: Text(
-              'Unirse a Handicraft',
-              style: TextStyle(
-                color: Colors.white,
-                fontFamily: 'Montserrat',
-                fontWeight: FontWeight.w500,
-              ),
-            ))
+        Text(
+          'Unirse a Handicraft',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w500,
+          ),
+        )
       ],
     );
   }
