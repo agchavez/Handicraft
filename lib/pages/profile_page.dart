@@ -4,6 +4,7 @@ import 'package:handicraft_app/provider/auth_service.dart';
 
 class PorfilePage extends StatelessWidget {
   @override
+  Size size;
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -24,10 +25,8 @@ class PorfilePage extends StatelessWidget {
           "Perfil",
           style: TextStyle(color: Colors.black),
         ),
-      ),
-      body: Center(
-        child: Text(''),
-      ),
-    );
+        body: _createBody());
   }
+
+  Widget _createBody() {}
 }

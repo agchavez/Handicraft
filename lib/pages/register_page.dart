@@ -175,7 +175,7 @@ class _RegisterPageState extends State<RegisterPage> {
       children: [
         Image(
           height: size.height * 0.07,
-          image: AssetImage('assets/images/logo.png'),
+          image: AssetImage('s'),
         ),
         Text(
           "Productos que te encantarán.",
