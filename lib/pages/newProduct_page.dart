@@ -7,6 +7,7 @@ import 'package:handicraft_app/provider/location_service.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/utils/selectImage.dart';
 import 'package:handicraft_app/widgets/custon_input.dart';
+import 'package:handicraft_app/widgets/dropdown_widget.dart';
 import 'package:provider/provider.dart';
 
 class NewpProductPage extends StatefulWidget {
@@ -16,8 +17,12 @@ class NewpProductPage extends StatefulWidget {
 
 class _NewpProductPageState extends State<NewpProductPage> {
   @override
-  LocationModel _countryValue, _cityValue, _provincesValue;
-  List<LocationModel> citys = [], contries = [], provinces = [];
+  LocationModel _countryValue, _cityValue, _provincesValue, categorie, coin;
+  List<LocationModel> citys = [],
+      contries = [],
+      provinces = [],
+      coines = [],
+      categories = [];
   Size size;
   File image1, image2, image3, image4;
   final descripCtrl = TextEditingController();
@@ -27,22 +32,33 @@ class _NewpProductPageState extends State<NewpProductPage> {
   bool nameError = false,
       image1Error = false,
       check = false,
+      coinError = false,
+      categorieError = false,
+      contrieError = false,
       descError = false,
       amountError = false,
       priceErro = false;
   LocationService locationService;
+  ProductService productService;
 
   @override
   void initState() {
     super.initState();
     locationService = Provider.of<LocationService>(context, listen: false);
+    productService = Provider.of<ProductService>(context, listen: false);
     _services();
   }
 
   _services() async {
     await locationService.getContries().then((value) {
       contries.addAll(value);
-      print(contries);
+    });
+    await productService.getCategories().then((value) {
+      categories.addAll(value);
+    });
+    await productService.getCoins().then((value) {
+      print(value);
+      coines.addAll(value);
     });
     setState(() {
       contries;
@@ -112,7 +128,21 @@ class _NewpProductPageState extends State<NewpProductPage> {
           ),
           _createFormProduct(),
           SizedBox(
-            height: 10,
+            height: 20,
+          ),
+          Container(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'Ubicacion del producto',
+              style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[600],
+                  fontSize: 15,
+                  fontFamily: 'Montserrat'),
+            ),
+          ),
+          SizedBox(
+            height: 20,
           ),
           _createFormLocation(),
           check
@@ -181,9 +211,19 @@ class _NewpProductPageState extends State<NewpProductPage> {
         isExpanded: true,
         hint: Text("Seleccione pais"),
         style: TextStyle(color: Colors.black, fontSize: 16),
-        icon: Icon(
-          Icons.arrow_drop_down,
-          size: 32,
+        icon: Row(
+          children: [
+            Icon(
+              Icons.arrow_drop_down,
+              size: 32,
+            ),
+            contrieError
+                ? Icon(
+                    Icons.error_outline_outlined,
+                    color: Colors.red,
+                  )
+                : Container()
+          ],
         ),
         iconEnabledColor: Colors.black,
       ),
@@ -450,14 +490,35 @@ class _NewpProductPageState extends State<NewpProductPage> {
               textController: descripCtrl,
             ),
           ),
-          Container(
-            height: 55,
-            child: CustonInput(
-              placeholder: "Precio",
-              isError: priceErro,
-              keyBoardtype: TextInputType.number,
-              textController: priceCtrl,
-            ),
+          Row(
+            children: [
+              Container(
+                height: 55,
+                width: size.width * 0.4,
+                child: CustonInput(
+                  placeholder: "Precio",
+                  isError: priceErro,
+                  keyBoardtype: TextInputType.number,
+                  textController: priceCtrl,
+                ),
+              ),
+              SizedBox(
+                width: size.width * 0.04,
+              ),
+              Container(
+                margin: EdgeInsets.only(bottom: 10),
+                height: 45,
+                width: size.width * 0.4,
+                child: DropdownHan(
+                    hint: "Modena",
+                    error: coinError,
+                    value: coin,
+                    fnOnchage: setCoins,
+                    list: coines,
+                    size: 12,
+                    width: size.width * 0.4),
+              )
+            ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -506,9 +567,29 @@ class _NewpProductPageState extends State<NewpProductPage> {
               )
             ],
           ),
+          DropdownHan(
+              hint: "Seleccionar categoria",
+              height: 55,
+              error: categorieError,
+              value: categorie,
+              fnOnchage: setCategories,
+              list: categories,
+              width: size.width * 0.9)
         ],
       ),
     );
+  }
+
+  void setCoins(LocationModel coinTemp) {
+    setState(() {
+      coin = coinTemp;
+    });
+  }
+
+  void setCategories(LocationModel categorieTemp) {
+    setState(() {
+      categorie = categorieTemp;
+    });
   }
 
   Widget _createButtom() {
@@ -549,14 +630,14 @@ class _NewpProductPageState extends State<NewpProductPage> {
       "description": descripCtrl.text,
       "price": int.parse(priceCtrl.text),
       "quantity": int.parse(amountCtrl.text),
-      "coin": 1,
-      "category": 1,
+      "coin": coin.id,
+      "category": categorie.id,
       "country": _countryValue.id,
       "province": _provincesValue.id,
       "city": _cityValue.id,
     };
     final images = [image1, image2, image3, image4];
-    final resp = await ProductService().addProduct(images, body);
+    final resp = await productService.addProduct(images, body);
     print("************** $resp");
     setState(() {
       check = false;
@@ -574,6 +655,21 @@ class _NewpProductPageState extends State<NewpProductPage> {
     } else {
       image1Error = true;
     }
+    if (coin != null) {
+      coinError = false;
+    } else {
+      coinError = true;
+    }
+    if (_countryValue != null) {
+      contrieError = false;
+    } else {
+      contrieError = true;
+    }
+    if (categorie != null) {
+      categorieError = false;
+    } else {
+      categorieError = true;
+    }
     if (descripCtrl.text.length > 5) {
       descError = false;
     } else {
@@ -589,7 +685,13 @@ class _NewpProductPageState extends State<NewpProductPage> {
     } else {
       priceErro = true;
     }
-    if (amountError || nameError || descError || priceErro || image1Error) {
+    if (amountError ||
+        nameError ||
+        descError ||
+        priceErro ||
+        image1Error ||
+        contrieError ||
+        coinError) {
       return false;
     } else {
       return true;
