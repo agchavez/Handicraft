@@ -25,21 +25,21 @@ class RegisterPage extends StatefulWidget {
   _RegisterPageState createState() => _RegisterPageState();
 }
 
-  final formkey = GlobalKey<FormState>();
-  final form2key = GlobalKey<FormState>();
-  UserAccountModel _user = new UserAccountModel();
-  CompanieAccountModel _companie = new CompanieAccountModel();
+final formkey = GlobalKey<FormState>();
+final form2key = GlobalKey<FormState>();
+UserAccountModel _user = new UserAccountModel();
+CompanieAccountModel _companie = new CompanieAccountModel();
 
-  File foto, newImage;
-  bool _typeAcount = false;
-  bool _showpasword = true;
-  bool check = false;
-  bool nowCompanie = false;
-  double currentOpacity = 1.0;
+File foto, newImage;
+bool _typeAcount = false;
+bool _showpasword = true;
+bool check = false;
+bool nowCompanie = false;
+double currentOpacity = 1.0;
 
-  String _countryValue = 'Pais';
-  String _cityValue = 'Ciudad';
-  String _stateValue = 'Provincia';
+String _countryValue = 'Pais';
+String _cityValue = 'Ciudad';
+String _stateValue = 'Provincia';
 
 class _RegisterPageState extends State<RegisterPage> {
   final picker = ImagePicker();
@@ -47,28 +47,25 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    size = MediaQuery
-        .of(context)
-        .size;
+    size = MediaQuery.of(context).size;
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SafeArea(child:
-            Row(
-              children: [
-                Padding(
-                    padding: EdgeInsets.only(top: 30.0, left: 25.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacementNamed(context, 'home');
-                      },
-                      child: Image.asset(
-                          'assets/icons/back-black-icon.png', width: 10.0),
-                    )
-                )
-              ],
-            ),
+            SafeArea(
+              child: Row(
+                children: [
+                  Padding(
+                      padding: EdgeInsets.only(top: 30.0, left: 25.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacementNamed(context, 'home');
+                        },
+                        child: Image.asset('assets/icons/back-black-icon.png',
+                            width: 10.0),
+                      ))
+                ],
+              ),
             ),
             SizedBox(
               height: size.height * 0.03,
@@ -126,8 +123,8 @@ class _RegisterPageState extends State<RegisterPage> {
             !check
                 ? _createBottom(context)
                 : CircularProgressIndicator(
-              color: Colors.black,
-            ),
+                    color: Colors.black,
+                  ),
             SizedBox(
               height: 15,
             ),
@@ -138,23 +135,23 @@ class _RegisterPageState extends State<RegisterPage> {
                 },
                 child: Container(
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("¿Ya tienes una cuenta?",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 16)),
-                        GestureDetector(
-                          onTap: (){
-                            _createAcount();
-                          },
-                          child: Text(
-                            " Iniciar Sesión",
-                            style:
-                            TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-                          ),
-                        )
-                      ],
-                    )),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("¿Ya tienes una cuenta?",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16)),
+                    GestureDetector(
+                      onTap: () {
+                        _createAcount();
+                      },
+                      child: Text(
+                        " Iniciar Sesión",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 17),
+                      ),
+                    )
+                  ],
+                )),
               ),
             ),
             SizedBox(
@@ -211,20 +208,20 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget _logo() {
     return Container(
         child: Column(
+      children: [
+        Column(
           children: [
-            Column(
-              children: [
-                Image(
-                    height: size.height * 0.06,
-                    image: AssetImage('assets/images/logo.png')),
-                Text(
-                  "¡Productos que te encantarán!.",
-                  style: TextStyle(color: Colors.grey[600], fontSize: 15),
-                )
-              ],
-            ),
+            Image(
+                height: size.height * 0.06,
+                image: AssetImage('assets/images/logo.png')),
+            Text(
+              "¡Productos que te encantarán!.",
+              style: TextStyle(color: Colors.grey[600], fontSize: 15),
+            )
           ],
-        ));
+        ),
+      ],
+    ));
   }
 
   /*Widget _createImg(BuildContext context) {
@@ -252,7 +249,7 @@ class _RegisterPageState extends State<RegisterPage> {
   _imgFromCamera() async {
     print('here');
     final pickedFile =
-    await picker.getImage(source: ImageSource.camera, imageQuality: 50);
+        await picker.getImage(source: ImageSource.camera, imageQuality: 50);
     imageFile = pickedFile;
     File file = await cropImage();
     print(file);
@@ -263,7 +260,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   _imgFromGallery() async {
     final pickedFile =
-    await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
+        await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
     imageFile = pickedFile;
     File file = await cropImage();
     print(file);
@@ -443,15 +440,14 @@ class _RegisterPageState extends State<RegisterPage> {
             suffixIcon: GestureDetector(
               child: _showpasword
                   ? Icon(
-                Icons.lock,
-                color: Colors.black,
-              )
+                      Icons.lock,
+                      color: Colors.black,
+                    )
                   : Icon(
-                Icons.lock_open,
-                color: Colors.black,
-              ),
-              onTap: () =>
-              {
+                      Icons.lock_open,
+                      color: Colors.black,
+                    ),
+              onTap: () => {
                 setState(() {
                   _showpasword = !_showpasword;
                 })
@@ -480,8 +476,7 @@ class _RegisterPageState extends State<RegisterPage> {
         children: [
           Text(
             "Cuenta de empresa",
-            style: TextStyle(fontSize: 13,
-                fontFamily: 'Montserrat'),
+            style: TextStyle(fontSize: 13, fontFamily: 'Montserrat'),
           ),
           SizedBox(
             width: 8,
@@ -523,7 +518,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   Text(_typeAcount ? 'Siguiente' : 'Registrarme'),
                 ])),
         shape:
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         elevation: 2.0,
         color: Colors.black,
         textColor: Colors.white,
@@ -576,38 +571,38 @@ class _RegisterPageState extends State<RegisterPage> {
     return Container(
         width: size.width * 0.75,
         child: TextFormField(
-            validator: (value) {
-              if (value.isEmpty || utils.isNumeric(value)) {
-                return 'Campo obligatorio';
-              } else {
-                return null;
-              }
-            },
-            style: TextStyle(
-              decorationColor: Colors.white,
-            ),
-            keyboardType: TextInputType.name,
-            decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: BorderSide(
-                  width: 2.5,
-                  color: Colors.black,
-                ),
+          validator: (value) {
+            if (value.isEmpty || utils.isNumeric(value)) {
+              return 'Campo obligatorio';
+            } else {
+              return null;
+            }
+          },
+          style: TextStyle(
+            decorationColor: Colors.white,
+          ),
+          keyboardType: TextInputType.name,
+          decoration: InputDecoration(
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                width: 2.5,
+                color: Colors.black,
               ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: BorderSide(
-                  width: 2.5,
-                  color: Colors.black,
-                ),
-              ),
-              border: OutlineInputBorder(
-                  borderSide: BorderSide(width: 100, color: Colors.white10),
-                  borderRadius: BorderRadius.circular(10.0)),
-              hintText: 'Nombre de la empresa',
             ),
-            onSaved: (value) => _companie.name = value,
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                width: 2.5,
+                color: Colors.black,
+              ),
+            ),
+            border: OutlineInputBorder(
+                borderSide: BorderSide(width: 100, color: Colors.white10),
+                borderRadius: BorderRadius.circular(10.0)),
+            hintText: 'Nombre de la empresa',
+          ),
+          onSaved: (value) => _companie.name = value,
         ));
   }
 
@@ -672,12 +667,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     _countryValue = newValue.toString();
                   });
                 },
-                items: <String>[
-                  'Pais',
-                  'La Paz',
-                  'Francisco Morazan',
-                  'Cortes'
-                ].map<DropdownMenuItem<String>>((String value) {
+                items: <String>['Pais', 'La Paz', 'Francisco Morazan', 'Cortes']
+                    .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -688,7 +679,6 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
-
 
   Widget _createCity() {
     return Container(
@@ -790,18 +780,19 @@ class _RegisterPageState extends State<RegisterPage> {
     formkey.currentState.save();
 
     final authService = Provider.of<AuthService>(context, listen: false);
-    await authService.register( _user ).then((userResponse) async {
+    await authService.register(_user).then((userResponse) async {
       setState(() {
         check = !check;
       });
 
-      Map<String ,dynamic> prepareBody = {
+      Map<String, dynamic> prepareBody = {
         'idUser': FirebaseAuth.instance.currentUser.uid,
         'firstName': _user.firstname,
         'lastName': _user.lastname,
         'email': _user.email,
         'phoneNumber': _user.phone,
-        'photoProfile': 'https://cdn130.picsart.com/329155800062211.png?type=webp&to=min&r=640',
+        'photoProfile':
+            'https://cdn130.picsart.com/329155800062211.png?type=webp&to=min&r=640',
       };
 
       // if ( _typeAcount ) {
@@ -814,21 +805,25 @@ class _RegisterPageState extends State<RegisterPage> {
       final url = Uri.parse("http://192.168.1.106:5000/user/user-company");
 
       // _typeAcount ?   : 'https://hechoencasa-backend.herokuapp.com/user'
-      await http.post(url, body: convert.jsonEncode({
-        "idUser": "idUsuario222",
-        "firstName": "Jrui2z",
-        "lastName": "Jaeger",
-        "email": "Correo222@gmail.com",
-        "phoneNumber": "98899889",
-        "photoProfile": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzwKAip4zTU9t-aWwRZuLHFbyRJdKMdsCK9sgiR0APj52jlSZfroKySpcTS27vWdsy57o&usqp=CAU",
-        "companyName": "compania",
-        "country": 1,
-        "province": 2,
-        "city": 3
-      })).then((value) {
+      await http
+          .post(url,
+              body: convert.jsonEncode({
+                "idUser": "idUsuario222",
+                "firstName": "Jrui2z",
+                "lastName": "Jaeger",
+                "email": "Correo222@gmail.com",
+                "phoneNumber": "98899889",
+                "photoProfile":
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzwKAip4zTU9t-aWwRZuLHFbyRJdKMdsCK9sgiR0APj52jlSZfroKySpcTS27vWdsy57o&usqp=CAU",
+                "companyName": "compania",
+                "country": 1,
+                "province": 2,
+                "city": 3
+              }))
+          .then((value) {
         print('response');
         print(value);
-      }).catchError( (error) => print(error));
+      }).catchError((error) => print(error));
     });
 
     _mostrarFoto(data) {
