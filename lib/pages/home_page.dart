@@ -72,15 +72,17 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
               child: FittedBox(
                 alignment: Alignment.center,
                 child: FloatingActionButton(
-                  elevation: 3,
-                  backgroundColor: Colors.white,
-                  onPressed: () {
-                    setState(() {
-                      _selectedIndex = 4;
-                    });
-                  },
-                  child: Image.asset('assets/icons/plus-icon.png', width: 15.0,)
-                ),
+                    elevation: 3,
+                    backgroundColor: Colors.white,
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 4;
+                      });
+                    },
+                    child: Image.asset(
+                      'assets/icons/plus-icon.png',
+                      width: 15.0,
+                    )),
               ),
             )
           : null,
@@ -147,7 +149,10 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.asset('assets/icons/home-icon.png', width: 17.0,)
+                            Image.asset(
+                              'assets/icons/home-icon.png',
+                              width: 17.0,
+                            )
                           ],
                         ),
                       ),
@@ -164,7 +169,10 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.asset('assets/icons/message-icon.png', width: 19,)
+                            Image.asset(
+                              'assets/icons/message-icon.png',
+                              width: 19,
+                            )
                           ],
                         ),
                       ),
@@ -208,10 +216,12 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                           children: [
                             CircleAvatar(
                               maxRadius: 18,
-                              child: Text('JR',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),),
+                              child: Text(
+                                'JR',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
                               backgroundColor: _selectedIndex == 3
                                   ? Colors.white
                                   : Colors.pink,
@@ -260,37 +270,36 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
             return Stack(
               children: [
                 Positioned(
-                  height: lerpDouble(_minHeigth, _currentHeight, value),
-                  left: lerpDouble(size.width / 2 - menuWidth / 2, 0, value),
-                  width: lerpDouble(menuWidth, size.width, value),
-                  bottom: lerpDouble(30.0, 0.0, value),
-                  child: GestureDetector(
-                    onTap: () {
-                      if ( !_expanded ) {
-                        setState(() {
-                          _expanded = true;
-                          _currentHeight = _maxHeight;
-                          _controller.forward(from: 0.0);
-                        });
-                      }
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: _expanded ? Colors.white : Colors.black,
-                        borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(20),
-                            bottom: Radius.circular(
-                              lerpDouble(20.0, 0.0, value),
-                            )),
+                    height: lerpDouble(_minHeigth, _currentHeight, value),
+                    left: lerpDouble(size.width / 2 - menuWidth / 2, 0, value),
+                    width: lerpDouble(menuWidth, size.width, value),
+                    bottom: lerpDouble(30.0, 0.0, value),
+                    child: GestureDetector(
+                      onTap: () {
+                        if (!_expanded) {
+                          setState(() {
+                            _expanded = true;
+                            _currentHeight = _maxHeight;
+                            _controller.forward(from: 0.0);
+                          });
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: _expanded ? Colors.white : Colors.black,
+                          borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20),
+                              bottom: Radius.circular(
+                                lerpDouble(20.0, 0.0, value),
+                              )),
+                        ),
+                        child: _expanded
+                            ? Opacity(
+                                opacity: _controller.value,
+                                child: _buildExpandedContent())
+                            : _buildMenuContent(),
                       ),
-                      child: _expanded
-                          ? Opacity(
-                          opacity: _controller.value,
-                          child: _buildExpandedContent())
-                          : _buildMenuContent(),
-                    ),
-                  )
-                ),
+                    )),
               ],
             );
           },

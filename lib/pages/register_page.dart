@@ -185,26 +185,6 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  /*Widget _createImg(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        _navigateAndDisplaySelection(context);
-        //Navigator.pushNamed(context, "example");
-      },
-      child: Container(
-        width: size.width * 0.4,
-        child: ClipRRect(
-            borderRadius: BorderRadius.circular(90),
-            child: FadeInImage(
-                height: 120,
-                width: 140,
-                fit: BoxFit.fitHeight,
-                placeholder: AssetImage("assets/images/Spinner-1s-200px.gif"),
-                image: _mostrarFoto(""))),
-      ),
-    );
-  }*/
-
 /*IMAGEN*/
 
   _imgFromCamera() async {
@@ -683,7 +663,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     final authService = Provider.of<AuthService>(context, listen: false);
     final resp = await authService.register(user);
-
+    print(resp);
     setState(() {
       check = !check;
     });
