@@ -15,14 +15,14 @@ double heightScreen, widthScreen;
 
 class _ProductsPgaesState extends State<ProductsPages> {
   //List<dynamic> items;
-  int cont = 6;
   void _onLoading() async {
     // monitor network fetch
     await Future.delayed(Duration(milliseconds: 1000));
     // if failed,use loadFailed(),if no data return,use LoadNodata()
     //items.add((items.length + 1).toString());
     //PostsRepository().getPosts(1);
-    cont = cont + 6;
+    //ProductService().getPosts(2);
+
     if (mounted) setState(() {});
     _refreshController.loadComplete();
   }
@@ -59,7 +59,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
           title:
               Image(width: 140, image: AssetImage('assets/images/logo.png'))),
       body: FutureBuilder(
-        future: ProductService().getPosts(cont),
+        future: ProductService().getPosts(),
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (snapshot.hasError) {
             print('ERROR');
@@ -108,20 +108,6 @@ class _ProductsPgaesState extends State<ProductsPages> {
                         ),
                       );
                     }));
-            /*GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                ),
-                itemCount: snapshot.data.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20, right: 20, bottom: 8),
-                    child: Container(
-                      child: _information(snapshot.data[index]),
-                    ),
-                  );
-                });*/
           }
           return Center(
             child: CircularProgressIndicator(),

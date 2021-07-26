@@ -13,6 +13,9 @@ import 'package:handicraft_app/global/enviroment.dart';
 import 'package:handicraft_app/models/location_model.dart';
 import 'package:handicraft_app/models/locationresponse_model.dart';
 
+List<dynamic> data = [];
+int cont = 0;
+
 class ProductService with ChangeNotifier {
   final dio = Dio();
   final uuid = Uuid();
@@ -109,12 +112,16 @@ class ProductService with ChangeNotifier {
   }
 
   //Obtener productos sin logearse
-  Future<List<dynamic>> getPosts(int endArray) async {
-    print(endArray);
+  Future<List<dynamic>> getPosts() async {
+    // print(endArray);
     final response = await http.get(Uri.parse(
-        "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/2/0/${endArray}"));
+        "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/2/${cont}/6"));
+    final resp = productModelFromJson(response.body).data;
 
-    final data = productModelFromJson(response.body).data;
+    final arrayData = [...data, ...resp];
+    data = arrayData;
+    cont = cont + 6;
+    print(data.length);
 
     return data;
   }
