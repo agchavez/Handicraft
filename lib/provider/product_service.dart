@@ -109,10 +109,13 @@ class ProductService with ChangeNotifier {
   }
 
   //Obtener productos sin logearse
-  Future<List<dynamic>> getPosts() async {
+  Future<List<dynamic>> getPosts(int endArray) async {
+    print(endArray);
     final response = await http.get(Uri.parse(
-        "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/0/40"));
-    final json_general = productModelFromJson(response.body).data;
-    return json_general;
+        "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/2/0/${endArray}"));
+
+    final data = productModelFromJson(response.body).data;
+
+    return data;
   }
 }
