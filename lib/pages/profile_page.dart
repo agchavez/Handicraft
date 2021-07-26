@@ -7,23 +7,24 @@ class PorfilePage extends StatelessWidget {
   Size size;
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: () async {
-                AuthService().signOut();
-                StorageService().setValue("", "uid");
-                Navigator.popAndPushNamed(context, "home");
-              },
-              icon: Icon(
-                Icons.exit_to_app,
-                color: Colors.red,
-              ))
-        ],
-        backgroundColor: Colors.white,
-        title: Text(
-          "Perfil",
-          style: TextStyle(color: Colors.black),
+        appBar: AppBar(
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  AuthService().signOut();
+                  StorageService().setValue("", "uid");
+                  Navigator.popAndPushNamed(context, "home");
+                },
+                icon: Icon(
+                  Icons.exit_to_app,
+                  color: Colors.red,
+                ))
+          ],
+          backgroundColor: Colors.white,
+          title: Text(
+            "Perfil",
+            style: TextStyle(color: Colors.black),
+          ),
         ),
         body: _createBody());
   }

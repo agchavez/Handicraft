@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:handicraft_app/provider/product_service2.dart';
+
+import 'package:handicraft_app/provider/product_service.dart';
 
 class ProductsPages extends StatefulWidget {
   @override
@@ -30,12 +31,10 @@ class _ProductsPgaesState extends State<ProductsPages> {
           title:
               Image(width: 140, image: AssetImage('assets/images/logo.png'))),
       body: FutureBuilder(
-        future: PostsRepository().getPosts(),
+        future: ProductService().getPosts(),
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (snapshot.hasError) {
-            print('ERROR');
           } else if (snapshot.hasData) {
-            print(snapshot.data);
             return GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
@@ -44,7 +43,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding:
-                        const EdgeInsets.only(left: 20, right: 20, bottom: 8),
+                        const EdgeInsets.only(left: 20, right: 20, bottom: 10),
                     child: Container(
                       child: _information(snapshot.data[index]),
                     ),
@@ -52,7 +51,9 @@ class _ProductsPgaesState extends State<ProductsPages> {
                 });
           }
           return Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator(
+              color: Colors.black,
+            ),
           );
         },
       ),
@@ -61,37 +62,39 @@ class _ProductsPgaesState extends State<ProductsPages> {
 }
 
 Widget _information(dynamic data) {
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.start,
-    children: [
-      _image(data['urlImage']),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 1.0,
-          ),
-          Text(
-            data['name'],
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
-          ),
-          Text(
-            data['location'],
-            style: TextStyle(fontWeight: FontWeight.normal, fontSize: 10),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                data['cost'],
-                style: TextStyle(fontWeight: FontWeight.w200, fontSize: 10),
-              ),
-            ],
-          ),
-        ],
-      )
-    ],
+  return Container(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        _image(data['urlImage']),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 1.0,
+            ),
+            Text(
+              data['name'],
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+            Text(
+              data['location'],
+              style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  data['cost'],
+                  style: TextStyle(fontWeight: FontWeight.w300, fontSize: 10),
+                ),
+              ],
+            ),
+          ],
+        )
+      ],
+    ),
   );
 }
 

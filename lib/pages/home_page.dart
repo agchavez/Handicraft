@@ -64,28 +64,30 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      floatingActionButton: authUser
-          ? Container(
-              margin: EdgeInsets.only(bottom: 25),
-              width: 60,
-              height: 60,
-              child: FittedBox(
-                alignment: Alignment.center,
-                child: FloatingActionButton(
-                    elevation: 3,
-                    backgroundColor: Colors.white,
-                    onPressed: () {
-                      setState(() {
-                        _selectedIndex = 4;
-                      });
-                    },
-                    child: Image.asset(
-                      'assets/icons/plus-icon.png',
-                      width: 15.0,
-                    )),
-              ),
-            )
-          : null,
+      floatingActionButton: _selectedIndex == 4
+          ? null
+          : authUser
+              ? Container(
+                  margin: EdgeInsets.only(bottom: 25),
+                  width: 60,
+                  height: 60,
+                  child: FittedBox(
+                    alignment: Alignment.center,
+                    child: FloatingActionButton(
+                        elevation: 3,
+                        backgroundColor: Colors.white,
+                        onPressed: () {
+                          setState(() {
+                            _selectedIndex = 4;
+                          });
+                        },
+                        child: Image.asset(
+                          'assets/icons/plus-icon.png',
+                          width: 15.0,
+                        )),
+                  ),
+                )
+              : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(child: _body(size)),
     );
@@ -118,120 +120,122 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
 
   Widget createNavbar(size) {
     return Positioned(
-        top: size.height * 0.86,
-        child: Container(
-          margin:
-              EdgeInsets.symmetric(vertical: 5, horizontal: size.width * 0.03),
-          child: BottomAppBar(
-            elevation: 0,
-            color: Colors.transparent,
-            notchMargin: 10,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.all(Radius.circular(15)),
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              height: 55,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      MaterialButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedIndex = 0;
-                          });
-                        },
-                        minWidth: 50,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/icons/home-icon.png',
-                              width: 17.0,
-                            )
-                          ],
+        top: size.height * 0.87,
+        child: Center(
+          child: Container(
+            width: size.width * 0.92,
+            margin: EdgeInsets.only(bottom: 5, left: size.width * 0.04),
+            child: BottomAppBar(
+              elevation: 0,
+              color: Colors.transparent,
+              notchMargin: 10,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                height: 55,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        MaterialButton(
+                          onPressed: () {
+                            setState(() {
+                              _selectedIndex = 0;
+                            });
+                          },
+                          minWidth: 50,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/icons/home-icon.png',
+                                width: 17.0,
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 25,
-                      ),
-                      MaterialButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedIndex = 1;
-                          });
-                        },
-                        minWidth: 50,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/icons/message-icon.png',
-                              width: 19,
-                            )
-                          ],
+                        SizedBox(
+                          width: 10,
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    width: size.width * 0.17,
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      MaterialButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedIndex = 2;
-                          });
-                        },
-                        minWidth: 50,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/icons/notification-icon.png',
-                              width: 19,
-                            )
-                          ],
+                        MaterialButton(
+                          onPressed: () {
+                            setState(() {
+                              _selectedIndex = 1;
+                            });
+                          },
+                          minWidth: 50,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/icons/message-icon.png',
+                                width: 19,
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 13,
-                      ),
-                      MaterialButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedIndex = 3;
-                          });
-                        },
-                        minWidth: 50,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircleAvatar(
-                              maxRadius: 18,
-                              child: Text(
-                                'JR',
-                                style: TextStyle(
-                                  color: Colors.white,
+                      ],
+                    ),
+                    SizedBox(
+                      width: size.width * 0.17,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        MaterialButton(
+                          onPressed: () {
+                            setState(() {
+                              _selectedIndex = 2;
+                            });
+                          },
+                          minWidth: 50,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/icons/notification-icon.png',
+                                width: 19,
+                              )
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        MaterialButton(
+                          onPressed: () {
+                            setState(() {
+                              _selectedIndex = 3;
+                            });
+                          },
+                          minWidth: 50,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircleAvatar(
+                                maxRadius: 18,
+                                child: Text(
+                                  'AC',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                              backgroundColor: _selectedIndex == 3
-                                  ? Colors.white
-                                  : Colors.pink,
-                            )
-                          ],
+                                backgroundColor: _selectedIndex == 3
+                                    ? Colors.white
+                                    : Colors.pink,
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  )
-                ],
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
           ),
