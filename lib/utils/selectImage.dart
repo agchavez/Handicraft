@@ -41,15 +41,27 @@ Future<String> showPicker(context) async {
             child: new Wrap(
               children: <Widget>[
                 new ListTile(
-                    leading: new Icon(Icons.photo_library),
-                    title: new Text('Photo Library'),
+                    leading: new Icon(
+                      Icons.photo_library_outlined,
+                      color: Colors.black,
+                    ),
+                    title: new Text(
+                      'Galeria',
+                      style: TextStyle(color: Colors.black),
+                    ),
                     onTap: () async {
                       _image = await _imgFromGallery();
                       Navigator.of(context).pop();
                     }),
                 new ListTile(
-                  leading: new Icon(Icons.photo_camera),
-                  title: new Text('Camera'),
+                  leading: new Icon(
+                    Icons.photo_camera_outlined,
+                    color: Colors.black,
+                  ),
+                  title: new Text(
+                    'Camara',
+                    style: TextStyle(color: Colors.black),
+                  ),
                   onTap: () async {
                     _image = await _imgFromCamera();
                     Navigator.of(context).pop();
