@@ -1,25 +1,32 @@
+import 'dart:convert';
 import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/acount_user.dart';
-import 'package:handicraft_app/models/login_user.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 
 class AuthService with ChangeNotifier {
   FirebaseAuth auth = FirebaseAuth.instance;
-  final storage = new StorageService();
+  bool authState = false;
+  Widget navbarProfile;
+  final dio = Dio();
 
   Future<bool> login(String email, String password) async {
     try {
-      UserCredential userCredential = await auth.signInWithEmailAndPassword(
-          email: email, password: password);
-      print(userCredential.user);
-      if (userCredential.user != null) {
-        storage.setValue(userCredential.user.uid, "uid");
-        return true;
+      await auth.signInWithEmailAndPassword(
+          email: email.trim(), password: password);
+      final user = auth.currentUser;
+      if ( user.emailVerified ) {
+        if (user != null) {
+          return true;
+        } else {
+          return false;
+        }
       } else {
+        print('Usuario no verificado por correo');
         return false;
       }
     } catch (e) {
@@ -32,7 +39,6 @@ class AuthService with ChangeNotifier {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
           email: user.email, password: user.password);
       if (userCredential.user != null) {
-        storage.setValue(userCredential.user.uid, "uid");
         return true;
       } else {
         return false;
@@ -51,37 +57,63 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  Widget get photoURL {
-    if ( FirebaseAuth.instance.currentUser.photoURL != null ) {
+  Future<Widget> get photoURL async {
+    if ( await StorageService().getValue('photoProfile') != null) {
       return CircleAvatar(
         maxRadius: 18,
-        backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser.photoURL),
+        backgroundImage:
+            NetworkImage(await StorageService().getValue('photoProfile')),
       );
     } else {
-      String displayName = ( FirebaseAuth.instance.currentUser.displayName != null ) ? FirebaseAuth.instance.currentUser.displayName : 'Hc';
+      String name = await StorageService().getValue('displayName');
+      String displayName = ( name != null ) ? name : 'H C';
       List names  = displayName.split(' ');
       String initials = names[0][0] + names[1][0];
       return CircleAvatar(
         maxRadius: 18,
-        child: Text( initials ,
+        child: Text( initials,
             style: TextStyle(
               color: Colors.white,
             )),
-        backgroundColor: Colors.primaries[Random().nextInt(Colors.primaries.length)],
+        backgroundColor:
+            Colors.primaries[Random().nextInt(Colors.primaries.length)],
       );
     }
+    print('eject');
+    notifyListeners();
   }
 
-  Future<bool> stateAuth() async {
-    User user = FirebaseAuth.instance.currentUser;
-    if ( user == null ) {
-      return false;
+  Future<void> stateAuth() async {
+    final user = await FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      authState = true;
     } else {
-      return true;
+      authState = false;
     }
+    notifyListeners();
   }
 
   Future<bool> signOut() async {
     await FirebaseAuth.instance.signOut();
+  }
+
+  Future<bool> sendEmailVerification() async {
+    if ( auth.currentUser != null ) {
+      await auth.currentUser.sendEmailVerification();
+      return true;
+    }
+  }
+
+  Future<bool> setUserStorage() async {
+    Response responseInfoUser = await dio.get('http://192.168.1.106:5000/user/${auth.currentUser.uid}');
+    Map<String, dynamic> userData = jsonDecode(responseInfoUser.toString());
+    await StorageService().deleteAll();
+    await StorageService().setValue(userData['data']['idUser'], 'uid');
+    await StorageService().setValue('${userData['data']['name']} ${userData['data']['lastName']}', 'displayName');
+    await StorageService().setValue(userData['data']['email'], 'email');
+    await StorageService().setValue(userData['data']['photoProfile'], 'photoProfile');
+    await StorageService().setValue(userData['data']['phone'], 'phone');
+    print( userData['data']['photoProfile'] );
+    return true;
   }
 }

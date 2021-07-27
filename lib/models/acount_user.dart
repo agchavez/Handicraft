@@ -37,4 +37,5 @@ class UserAccountModel {
         "password": password,
         "phone": phone
       };
+
 }

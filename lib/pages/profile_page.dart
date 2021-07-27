@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
+import 'package:provider/provider.dart';
+
+AuthService auth;
 
 class PorfilePage extends StatelessWidget {
-  @override
   Size size;
+
+  @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<AuthService>(context);
+
     return Scaffold(
       appBar: AppBar(
         actions: [
           IconButton(
               onPressed: () async {
-                AuthService().signOut();
-                StorageService().setValue("", "uid");
+                await auth.signOut();
+                await auth.stateAuth();
+                await StorageService().deleteAll();
                 Navigator.popAndPushNamed(context, "home");
               },
               icon: Icon(
@@ -24,7 +31,7 @@ class PorfilePage extends StatelessWidget {
         title: Text(
           "Perfil",
           style: TextStyle(color: Colors.black),
-        ),
+        )),
         body: _createBody());
   }
 

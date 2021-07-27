@@ -14,31 +14,47 @@ final formkey = GlobalKey<FormState>();
 
 bool _showpasword = true, check = false;
 LoginAccountModel login_user = new LoginAccountModel();
+AuthService auth;
 
 class _LoginPageState extends State<LoginPage> {
   Size size = Size(1000, 5000);
+
+  @override
+  void initState() {
+    auth = Provider.of<AuthService>(context, listen: false);
+    auth.stateAuth();
+    super.initState();
+  }
+
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
     return Scaffold(
+      appBar: AppBar(
+        title: Container(
+          child: FloatingActionButton(
+            child: Image.asset('assets/icons/back-black-icon.png',
+              width: 7.0,
+            ),
+            backgroundColor: Colors.white,
+            onPressed: ()  {
+              Navigator.popAndPushNamed(context, 'home');
+            },
+          ),
+          height: 43.0,
+          width: 43.0,
+        ),
+        backgroundColor: Colors.white,
+        bottomOpacity: 0.0,
+        elevation: 0,
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SafeArea(child:
-              Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 30.0, left: 25.0),
-                    child: GestureDetector(
-                      onTap: (){
-                        Navigator.pushReplacementNamed(context, 'home');
-                      },
-                      child: Image.asset('assets/icons/back-black-icon.png', width: 10.0),
-                    )
-                  )
-                ],
-              ),
-            ),
             SizedBox(
               height: size.height * 0.12,
             ),
@@ -224,8 +240,8 @@ class _LoginPageState extends State<LoginPage> {
                     })
                   },
                 ),
-                border: OutlineInputBorder(
-                    borderSide: BorderSide(width: 100, color: Colors.white10),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 2.5, color: Colors.black),
                     borderRadius: BorderRadius.circular(10.0)),
                 hintText: 'Contraseña',
               ),
@@ -283,15 +299,19 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     formkey.currentState.save();
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final resp = await authService.login(login_user.email, login_user.password);
+    final resp = await auth.login(login_user.email, login_user.password);
 
     setState(() {
       check = !check;
     });
 
     if (resp) {
-      Navigator.popAndPushNamed(context, "home");
+      await auth.stateAuth();
+      if ( auth.authState ) {
+        await auth.setUserStorage();
+        auth.navbarProfile = await auth.photoURL;
+        Navigator.popAndPushNamed(context, "home");
+      }
     } else {
       showAlert(
           context, "Error", "Datos incorrectos - Verifique la informacion");

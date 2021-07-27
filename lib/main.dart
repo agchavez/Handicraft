@@ -41,6 +41,7 @@ class MyApp extends StatelessWidget {
 
         // Tema de la aplicacion, poder cambiar los colores por defecto de la aplicacion
         theme: ThemeData(
+          scaffoldBackgroundColor: const Color(0xFFFFFFFF),
           primaryColor: Colors.indigo,
           floatingActionButtonTheme:
               FloatingActionButtonThemeData(backgroundColor: Colors.indigo),

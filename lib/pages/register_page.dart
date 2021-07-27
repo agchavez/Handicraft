@@ -1,12 +1,12 @@
+import 'dart:async';
 import 'dart:io';
-import 'dart:convert' as convert;
+import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:custom_switch_button/custom_switch_button.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
-import 'package:handicraft_app/utils/alerts.dart';
 
 import 'package:handicraft_app/utils/util.dart' as utils;
 import 'package:provider/provider.dart';
@@ -14,11 +14,12 @@ import 'package:handicraft_app/widgets/image.dart';
 
 import 'package:handicraft_app/models/companie.dart';
 import 'package:handicraft_app/models/acount_user.dart';
-//import 'package:handicraft_app/widgets/image.dart' as imageWid;
-
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import 'package:handicraft_app/global/enviroment.dart';
+import 'package:handicraft_app/models/location_model.dart';
+import 'package:handicraft_app/provider/location_service.dart';
+import 'package:handicraft_app/provider/product_service.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -34,142 +35,68 @@ File foto, newImage;
 bool _typeAcount = false;
 bool _showpasword = true;
 bool check = false;
+bool vefiryEmail = false;
 bool nowCompanie = false;
 double currentOpacity = 1.0;
+final dio = Dio();
 
-String _countryValue = 'Pais';
-String _cityValue = 'Ciudad';
-String _stateValue = 'Provincia';
+LocationModel _countryValue, _cityValue, _provinceValue;
+List<LocationModel> cities = [], contries = [], provinces = [];
+LocationService locationService;
+ProductService productService;
 
 class _RegisterPageState extends State<RegisterPage> {
   final picker = ImagePicker();
   Size size = Size(1000, 5000);
+  final auth = FirebaseAuth.instance;
+  User user;
 
   @override
+  void initState() {
+    super.initState();
+    locationService = Provider.of<LocationService>(context, listen: false);
+    _services();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  _services() async {
+    await locationService.getContries().then((value) {
+      contries.addAll(value);
+    });
+
+    setState(() {
+      contries;
+    });
+  }
+
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SafeArea(
-              child: Row(
-                children: [
-                  Padding(
-                      padding: EdgeInsets.only(top: 30.0, left: 25.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacementNamed(context, 'home');
-                        },
-                        child: Image.asset('assets/icons/back-black-icon.png',
-                            width: 10.0),
-                      ))
-                ],
+      appBar: AppBar(
+        title: Container(
+          child: FloatingActionButton(
+              child: Image.asset('assets/icons/back-black-icon.png',
+              width: 7.0,
               ),
-            ),
-            SizedBox(
-              height: size.height * 0.03,
-            ),
-            _logo(),
-            SizedBox(
-              height: 15,
-            ),
-            /*Center(
-              child: GestureDetector(
-                onTap: () {
-                  showPicker(context);
-                },
-                child: CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Color(0xFFFFFFFF),
-                  child: tempimageFileList != null
-                      ? previewImages()
-                      : Container(
-                          decoration: BoxDecoration(
-                              color: Color(0xFF000000),
-                              borderRadius: BorderRadius.circular(50)),
-                          width: 50,
-                          height: 50,
-                          child: Image.asset('assets/icons/camera-icon.png', width: 10.0,)
-                        ),
-                ),
-              ),
-            ),*/
-            SizedBox(
-              height: 15,
-            ),
-            _createForm(),
-            _createFormCompanies(),
-            // Stack(
-            //   children: [
-            //     AnimatedOpacity(
-            //       opacity: currentOpacity,
-            //       duration: Duration(milliseconds: 600),
-            //       child: nowCompanie ? _createFormCompanies() : _createForm(),
-            //     ),
-            //   ],
-            // ),
-            SizedBox(
-              height: 10,
-            ),
-            _createSelect(),
-            SizedBox(
-              height: 10,
-            ),
-            // if (_typeAcount) _createFormCompanies(),
-            SizedBox(
-              height: 20,
-            ),
-            !check
-                ? _createBottom(context)
-                : CircularProgressIndicator(
-                    color: Colors.black,
-                  ),
-            SizedBox(
-              height: 15,
-            ),
-            Center(
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.pushReplacementNamed(context, 'login');
-                },
-                child: Container(
-                    child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("¿Ya tienes una cuenta?",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16)),
-                    GestureDetector(
-                      onTap: () {
-                        _createAcount();
-                      },
-                      child: Text(
-                        " Iniciar Sesión",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 17),
-                      ),
-                    )
-                  ],
-                )),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Container(
-              width: size.width * 0.73,
-              child: Text(
-                "Al hacer clic en iniciar sesión o continuar con google, acepta los términos de uso de Handicraft y política de privacidad.",
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey[600], fontSize: 12),
-              ),
-            ),
-            SizedBox(
-              height: 50.0,
-            )
-          ],
+              backgroundColor: Colors.white,
+              onPressed: ()  {
+                Navigator.popAndPushNamed(context, 'home');
+              },
+          ),
+          height: 43.0,
+          width: 43.0,
         ),
+        backgroundColor: Colors.transparent,
+        bottomOpacity: 0.0,
+        elevation: 0,
+        ),
+      body: SingleChildScrollView(
+        child: vefiryEmail ?  _createVerifyEmailView() : _createFormsInteract(),
+
       ),
     );
   }
@@ -247,7 +174,6 @@ class _RegisterPageState extends State<RegisterPage> {
 /*IMAGEN*/
 
   _imgFromCamera() async {
-    print('here');
     final pickedFile =
         await picker.getImage(source: ImageSource.camera, imageQuality: 50);
     imageFile = pickedFile;
@@ -256,6 +182,261 @@ class _RegisterPageState extends State<RegisterPage> {
     if (file != null) {
       setSt(file);
     }
+  }
+
+  Widget _createFormsInteract() {
+    return SafeArea(
+        child: Container(
+          child: Column(
+            children: [
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              _logo(),
+              SizedBox(
+                height: 15,
+              ),
+              /*Center(
+              child: GestureDetector(
+                onTap: () {
+                  showPicker(context);
+                },
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Color(0xFFFFFFFF),
+                  child: tempimageFileList != null
+                      ? previewImages()
+                      : Container(
+                          decoration: BoxDecoration(
+                              color: Color(0xFF000000),
+                              borderRadius: BorderRadius.circular(50)),
+                          width: 50,
+                          height: 50,
+                          child: Image.asset('assets/icons/camera-icon.png', width: 10.0,)
+                        ),
+                ),
+              ),
+            ),*/
+              SizedBox(
+                height: 15,
+              ),
+              Stack(
+                children: [
+                  AnimatedOpacity(
+                    opacity: currentOpacity,
+                    duration: Duration(milliseconds: 600),
+                    child: nowCompanie ? _createFormCompanies() : _createForm(),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              _createSelect(),
+              SizedBox(
+                height: 10,
+              ),
+              // if (_typeAcount) _createFormCompanies(),
+              !check
+                  ? _createBottom(context)
+                  : CircularProgressIndicator(
+                color: Colors.black,
+              ),
+              SizedBox(
+                height: 10.0,
+              ),
+              nowCompanie
+                  ? _createBackButton(context)
+                  : SizedBox(
+                height: 5,
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacementNamed(context, 'login');
+                  },
+                  child: Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("¿Ya tienes una cuenta?",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 16)),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.popAndPushNamed(context, 'login');
+                            },
+                            child: Text(
+                              " Iniciar Sesión",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 17),
+                            ),
+                          )
+                        ],
+                      )),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                width: size.width * 0.73,
+                child: Text(
+                  "Al hacer clic en iniciar sesión o continuar con google, acepta los términos de uso de Handicraft y política de privacidad.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                ),
+              ),
+              SizedBox(
+                height: 50.0,
+              )
+            ],
+          ),
+        )
+    );
+  }
+
+  Widget _createVerifyEmailView() {
+    return SafeArea(
+      child: Container(
+          height: size.height * 0.95,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _logo(),
+              SizedBox(
+                height: 50.0,
+              ),
+              Text(
+                'Verificación de correo electrónico.',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontFamily: 'Gilroy_ExtraBold',
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: new TextSpan(
+                      style: new TextStyle(
+                        color: Color(0xFFC4C4C4),
+                        fontFamily: 'Montserrat',
+                        fontSize: 12,
+                        height: 0.65,
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(text: "¡Enhorabuena, "),
+                        TextSpan(text: "${_user.firstname} ${_user.lastname} ", style: new TextStyle(fontWeight: FontWeight.bold)),
+                        TextSpan(text: 'Bienvenido a \n\n Handicraft!'),
+                        TextSpan(text: 'hemos enviado un correo de \n\n verificacion a tu email '),
+                        TextSpan(text: "${_user.email} \n\n", style: new TextStyle(fontWeight: FontWeight.bold)),
+                        TextSpan(text: ', por favor confirma tu email para continuar.'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              RaisedButton(
+                child: Container(
+                  width: size.width * 0.75,
+                    padding: EdgeInsets.symmetric(vertical: 18.0),
+                    child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: (){
+                              Navigator.popAndPushNamed(context, "login");
+                            },
+                            child: Text('Continuar'),
+                          ),
+                        ])),
+                shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                elevation: 2.0,
+                color: Colors.black,
+                textColor: Colors.white,
+                onPressed: () => _viewEventSignUpOrCompanie(),
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              RaisedButton(
+                child: Container(
+                  width: size.width * 0.75,
+                    padding: EdgeInsets.symmetric(vertical: 18.0),
+                    child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              auth.currentUser.sendEmailVerification();
+                            },
+                            child: Text(
+                              'Reenviar confirmación',
+                              style: TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontWeight: FontWeight.w800,
+                                fontSize: 14,
+                              ),
+                            ),
+                          )
+                        ])),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  side: BorderSide(color: Colors.black, width: 3.0),
+                ),
+                elevation: 2.0,
+                color: Colors.white,
+                textColor: Colors.black,
+                onPressed: () {
+                  setState(() {
+                    currentOpacity = 0.0;
+                  });
+                  Future.delayed(const Duration(milliseconds: 600), () {
+                    form2key.currentState.save();
+                    setState(() {
+                      nowCompanie = !nowCompanie;
+                      currentOpacity = 1.0;
+                    });
+                  });
+                },
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.popAndPushNamed(context, 'home');
+                },
+                child: Text(
+                  'Regresar al inicio.',
+                  style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      fontFamily: 'Montserrat',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14),
+                ),
+              ),
+            ],
+          )
+      ),
+    );
   }
 
   _imgFromGallery() async {
@@ -318,6 +499,7 @@ class _RegisterPageState extends State<RegisterPage> {
             scrollPadding: EdgeInsets.symmetric(vertical: 0.0),
             style: TextStyle(decorationColor: Colors.white),
             keyboardType: TextInputType.name,
+            initialValue: _user.firstname,
             decoration: InputDecoration(
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
@@ -341,7 +523,7 @@ class _RegisterPageState extends State<RegisterPage> {
             onSaved: (value) => _user.firstname = value,
             validator: (value) {
               if (value.isEmpty || utils.isNumeric(value)) {
-                return 'Campo obligatorio';
+                return 'Nombre obligatorio';
               } else {
                 return null;
               }
@@ -354,6 +536,7 @@ class _RegisterPageState extends State<RegisterPage> {
         child: TextFormField(
           style: TextStyle(decorationColor: Colors.white),
           keyboardType: TextInputType.name,
+          initialValue: _user.lastname,
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
@@ -377,7 +560,7 @@ class _RegisterPageState extends State<RegisterPage> {
           onSaved: (value) => _user.lastname = value,
           validator: (value) {
             if (value.isEmpty || utils.isNumeric(value)) {
-              return 'Campo obligatorio';
+              return 'Apellido obligatorio';
             } else {
               return null;
             }
@@ -391,6 +574,7 @@ class _RegisterPageState extends State<RegisterPage> {
         child: TextFormField(
           style: TextStyle(decorationColor: Colors.white),
           keyboardType: TextInputType.name,
+          initialValue: _user.email,
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
@@ -429,6 +613,7 @@ class _RegisterPageState extends State<RegisterPage> {
           obscureText: _showpasword,
           style: TextStyle(decorationColor: Colors.white),
           keyboardType: TextInputType.name,
+          initialValue: _user.password,
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
@@ -453,8 +638,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 })
               },
             ),
-            border: OutlineInputBorder(
-                borderSide: BorderSide(width: 100, color: Colors.white10),
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(width: 2.5, color: Colors.black),
                 borderRadius: BorderRadius.circular(10.0)),
             hintText: 'Contraseña',
           ),
@@ -515,7 +700,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(_typeAcount ? 'Siguiente' : 'Registrarme'),
+                  Text(_typeAcount
+                      ? (nowCompanie ? 'Registrarme' : 'Siguiente')
+                      : 'Registrarme'),
                 ])),
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
@@ -527,17 +714,62 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  Widget _createBackButton(BuildContext context) {
+    return Container(
+      width: size.width * 0.75,
+      child: RaisedButton(
+        child: Container(
+            padding: EdgeInsets.symmetric(vertical: 18.0),
+            child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Regresar',
+                    style: TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontWeight: FontWeight.w800,
+                      fontSize: 14,
+                    ),
+                  ),
+                ])),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          side: BorderSide(color: Colors.black, width: 3.0),
+        ),
+        elevation: 2.0,
+        color: Colors.white,
+        textColor: Colors.black,
+        onPressed: () {
+          setState(() {
+            currentOpacity = 0.0;
+          });
+          Future.delayed(const Duration(milliseconds: 600), () {
+            form2key.currentState.save();
+            setState(() {
+              nowCompanie = !nowCompanie;
+              currentOpacity = 1.0;
+            });
+          });
+        },
+      ),
+    );
+  }
+
   Widget _viewEventSignUpOrCompanie() {
-    if (_typeAcount) {
-      setState(() {
-        currentOpacity = 0.0;
-      });
-      var future = new Future.delayed(const Duration(milliseconds: 600), () {
+    if (_typeAcount && !nowCompanie) {
+      if (formkey.currentState.validate()) {
+        formkey.currentState.save();
         setState(() {
-          nowCompanie = !nowCompanie;
-          currentOpacity = 1.0;
+          currentOpacity = 0.0;
         });
-      });
+        Future.delayed(const Duration(milliseconds: 600), () {
+          setState(() {
+            nowCompanie = !nowCompanie;
+            currentOpacity = 1.0;
+          });
+        });
+      }
     } else {
       _createAcount();
     }
@@ -570,6 +802,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget _createNameCompanie() {
     return Container(
         width: size.width * 0.75,
+        height: 58,
         child: TextFormField(
           validator: (value) {
             if (value.isEmpty || utils.isNumeric(value)) {
@@ -582,6 +815,7 @@ class _RegisterPageState extends State<RegisterPage> {
             decorationColor: Colors.white,
           ),
           keyboardType: TextInputType.name,
+          initialValue: _companie.name,
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
@@ -613,7 +847,7 @@ class _RegisterPageState extends State<RegisterPage> {
           validator: (value) {
             print(value.length);
             if (value.length != 8) {
-              return "Numero no valido";
+              return "Teléfono no valido";
             } else {
               return null;
             }
@@ -622,6 +856,7 @@ class _RegisterPageState extends State<RegisterPage> {
             decorationColor: Colors.white,
           ),
           keyboardType: TextInputType.phone,
+          initialValue: _user.phone,
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
@@ -640,7 +875,7 @@ class _RegisterPageState extends State<RegisterPage> {
             border: OutlineInputBorder(
                 borderSide: BorderSide(width: 100, color: Colors.white10),
                 borderRadius: BorderRadius.circular(10.0)),
-            hintText: 'Numero de telefono',
+            hintText: 'Teléfono',
           ),
           onSaved: (value) => {_user.phone = value.toString(), print("object")},
         ));
@@ -650,71 +885,44 @@ class _RegisterPageState extends State<RegisterPage> {
     return Container(
       width: size.width * 0.75,
       height: 58,
-      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 5),
+      padding: EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(width: 2.5, color: Colors.black)),
-      child: Row(
-        children: [
-          Container(
-            child: DropdownButton<String>(
-                value: _countryValue,
-                icon: Icon(Icons.arrow_drop_down),
-                iconSize: 35,
-                onChanged: (newValue) {
-                  setState(() {
-                    _countryValue = newValue.toString();
-                  });
-                },
-                items: <String>['Pais', 'La Paz', 'Francisco Morazan', 'Cortes']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList()),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _createCity() {
-    return Container(
-      width: size.width * 0.75,
-      height: 58,
-      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 5),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(width: 2.5, color: Colors.black)),
-      child: Row(
-        children: [
-          Container(
-            child: DropdownButton<String>(
-                value: _cityValue,
-                icon: Icon(Icons.arrow_drop_down),
-                iconSize: 35,
-                onChanged: (newValue) {
-                  setState(() {
-                    _cityValue = newValue.toString();
-                  });
-                },
-                items: <String>[
-                  'Ciudad',
-                  'La Paz',
-                  'Francisco Morazan',
-                  'Cortes'
-                ].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList()),
-          ),
-        ],
-      ),
+      child: new DropdownButtonHideUnderline(
+          child: DropdownButton<LocationModel>(
+            value: _countryValue,
+            items: contries.map((LocationModel location) {
+            return new DropdownMenuItem<LocationModel>(
+                value: location,
+                child: new Text(
+                  location.name,
+                  style: new TextStyle(color: Colors.black),
+                ));
+            }).toList(),
+            onChanged: (value) async {
+              _provinceValue = null;
+              provinces = [];
+              _countryValue = value;
+              await locationService
+                  .getProvinces(_countryValue.id)
+                  .then((provincesRes) => provinces.addAll(provincesRes));
+              setState(() {});
+            },
+            isExpanded: true,
+            hint: Text('Seleccione su pais'),
+            style: TextStyle(color: Colors.black, fontSize: 16),
+            icon: Row(
+              children: [
+              Icon(
+                Icons.arrow_drop_down,
+                size: 32,
+            )
+          ],
+        ),
+        iconEnabledColor: Colors.black,
+      )),
     );
   }
 
@@ -722,39 +930,85 @@ class _RegisterPageState extends State<RegisterPage> {
     return Container(
       width: size.width * 0.75,
       height: 58,
-      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 5),
+      padding: EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(width: 2.5, color: Colors.black)),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            child: DropdownButton<String>(
-                value: _stateValue,
-                icon: Icon(Icons.arrow_drop_down),
-                iconSize: 35,
-                onChanged: (newValue) {
-                  setState(() {
-                    _stateValue = newValue.toString();
-                  });
-                },
-                items: <String>[
-                  'Provincia',
-                  'La Paz',
-                  'Marcala',
-                  'Guajiquiro',
-                  'Tutule'
-                ].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList()),
-          ),
-        ],
-      ),
+      child: new DropdownButtonHideUnderline(
+          child: DropdownButton<LocationModel>(
+            value: _provinceValue,
+            items: provinces.map((LocationModel province) {
+              return new DropdownMenuItem<LocationModel>(
+                  value: province,
+                  child: new Text(
+                    province.name,
+                    style: new TextStyle(color: Colors.black),
+                  ));
+            }).toList(),
+            onChanged: (value) async {
+              cities = [];
+              _cityValue = null;
+              _provinceValue = value;
+              await locationService
+                  .getCity(_countryValue.id, _provinceValue.id)
+                  .then((value) => cities.addAll(value));
+              setState(() {});
+            },
+            isExpanded: true,
+            hint: Text('Seleccione su provincia'),
+            style: TextStyle(color: Colors.black, fontSize: 16),
+            icon: Row(
+              children: [
+                Icon(
+                  Icons.arrow_drop_down,
+                  size: 32,
+                )
+             ],
+            ),
+            iconEnabledColor: Colors.black,
+      )),
+    );
+  }
+
+  Widget _createCity() {
+    return Container(
+      width: size.width * 0.75,
+      height: 58,
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(width: 2.5, color: Colors.black)),
+      child: new DropdownButtonHideUnderline(
+          child: DropdownButton<LocationModel>(
+            value: _cityValue,
+            items: cities.map((LocationModel city) {
+              return new DropdownMenuItem<LocationModel>(
+                  value: city,
+                  child: new Text(
+                    city.name,
+                    style: new TextStyle(color: Colors.black),
+                  ));
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                _cityValue = value;
+              });
+            },
+            isExpanded: true,
+            hint: Text('Seleccione su ciudad'),
+            style: TextStyle(color: Colors.black, fontSize: 16),
+            icon: Row(
+              children: [
+                Icon(
+                  Icons.arrow_drop_down,
+                  size: 32,
+                )
+              ],
+            ),
+            iconEnabledColor: Colors.black,
+      )),
     );
   }
 
@@ -763,21 +1017,23 @@ class _RegisterPageState extends State<RegisterPage> {
       check = !check;
     });
 
-    if (!formkey.currentState.validate()) {
-      if (_typeAcount) {
-        if (form2key.currentState.validate()) {
-          setState(() {
-            check = !check;
-          });
-          return;
-        }
+    if (!_typeAcount) {
+      if (!formkey.currentState.validate()) {
+        setState(() {
+          check = !check;
+        });
+        return;
       }
-      setState(() {
-        check = !check;
-      });
-      return;
+      formkey.currentState.save();
+    } else {
+      if (!form2key.currentState.validate()) {
+        setState(() {
+          check = !check;
+        });
+        return;
+      }
+      form2key.currentState.save();
     }
-    formkey.currentState.save();
 
     final authService = Provider.of<AuthService>(context, listen: false);
     await authService.register(_user).then((userResponse) async {
@@ -785,57 +1041,57 @@ class _RegisterPageState extends State<RegisterPage> {
         check = !check;
       });
 
-      Map<String, dynamic> prepareBody = {
+      Map<String, dynamic> body = {
         'idUser': FirebaseAuth.instance.currentUser.uid,
-        'firstName': _user.firstname,
-        'lastName': _user.lastname,
-        'email': _user.email,
-        'phoneNumber': _user.phone,
+        'firstName': _user.firstname.trim(),
+        'lastName': _user.lastname.trim(),
+        'email': _user.email.trim(),
+        'phoneNumber': _user.phone.trim(),
         'photoProfile':
-            'https://cdn130.picsart.com/329155800062211.png?type=webp&to=min&r=640',
+            'https://firebasestorage.googleapis.com/v0/b/handicraft-app.appspot.com/o/image%2Fprofile_pictures%2F360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg?alt=media&token=5b8732bd-6b84-4514-b53a-c9a1a16fe9d4'
       };
 
-      // if ( _typeAcount ) {
-      //   prepareBody["companyName"] = "Jorge company";
-      //   prepareBody["country"] = 1;
-      //   prepareBody["province"] = 1;
-      //   prepareBody["city"] = 1;
-      // }
-
-      final url = Uri.parse("http://192.168.1.106:5000/user/user-company");
-
-      // _typeAcount ?   : 'https://hechoencasa-backend.herokuapp.com/user'
-      await http
-          .post(url,
-              body: convert.jsonEncode({
-                "idUser": "idUsuario222",
-                "firstName": "Jrui2z",
-                "lastName": "Jaeger",
-                "email": "Correo222@gmail.com",
-                "phoneNumber": "98899889",
-                "photoProfile":
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzwKAip4zTU9t-aWwRZuLHFbyRJdKMdsCK9sgiR0APj52jlSZfroKySpcTS27vWdsy57o&usqp=CAU",
-                "companyName": "compania",
-                "country": 1,
-                "province": 2,
-                "city": 3
-              }))
-          .then((value) {
-        print('response');
-        print(value);
-      }).catchError((error) => print(error));
-    });
-
-    _mostrarFoto(data) {
-      if (data == '' || data.fotoUrl == null) {
-        return AssetImage('assets/images/unnamed.png');
-      } else {
-        return NetworkImage(
-          data.fotoUrl,
-        );
+      if (_typeAcount) {
+        body["companyName"] = _companie.name.trim();
+        body["country"] = _countryValue.id;
+        body["province"] = _provinceValue.id;
+        body["city"] = _cityValue.id;
       }
-    }
 
-    _navigateAndDisplaySelection(BuildContext context) async {}
+      print(body);
+      Response response = await dio.post(
+          _typeAcount
+              ? "http://192.168.1.106:5000/user/user-company"
+              : "http://192.168.1.106:5000/user",
+          options: Options(headers: {
+            HttpHeaders.contentTypeHeader: "application/json",
+          }),
+          data: jsonEncode(body));
+
+      if (response.statusCode == 200) {
+        authService.sendEmailVerification().then((send){
+          if ( send ) {
+            setState(() {
+              vefiryEmail = !vefiryEmail;
+            });
+          }
+        });
+        return true;
+      } else {
+        return false;
+      }
+
+      _mostrarFoto(data) {
+        if (data == '' || data.fotoUrl == null) {
+          return AssetImage('assets/images/unnamed.png');
+        } else {
+          return NetworkImage(
+            data.fotoUrl,
+          );
+        }
+      }
+
+      _navigateAndDisplaySelection(BuildContext context) async {}
+    });
   }
 }

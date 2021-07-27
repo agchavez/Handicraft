@@ -1,6 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class StorageService {
+class StorageService with ChangeNotifier {
   // Create storage
   final storage = new FlutterSecureStorage();
 
@@ -10,6 +11,7 @@ class StorageService {
   Future<bool> setValue(String value, String key) async {
     try {
       await storage.write(key: key, value: value);
+      notifyListeners();
       return true;
     } catch (e) {
       return false;
@@ -33,6 +35,15 @@ class StorageService {
       return false;
     }
   }
+
+  Future<dynamic> deleteAll() async {
+    try {
+      await storage.deleteAll();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }
 // // Read all values
 // Map<String, String> allValues = await storage.readAll();
@@ -41,7 +52,7 @@ class StorageService {
 // await storage.delete(key: key);
 
 // // Delete all
-// await storage.deleteAll();
+//
 
 // // Write value
 // await storage.write(key: key, value: value);

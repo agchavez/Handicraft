@@ -1,6 +1,4 @@
-import 'dart:ffi';
 import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/pages/menssange_pages.dart';
@@ -28,8 +26,11 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
   AnimationController _controller;
   bool _expanded = false;
   double _currentHeight = _minHeigth;
-  bool authUser = false;
   String uid = "";
+  Widget navBarProfile;
+  StorageService storage;
+  AuthService auth;
+  String photoUrl = '';
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
@@ -42,15 +43,11 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
 
   @override
   void initState() {
-    super.initState();
-    // _verifyAuth();
+    auth = Provider.of<AuthService>(context, listen: false);
+    auth.stateAuth();
     _controller = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 600));
-  }
-
-  _verifyAuth() async {
-    authUser = await AuthService().stateAuth();
-    uid = await StorageService().getValue("uid");
+    super.initState();
   }
 
   @override
@@ -64,11 +61,11 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      floatingActionButton: authUser
+      floatingActionButton: auth.authState
           ? Container(
               margin: EdgeInsets.only(bottom: 25),
-              width: 60,
-              height: 60,
+              width: 50,
+              height: 50,
               child: FittedBox(
                 alignment: Alignment.center,
                 child: FloatingActionButton(
@@ -116,7 +113,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
 
   Widget _buildNavBarContent(size) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 5, horizontal: size.width * 0.03),
+      margin: EdgeInsets.symmetric(vertical: 2, horizontal: size.width * 0.03),
       child: BottomAppBar(
         elevation: 0,
         color: Colors.transparent,
@@ -197,7 +194,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        AuthService().photoURL
+                        auth.navbarProfile != null ? auth.navbarProfile : Text('Hc'),
                       ],
                     ),
                   ),
@@ -210,7 +207,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
     );
   }
 
-  Widget createAccountMenu(size) {
+  Widget createAccountMenu(size)  {
     final menuWidth = size.width * 0.93;
     return GestureDetector(
         onVerticalDragUpdate: _expanded
@@ -247,12 +244,12 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                   width: lerpDouble(menuWidth, size.width, value),
                   bottom: lerpDouble(15.0, 0.0, value),
                   child: GestureDetector(
-                    onTap: () {
-                      if ( !_expanded && !authUser) {
+                    onTap: () async {
+                      if ( !_expanded && !auth.authState) {
+                        _expanded = true;
+                        _currentHeight = _maxHeight;
+                        _controller.forward(from: 0.0);
                         setState(() {
-                          _expanded = true;
-                          _currentHeight = _maxHeight;
-                          _controller.forward(from: 0.0);
                         });
                       }
                     },
@@ -269,7 +266,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                           ? Opacity(
                           opacity: _controller.value,
                           child: _buildExpandedContent())
-                          : ( authUser ? _buildNavBarContent(size) : _buildMenuContent()) ,
+                          : ( auth.authState ? _buildNavBarContent(size) : _buildMenuContent()) ,
                     ),
                   )
                 ),
@@ -417,10 +414,14 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                                     Provider.of<GoogleSignInProvider>(context,
                                         listen: false);
                                 provider.googleLogin().then((value) async {
-                                  await _verifyAuth();
-                                  _controller.reverse();
-                                  _expanded = false;
-                                  setState(() {
+                                  provider.saveUser().then((value) async {
+                                    await auth.setUserStorage();
+                                    navBarProfile = await auth.photoURL.then((value) => value);
+                                    await auth.stateAuth();
+                                    _controller.reverse();
+                                    _expanded = false;
+                                    setState(() {
+                                    });
                                   });
                                 });
                               },
