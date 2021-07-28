@@ -1,8 +1,14 @@
+import 'dart:convert';
+
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/login_user.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/utils/alerts.dart';
 import 'package:handicraft_app/utils/util.dart' as utils;
+import 'package:handicraft_app/global/enviroment.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -15,6 +21,7 @@ final formkey = GlobalKey<FormState>();
 bool _showpasword = true, check = false;
 LoginAccountModel login_user = new LoginAccountModel();
 AuthService auth;
+final dio = Dio();
 
 class _LoginPageState extends State<LoginPage> {
   Size size = Size(1000, 5000);
@@ -308,9 +315,12 @@ class _LoginPageState extends State<LoginPage> {
     if (resp) {
       await auth.stateAuth();
       if ( auth.authState ) {
-        await auth.setUserStorage();
-        auth.navbarProfile = await auth.photoURL;
-        Navigator.popAndPushNamed(context, "home");
+        Response responseInfoUser = await dio.get('${Enviroment.apiurl}/user/${ FirebaseAuth.instance.currentUser.uid}');
+        Map<String, dynamic> userData = jsonDecode(responseInfoUser.toString());
+        await auth.setUserStorage(userData).then((value){
+          Navigator.popAndPushNamed(context, "home");
+        });
+
       }
     } else {
       showAlert(

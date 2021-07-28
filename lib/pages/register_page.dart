@@ -61,6 +61,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   void dispose() {
     super.dispose();
+    vefiryEmail = false;
   }
 
   _services() async {
@@ -304,7 +305,7 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Container(
           height: size.height * 0.95,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _logo(),
@@ -358,19 +359,16 @@ class _RegisterPageState extends State<RegisterPage> {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          GestureDetector(
-                            onTap: (){
-                              Navigator.popAndPushNamed(context, "login");
-                            },
-                            child: Text('Continuar'),
-                          ),
+                          Text('Continuar')
                         ])),
                 shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                 elevation: 2.0,
                 color: Colors.black,
                 textColor: Colors.white,
-                onPressed: () => _viewEventSignUpOrCompanie(),
+                onPressed: () {
+                  Navigator.popAndPushNamed(context, "login");
+                },
               ),
               SizedBox(
                 height: 15,
@@ -432,6 +430,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       fontWeight: FontWeight.bold,
                       fontSize: 14),
                 ),
+              ),
+              SizedBox(
+                height: 60,
               ),
             ],
           )
@@ -1037,10 +1038,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
     final authService = Provider.of<AuthService>(context, listen: false);
     await authService.register(_user).then((userResponse) async {
-      setState(() {
-        check = !check;
-      });
-
       Map<String, dynamic> body = {
         'idUser': FirebaseAuth.instance.currentUser.uid,
         'firstName': _user.firstname.trim(),
@@ -1048,7 +1045,7 @@ class _RegisterPageState extends State<RegisterPage> {
         'email': _user.email.trim(),
         'phoneNumber': _user.phone.trim(),
         'photoProfile':
-            'https://firebasestorage.googleapis.com/v0/b/handicraft-app.appspot.com/o/image%2Fprofile_pictures%2F360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg?alt=media&token=5b8732bd-6b84-4514-b53a-c9a1a16fe9d4'
+            'https://firebasestorage.googleapis.com/v0/b/handicraft-app.appspot.com/o/image%2Fprofile_pictures%2Fdefault_profile.png?alt=media&token=3610e4eb-44a4-4357-b877-f6bd16904aff'
       };
 
       if (_typeAcount) {
@@ -1061,23 +1058,28 @@ class _RegisterPageState extends State<RegisterPage> {
       print(body);
       Response response = await dio.post(
           _typeAcount
-              ? "http://192.168.1.106:5000/user/user-company"
-              : "http://192.168.1.106:5000/user",
+              ? "${Enviroment.apiurl}/user/user-company"
+              : "${Enviroment.apiurl}/user",
           options: Options(headers: {
             HttpHeaders.contentTypeHeader: "application/json",
           }),
           data: jsonEncode(body));
 
       if (response.statusCode == 200) {
-        authService.sendEmailVerification().then((send){
+        authService.sendEmailVerification().then((send) async {
           if ( send ) {
+            check = !check;
+            vefiryEmail = !vefiryEmail;
+            await authService.signOut();
             setState(() {
-              vefiryEmail = !vefiryEmail;
             });
           }
         });
         return true;
       } else {
+        setState(() {
+          check = !check;
+        });
         return false;
       }
 

@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:handicraft_app/global/enviroment.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 
@@ -40,7 +41,7 @@ class GoogleSignInProvider extends ChangeNotifier {
     }
   }
 
-   Future<bool> saveUser() async {
+   Future<bool> saveUser( AuthService auth ) async {
      if ( FirebaseAuth.instance.currentUser != null ) {
        final user = FirebaseAuth.instance.currentUser;
 
@@ -54,7 +55,7 @@ class GoogleSignInProvider extends ChangeNotifier {
          'photoProfile': user.photoURL
        };
 
-       Response response = await dio.post("http://192.168.1.106:5000/user",
+       Response response = await dio.post("${Enviroment.apiurl}/user",
            options: Options(
                headers: {
                  HttpHeaders.contentTypeHeader: "application/json",
@@ -62,13 +63,9 @@ class GoogleSignInProvider extends ChangeNotifier {
            data: jsonEncode(body));
 
        if ( response.statusCode == 200 ) {
-         Map<String, dynamic> data = jsonDecode(response.toString());
-         if ( data['data']['code'] == 'DUP_USER' ) {
-           await AuthService().setUserStorage();
-           return true;
-         } else {
-           return true;
-         }
+         Map<String, dynamic> userdata = jsonDecode(response.toString());
+         await auth.setUserStorage(userdata);
+         return true;
        } else {
          return false;
        }

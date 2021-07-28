@@ -12,6 +12,7 @@ class AuthService with ChangeNotifier {
   FirebaseAuth auth = FirebaseAuth.instance;
   bool authState = false;
   Widget navbarProfile;
+  StorageService storage = new StorageService();
   final dio = Dio();
 
   Future<bool> login(String email, String password) async {
@@ -58,14 +59,14 @@ class AuthService with ChangeNotifier {
   }
 
   Future<Widget> get photoURL async {
-    if ( await StorageService().getValue('photoProfile') != null) {
+    if ( await storage.getValue('photoProfile') != null) {
       return CircleAvatar(
         maxRadius: 18,
         backgroundImage:
-            NetworkImage(await StorageService().getValue('photoProfile')),
+            NetworkImage(await storage.getValue('photoProfile')),
       );
     } else {
-      String name = await StorageService().getValue('displayName');
+      String name = await storage.getValue('displayName');
       String displayName = ( name != null ) ? name : 'H C';
       List names  = displayName.split(' ');
       String initials = names[0][0] + names[1][0];
@@ -95,6 +96,8 @@ class AuthService with ChangeNotifier {
 
   Future<bool> signOut() async {
     await FirebaseAuth.instance.signOut();
+    await stateAuth();
+    await storage.deleteAll();
   }
 
   Future<bool> sendEmailVerification() async {
@@ -104,16 +107,28 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  Future<bool> setUserStorage() async {
-    Response responseInfoUser = await dio.get('http://192.168.1.106:5000/user/${auth.currentUser.uid}');
-    Map<String, dynamic> userData = jsonDecode(responseInfoUser.toString());
-    await StorageService().deleteAll();
-    await StorageService().setValue(userData['data']['idUser'], 'uid');
-    await StorageService().setValue('${userData['data']['name']} ${userData['data']['lastName']}', 'displayName');
-    await StorageService().setValue(userData['data']['email'], 'email');
-    await StorageService().setValue(userData['data']['photoProfile'], 'photoProfile');
-    await StorageService().setValue(userData['data']['phone'], 'phone');
-    print( userData['data']['photoProfile'] );
+  Future<bool> setUserStorage( Map<String, dynamic> user ) async {
+    user = user['data'];
+    await storage.deleteAll();
+    await storage.setValue(user["idUser"], 'uid');
+    await storage.setValue('${user["name"]} ${user['lastName']}', 'displayName');
+    await storage.setValue(user["email"], 'email');
+    await storage.setValue(user["photoProfile"], 'photoProfile');
+    await storage.setValue(user["phone"], 'phone');
     return true;
+  }
+
+  Future<String> refreshUserToken() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if ( user != null) {
+      FirebaseAuth.instance.currentUser.getIdToken(true)
+          .then(( idToken ){
+            print(idToken);
+            return idToken;
+      })
+          .catchError((error) {
+            print('Dont got a token!. :(');
+      });
+    }
   }
 }

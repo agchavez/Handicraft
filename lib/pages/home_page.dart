@@ -27,10 +27,9 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
   bool _expanded = false;
   double _currentHeight = _minHeigth;
   String uid = "";
-  Widget navBarProfile;
+  String photoProfile;
   StorageService storage;
   AuthService auth;
-  String photoUrl = '';
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
@@ -45,6 +44,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
   void initState() {
     auth = Provider.of<AuthService>(context, listen: false);
     auth.stateAuth();
+    _photoProfile();
     _controller = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 600));
     super.initState();
@@ -54,6 +54,10 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
   void dispose() {
     super.dispose();
     _controller.dispose();
+  }
+
+  _photoProfile() async {
+    photoProfile = await auth.storage.getValue('photoProfile');
   }
 
   @override
@@ -194,7 +198,12 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        auth.navbarProfile != null ? auth.navbarProfile : Text('Hc'),
+                        CircleAvatar(
+                          maxRadius: 18,
+                          backgroundImage: NetworkImage( photoProfile == null ?
+                          'https://firebasestorage.googleapis.com/v0/b/handicraft-app.appspot.com/o/image%2Fprofile_pictures%2Fdefault_profile.png?alt=media&token=3610e4eb-44a4-4357-b877-f6bd16904aff'
+                              : photoProfile ),
+                        ),
                       ],
                     ),
                   ),
@@ -414,9 +423,8 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                                     Provider.of<GoogleSignInProvider>(context,
                                         listen: false);
                                 provider.googleLogin().then((value) async {
-                                  provider.saveUser().then((value) async {
-                                    await auth.setUserStorage();
-                                    navBarProfile = await auth.photoURL.then((value) => value);
+                                  provider.saveUser( auth ).then((value) async {
+                                    await _photoProfile();
                                     await auth.stateAuth();
                                     _controller.reverse();
                                     _expanded = false;

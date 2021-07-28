@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:handicraft_app/provider/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class ProductsPages extends StatefulWidget {
   @override
@@ -9,6 +11,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    AuthService auth = Provider.of<AuthService>(context);
 
     return Scaffold(
       appBar: AppBar(

@@ -18,8 +18,6 @@ class PorfilePage extends StatelessWidget {
           IconButton(
               onPressed: () async {
                 await auth.signOut();
-                await auth.stateAuth();
-                await StorageService().deleteAll();
                 Navigator.popAndPushNamed(context, "home");
               },
               icon: Icon(
