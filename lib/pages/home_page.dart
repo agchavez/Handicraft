@@ -179,6 +179,9 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                             ],
                           ),
                         ),
+                        SizedBox(
+                          width: 10,
+                        ),
                       ],
                     ),
                     SizedBox(

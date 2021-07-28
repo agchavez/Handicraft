@@ -28,12 +28,6 @@ class _ProductsPgaesState extends State<ProductsPages> {
   }
 
   void _onRefresh() async {
-    // monitor network fetch
-    await Future.delayed(Duration(milliseconds: 1000));
-    // if failed,use refreshFailed()
-    // if (cont != 0) {
-    // cont = cont - 7;
-    //}
     if (mounted) setState(() {});
     _refreshController.refreshCompleted();
   }
@@ -62,10 +56,8 @@ class _ProductsPgaesState extends State<ProductsPages> {
         future: ProductService().getPosts(),
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (snapshot.hasError) {
-            print('ERROR');
           } else if (snapshot.hasData) {
             //items = snapshot.data;
-            print(snapshot.data);
             return SmartRefresher(
                 enablePullDown: true,
                 enablePullUp: true,
@@ -93,6 +85,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
                 controller: _refreshController,
                 onRefresh: _onRefresh,
                 onLoading: _onLoading,
+                physics: ScrollPhysics(),
                 child: GridView.builder(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
@@ -110,7 +103,9 @@ class _ProductsPgaesState extends State<ProductsPages> {
                     }));
           }
           return Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator(
+              color: Colors.black,
+            ),
           );
         },
       ),

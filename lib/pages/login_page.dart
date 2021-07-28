@@ -9,13 +9,13 @@ class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
-
 final formkey = GlobalKey<FormState>();
 
 bool _showpasword = true, check = false;
 LoginAcountModel login_user = new LoginAcountModel();
 
 class _LoginPageState extends State<LoginPage> {
+  
   Size size = Size(1000, 5000);
   @override
   Widget build(BuildContext context) {

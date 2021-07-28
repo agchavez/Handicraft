@@ -30,7 +30,8 @@ class ProductService with ChangeNotifier {
       }
       body["images"] = imgUrl;
       print(body);
-      Response response = await dio.post('${Enviroment.apiurl}/product/1',
+      Response response = await dio.post(
+          '${Enviroment.apiurl}/product/6htb1oKY61M8PXeVTtmY9ni8GUg2',
           options: Options(headers: {
             HttpHeaders.contentTypeHeader: "application/json",
           }),
@@ -114,14 +115,13 @@ class ProductService with ChangeNotifier {
   //Obtener productos sin logearse
   Future<List<dynamic>> getPosts() async {
     // print(endArray);
+    data = [];
     final response = await http.get(Uri.parse(
-        "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/2/${cont}/6"));
+        "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/0/12"));
     final resp = productModelFromJson(response.body).data;
 
-    final arrayData = [...data, ...resp];
-    data = arrayData;
+    data.addAll(resp);
     cont = cont + 6;
-    print(data.length);
 
     return data;
   }
