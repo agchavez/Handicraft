@@ -8,6 +8,7 @@ class ProductNew extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    print(this.product.name.length);
     return Container(
       height: size.height * 0.4,
       child: Column(
@@ -24,9 +25,15 @@ class ProductNew extends StatelessWidget {
                 this.product.name,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
               ),
+              SizedBox(
+                height: 3.0,
+              ),
               Text(
                 this.product.location,
                 style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12),
+              ),
+              SizedBox(
+                height: 3.0,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -34,7 +41,7 @@ class ProductNew extends StatelessWidget {
                 children: [
                   Text(
                     this.product.cost,
-                    style: TextStyle(fontWeight: FontWeight.w200, fontSize: 10),
+                    style: TextStyle(fontWeight: FontWeight.w300, fontSize: 10),
                   ),
                 ],
               ),
@@ -53,7 +60,7 @@ class ProductNew extends StatelessWidget {
         height: 135,
         width: 155,
       ),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(15),
     );
   }
 }

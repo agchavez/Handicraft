@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:handicraft_app/models/location_model.dart';
 import 'package:handicraft_app/models/product.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/widgets/productNew.dart';
+import 'package:provider/provider.dart';
 
 class PorfilePage extends StatefulWidget {
   @override
@@ -13,7 +15,18 @@ class PorfilePage extends StatefulWidget {
 class _PorfilePageState extends State<PorfilePage> {
   @override
   Size size;
+  final List<String> categoriesSuscribe = [
+    "Ropa y Calzado",
+    "Joyeria y Complementos"
+  ];
   int _selectedIndex = 0;
+  ProductService productService;
+
+  @override
+  void initState() {
+    super.initState();
+    productService = Provider.of<ProductService>(context, listen: false);
+  }
 
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
@@ -25,12 +38,18 @@ class _PorfilePageState extends State<PorfilePage> {
         child: Column(
       children: [
         _createAppbar(),
-        _selectedIndex == 0 ? _createLikes() : Container(),
+        Visibility(
+          child: _createLikes(),
+          visible: _selectedIndex == 0,
+        ),
         SizedBox(
           height: 20,
         ),
         _createNavbar(),
-        _createinformaction()
+        _createinformaction(),
+        SizedBox(
+          height: 60,
+        )
       ],
     ));
   }
@@ -229,36 +248,88 @@ class _PorfilePageState extends State<PorfilePage> {
   }
 
   Widget _createinformaction() {
-    return Expanded(
-      child: FutureBuilder(
-          future: ProductService().getPosts(),
-          builder: (context, AsyncSnapshot<List<Product_Model>> snapshot) {
-            if (snapshot.hasData) {
-              //items = snapshot.data;
-              data = snapshot.data;
-              return GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                  ),
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding:
-                          const EdgeInsets.only(left: 20, right: 20, bottom: 8),
-                      child: Container(
-                        child: ProductNew(
-                          product: data[index],
-                        ),
+    switch (_selectedIndex) {
+      case 0:
+        return Expanded(
+          child: FutureBuilder(
+              future: productService.getPosts(),
+              builder: (context, AsyncSnapshot<List<Product_Model>> snapshot) {
+                if (snapshot.hasData) {
+                  //items = snapshot.data;
+                  data = snapshot.data;
+                  return GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
                       ),
-                    );
-                  });
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(
+                              left: 20, right: 20, bottom: 8),
+                          child: Container(
+                            child: ProductNew(
+                              product: data[index],
+                            ),
+                          ),
+                        );
+                      });
+                } else {
+                  return Center(
+                      child: CircularProgressIndicator(
+                    color: Colors.black,
+                  ));
+                }
+              }),
+        );
+        break;
+      case 2:
+        return Expanded(
+            child: FutureBuilder(
+          future: productService.getCategories(),
+          builder: (context, AsyncSnapshot<List<LocationModel>> snapshot) {
+            if (snapshot.hasData) {
+              List<LocationModel> data = snapshot.data;
+              return Wrap(
+                children: data
+                    .map((item) => Container(
+                        margin: EdgeInsets.all(5),
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                            color: categoriesSuscribe.contains(item.name)
+                                ? Colors.black
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: Colors.black, width: 2)),
+                        child: Text(
+                          item.name,
+                          style: TextStyle(
+                              color: categoriesSuscribe.contains(item.name)
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontFamily: 'Montserrat',
+                              fontWeight: FontWeight.bold),
+                        )))
+                    .toList()
+                    .cast<Widget>(),
+              );
+            } else if (snapshot.hasError) {
+              return Center(child: Text("No tienes categorias"));
             } else {
               return Center(
-                  child: CircularProgressIndicator(
-                color: Colors.black,
-              ));
+                child: CircularProgressIndicator(
+                  color: Colors.black,
+                ),
+              );
             }
-          }),
-    );
+          },
+        ));
+        break;
+      case 1:
+        return Container();
+        break;
+      default:
+        return Container();
+    }
   }
 }
