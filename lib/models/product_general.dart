@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:handicraft_app/models/product.dart';
+
 Product productModelFromJson(String str) => Product.fromJson(json.decode(str));
 
 String productModelToJson(Product data) => json.encode(data.toJson());
@@ -10,11 +12,12 @@ class Product {
     this.message,
   });
 
-  List<dynamic> data;
+  List<Product_Model> data;
   String message;
 
   factory Product.fromJson(Map<dynamic, dynamic> json) => Product(
-        data: json["data"],
+        data: List<Product_Model>.from(
+            json["data"].map((x) => Product_Model.fromJson(x))),
         message: json["message"],
       );
   Map<dynamic, dynamic> toJson() => {

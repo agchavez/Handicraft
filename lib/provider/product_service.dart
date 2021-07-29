@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:dio/dio.dart';
+import 'package:handicraft_app/models/product.dart';
 import 'package:handicraft_app/models/product_general.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:http/http.dart' as http;
@@ -29,7 +30,6 @@ class ProductService with ChangeNotifier {
         }
       }
       body["images"] = imgUrl;
-      print(body);
       Response response = await dio.post(
           '${Enviroment.apiurl}/product/6htb1oKY61M8PXeVTtmY9ni8GUg2',
           options: Options(headers: {
@@ -37,7 +37,6 @@ class ProductService with ChangeNotifier {
           }),
           data: jsonEncode(body));
       if (response.statusCode == 200) {
-        print(response.data);
         return true;
       } else {
         return false;
@@ -50,7 +49,6 @@ class ProductService with ChangeNotifier {
   Future<String> uploadImg(File img) async {
     //Guardar imagenes en firebase y retornar el url
     String namImg = uuid.v4();
-    print(namImg);
     try {
       await firebase_storage.FirebaseStorage.instance
           .ref('image')
@@ -113,16 +111,15 @@ class ProductService with ChangeNotifier {
   }
 
   //Obtener productos sin logearse
-  Future<List<dynamic>> getPosts() async {
+  Future<List<Product_Model>> getPosts() async {
     // print(endArray);
-    data = [];
     final response = await http.get(Uri.parse(
         "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/0/12"));
-    final resp = productModelFromJson(response.body).data;
+    final resp = productModelFromJson(response.body);
 
-    data.addAll(resp);
     cont = cont + 6;
+    print(resp.data);
 
-    return data;
+    return resp.data;
   }
 }
