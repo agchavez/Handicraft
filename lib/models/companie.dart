@@ -8,29 +8,21 @@ String companieAccountModelToJson(CompanieAccountModel data) =>
 
 class CompanieAccountModel {
   String name;
-  int country;
-  int province;
-  int city;
+  String description;
 
   CompanieAccountModel({
     this.name,
-    this.country,
-    this.province,
-    this.city
+    this.description
   });
 
   factory CompanieAccountModel.fromJson( Map<String, dynamic> json ) =>
   CompanieAccountModel(
     name: json['name'],
-    country: json['country'],
-    province: json['province'],
-    city: json['city'],
+    description: json['description']
   );
 
   Map<String, dynamic> toJson() => {
     "name": name,
-    "country": country,
-    "province": province,
-    "city": city,
+    "description": description,
   };
 }

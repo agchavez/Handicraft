@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,26 +27,27 @@ class RegisterPage extends StatefulWidget {
   _RegisterPageState createState() => _RegisterPageState();
 }
 
-final formkey = GlobalKey<FormState>();
-final form2key = GlobalKey<FormState>();
-UserAccountModel _user = new UserAccountModel();
-CompanieAccountModel _companie = new CompanieAccountModel();
-
-File foto, newImage;
-bool _typeAcount = false;
-bool _showpasword = true;
-bool check = false;
-bool vefiryEmail = false;
-bool nowCompanie = false;
-double currentOpacity = 1.0;
-final dio = Dio();
-
-LocationModel _countryValue, _cityValue, _provinceValue;
-List<LocationModel> cities = [], contries = [], provinces = [];
-LocationService locationService;
-ProductService productService;
-
 class _RegisterPageState extends State<RegisterPage> {
+  final formkey = GlobalKey<FormState>();
+  final form2key = GlobalKey<FormState>();
+  UserAccountModel _user = new UserAccountModel();
+  CompanieAccountModel _companie = new CompanieAccountModel();
+
+  File foto, newImage;
+  bool _typeAcount = false;
+  bool _showpasword = true;
+  bool check = false;
+  bool vefiryEmail = false;
+  bool nowCompanie = false;
+  TextEditingController _textDescriptionController = TextEditingController();
+  double currentOpacity = 1.0;
+  bool _validateDescription = false;
+  final dio = Dio();
+
+  LocationModel _countryValue, _cityValue, _provinceValue;
+  List<LocationModel> cities = [], contries = [], provinces = [];
+  LocationService locationService;
+  ProductService productService;
   final picker = ImagePicker();
   Size size = Size(1000, 5000);
   final auth = FirebaseAuth.instance;
@@ -61,6 +63,9 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   void dispose() {
     super.dispose();
+    _validateDescription = false;
+    formkey.currentState?.reset();
+    form2key.currentState?.reset();
     vefiryEmail = false;
   }
 
@@ -80,13 +85,14 @@ class _RegisterPageState extends State<RegisterPage> {
       appBar: AppBar(
         title: Container(
           child: FloatingActionButton(
-              child: Image.asset('assets/icons/back-black-icon.png',
+            child: Image.asset(
+              'assets/icons/back-black-icon.png',
               width: 7.0,
-              ),
-              backgroundColor: Colors.white,
-              onPressed: ()  {
-                Navigator.popAndPushNamed(context, 'home');
-              },
+            ),
+            backgroundColor: Colors.white,
+            onPressed: () {
+              Navigator.popAndPushNamed(context, 'home');
+            },
           ),
           height: 43.0,
           width: 43.0,
@@ -94,10 +100,19 @@ class _RegisterPageState extends State<RegisterPage> {
         backgroundColor: Colors.transparent,
         bottomOpacity: 0.0,
         elevation: 0,
-        ),
+      ),
       body: SingleChildScrollView(
-        child: vefiryEmail ?  _createVerifyEmailView() : _createFormsInteract(),
-
+        child: PageTransitionSwitcher(
+          duration: Duration(seconds: 1),
+          transitionBuilder: (child, animation, secondaryAnimation) =>
+              FadeThroughTransition(
+            animation: animation,
+            secondaryAnimation: secondaryAnimation,
+            child: child,
+          ),
+          child:
+              vefiryEmail ? _createVerifyEmailView() : _createFormsInteract(),
+        ),
       ),
     );
   }
@@ -188,16 +203,16 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget _createFormsInteract() {
     return SafeArea(
         child: Container(
-          child: Column(
-            children: [
-              SizedBox(
-                height: size.height * 0.02,
-              ),
-              _logo(),
-              SizedBox(
-                height: 15,
-              ),
-              /*Center(
+      child: Column(
+        children: [
+          SizedBox(
+            height: size.height * 0.02,
+          ),
+          _logo(),
+          SizedBox(
+            height: 15,
+          ),
+          /*Center(
               child: GestureDetector(
                 onTap: () {
                   showPicker(context);
@@ -218,225 +233,223 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
             ),*/
-              SizedBox(
-                height: 15,
+          SizedBox(
+            height: 15,
+          ),
+          Stack(
+            children: [
+              AnimatedOpacity(
+                opacity: currentOpacity,
+                duration: Duration(milliseconds: 600),
+                child: nowCompanie ? _createFormCompanies() : _createForm(),
               ),
-              Stack(
-                children: [
-                  AnimatedOpacity(
-                    opacity: currentOpacity,
-                    duration: Duration(milliseconds: 600),
-                    child: nowCompanie ? _createFormCompanies() : _createForm(),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              _createSelect(),
-              SizedBox(
-                height: 10,
-              ),
-              // if (_typeAcount) _createFormCompanies(),
-              !check
-                  ? _createBottom(context)
-                  : CircularProgressIndicator(
-                color: Colors.black,
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              nowCompanie
-                  ? _createBackButton(context)
-                  : SizedBox(
-                height: 5,
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Center(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, 'login');
-                  },
-                  child: Container(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("¿Ya tienes una cuenta?",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 16)),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.popAndPushNamed(context, 'login');
-                            },
-                            child: Text(
-                              " Iniciar Sesión",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 17),
-                            ),
-                          )
-                        ],
-                      )),
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                width: size.width * 0.73,
-                child: Text(
-                  "Al hacer clic en iniciar sesión o continuar con google, acepta los términos de uso de Handicraft y política de privacidad.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                ),
-              ),
-              SizedBox(
-                height: 50.0,
-              )
             ],
           ),
-        )
-    );
+          SizedBox(
+            height: 10,
+          ),
+          _createSelect(),
+          SizedBox(
+            height: 10,
+          ),
+          // if (_typeAcount) _createFormCompanies(),
+          !check
+              ? _createBottom(context)
+              : CircularProgressIndicator(
+                  color: Colors.black,
+                ),
+          SizedBox(
+            height: 10.0,
+          ),
+          nowCompanie
+              ? _createBackButton(context)
+              : SizedBox(
+                  height: 5,
+                ),
+          SizedBox(
+            height: 15,
+          ),
+          Center(
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushReplacementNamed(context, 'login');
+              },
+              child: Container(
+                  child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("¿Ya tienes una cuenta?",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16)),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.popAndPushNamed(context, 'login');
+                    },
+                    child: Text(
+                      " Iniciar Sesión",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                    ),
+                  )
+                ],
+              )),
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            width: size.width * 0.73,
+            child: Text(
+              "Al hacer clic en iniciar sesión o continuar con google, acepta los términos de uso de Handicraft y política de privacidad.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            ),
+          ),
+          SizedBox(
+            height: 50.0,
+          )
+        ],
+      ),
+    ));
   }
 
   Widget _createVerifyEmailView() {
     return SafeArea(
       child: Container(
-          height: size.height * 0.95,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _logo(),
-              SizedBox(
-                height: 50.0,
-              ),
-              Text(
-                'Verificación de correo electrónico.',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontFamily: 'Gilroy_ExtraBold',
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+          height: size.height * 0.85,
+          child: Padding(
+            padding: EdgeInsets.only(
+                top: 20.0, right: 25.0, left: 25.0, bottom: 20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/urban-mailbox.png',
+                      scale: 3.5,
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  RichText(
-                    textAlign: TextAlign.center,
+                SizedBox(
+                  height: 40,
+                ),
+                Text(
+                  '¡Revisa tu correo electrónico!.',
+                  style: TextStyle(
+                    color: Color(0xFFB8B7B7),
+                    fontFamily: 'Montserrat',
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  child: RichText(
+                    textAlign: TextAlign.justify,
                     text: new TextSpan(
                       style: new TextStyle(
                         color: Color(0xFFC4C4C4),
                         fontFamily: 'Montserrat',
-                        fontSize: 12,
-                        height: 0.65,
+                        fontSize: 11.5,
+                        height: 1.1,
                       ),
                       children: <TextSpan>[
                         TextSpan(text: "¡Enhorabuena, "),
-                        TextSpan(text: "${_user.firstname} ${_user.lastname} ", style: new TextStyle(fontWeight: FontWeight.bold)),
-                        TextSpan(text: 'Bienvenido a \n\n Handicraft!'),
-                        TextSpan(text: 'hemos enviado un correo de \n\n verificacion a tu email '),
-                        TextSpan(text: "${_user.email} \n\n", style: new TextStyle(fontWeight: FontWeight.bold)),
-                        TextSpan(text: ', por favor confirma tu email para continuar.'),
+                        TextSpan(
+                            text: "${_user.firstname} ${_user.lastname} ",
+                            style: new TextStyle(fontWeight: FontWeight.bold)),
+                        TextSpan(text: 'Bienvenido a Handicraft!'),
+                        TextSpan(
+                            text:
+                                ' hemos enviado un correo de verificacion a tu email '),
+                        TextSpan(
+                            text: "${_user.email}",
+                            style: new TextStyle(fontWeight: FontWeight.bold)),
+                        TextSpan(
+                            text:
+                                ', por favor confirma tu email para continuar.'),
                       ],
                     ),
                   ),
-                ],
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              RaisedButton(
-                child: Container(
-                  width: size.width * 0.75,
-                    padding: EdgeInsets.symmetric(vertical: 18.0),
-                    child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('Continuar')
-                        ])),
-                shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-                elevation: 2.0,
-                color: Colors.black,
-                textColor: Colors.white,
-                onPressed: () {
-                  Navigator.popAndPushNamed(context, "login");
-                },
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              RaisedButton(
-                child: Container(
-                  width: size.width * 0.75,
-                    padding: EdgeInsets.symmetric(vertical: 18.0),
-                    child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              auth.currentUser.sendEmailVerification();
-                            },
-                            child: Text(
-                              'Reenviar confirmación',
-                              style: TextStyle(
-                                fontFamily: 'Montserrat',
-                                fontWeight: FontWeight.w800,
-                                fontSize: 14,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                RaisedButton(
+                  child: Container(
+                      width: size.width * 0.75,
+                      padding: EdgeInsets.symmetric(vertical: 18.0),
+                      child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [Text('Continuar')])),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0)),
+                  elevation: 2.0,
+                  color: Colors.black,
+                  textColor: Colors.white,
+                  onPressed: () {
+                    Navigator.popAndPushNamed(context, "login");
+                  },
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                RaisedButton(
+                  child: Container(
+                      width: size.width * 0.75,
+                      padding: EdgeInsets.symmetric(vertical: 18.0),
+                      child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  vefiryEmail = false;
+                                });
+                                // auth.currentUser.sendEmailVerification();
+                              },
+                              child: Text(
+                                'Reenviar confirmación',
+                                style: TextStyle(
+                                    fontFamily: 'Montserrat',
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 14,
+                                    decoration: TextDecoration.underline),
                               ),
-                            ),
-                          )
-                        ])),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  side: BorderSide(color: Colors.black, width: 3.0),
-                ),
-                elevation: 2.0,
-                color: Colors.white,
-                textColor: Colors.black,
-                onPressed: () {
-                  setState(() {
-                    currentOpacity = 0.0;
-                  });
-                  Future.delayed(const Duration(milliseconds: 600), () {
-                    form2key.currentState.save();
+                            )
+                          ])),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    side: BorderSide(color: Colors.white, width: 3.0),
+                  ),
+                  elevation: 0.0,
+                  color: Colors.white,
+                  textColor: Colors.black,
+                  onPressed: () {
                     setState(() {
-                      nowCompanie = !nowCompanie;
-                      currentOpacity = 1.0;
+                      currentOpacity = 0.0;
                     });
-                  });
-                },
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.popAndPushNamed(context, 'home');
-                },
-                child: Text(
-                  'Regresar al inicio.',
-                  style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      fontFamily: 'Montserrat',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14),
+                    Future.delayed(const Duration(milliseconds: 600), () {
+                      form2key.currentState.save();
+                      setState(() {
+                        nowCompanie = !nowCompanie;
+                        currentOpacity = 1.0;
+                      });
+                    });
+                  },
                 ),
-              ),
-              SizedBox(
-                height: 60,
-              ),
-            ],
-          )
-      ),
+              ],
+            ),
+          )),
     );
   }
 
@@ -794,7 +807,14 @@ class _RegisterPageState extends State<RegisterPage> {
               SizedBox(
                 height: 10,
               ),
-              _createCity()
+              _createCity(),
+              SizedBox(
+                height: 10,
+              ),
+              _createDescription(),
+              SizedBox(
+                height: 5,
+              ),
             ],
           )),
     );
@@ -805,13 +825,6 @@ class _RegisterPageState extends State<RegisterPage> {
         width: size.width * 0.75,
         height: 58,
         child: TextFormField(
-          validator: (value) {
-            if (value.isEmpty || utils.isNumeric(value)) {
-              return 'Campo obligatorio';
-            } else {
-              return null;
-            }
-          },
           style: TextStyle(
             decorationColor: Colors.white,
           ),
@@ -838,6 +851,54 @@ class _RegisterPageState extends State<RegisterPage> {
             hintText: 'Nombre de la empresa',
           ),
           onSaved: (value) => _companie.name = value,
+          validator: (value) {
+            if (value.isEmpty || utils.isNumeric(value)) {
+              return 'Campo obligatorio';
+            } else {
+              return null;
+            }
+          },
+        ));
+  }
+
+  Widget _createDescription() {
+    return Container(
+        width: size.width * 0.75,
+        padding: EdgeInsets.symmetric(vertical: 0.0),
+        child: TextFormField(
+          style: TextStyle(decorationColor: Colors.white),
+          keyboardType: TextInputType.multiline,
+          initialValue: _companie.description,
+          maxLines: null,
+          maxLength: 300,
+          decoration: InputDecoration(
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                width: 2.5,
+                color: Colors.black,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                width: 2.5,
+                color: Colors.black,
+              ),
+            ),
+            border: OutlineInputBorder(
+                borderSide: BorderSide(width: 1.5, color: Colors.white10),
+                borderRadius: BorderRadius.circular(10.0)),
+            hintText: 'Descripcion',
+          ),
+          onSaved: (value) => _companie.description = value,
+          validator: (value) {
+            if (value.length > 300) {
+              return 'Maximo de caracteres 300';
+            } else {
+              return null;
+            }
+          },
         ));
   }
 
@@ -893,32 +954,32 @@ class _RegisterPageState extends State<RegisterPage> {
           border: Border.all(width: 2.5, color: Colors.black)),
       child: new DropdownButtonHideUnderline(
           child: DropdownButton<LocationModel>(
-            value: _countryValue,
-            items: contries.map((LocationModel location) {
-            return new DropdownMenuItem<LocationModel>(
-                value: location,
-                child: new Text(
-                  location.name,
-                  style: new TextStyle(color: Colors.black),
-                ));
-            }).toList(),
-            onChanged: (value) async {
-              _provinceValue = null;
-              provinces = [];
-              _countryValue = value;
-              await locationService
-                  .getProvinces(_countryValue.id)
-                  .then((provincesRes) => provinces.addAll(provincesRes));
-              setState(() {});
-            },
-            isExpanded: true,
-            hint: Text('Seleccione su pais'),
-            style: TextStyle(color: Colors.black, fontSize: 16),
-            icon: Row(
-              children: [
-              Icon(
-                Icons.arrow_drop_down,
-                size: 32,
+        value: _countryValue,
+        items: contries.map((LocationModel location) {
+          return new DropdownMenuItem<LocationModel>(
+              value: location,
+              child: new Text(
+                location.name,
+                style: new TextStyle(color: Colors.black),
+              ));
+        }).toList(),
+        onChanged: (value) async {
+          _provinceValue = null;
+          provinces = [];
+          _countryValue = value;
+          await locationService
+              .getProvinces(_countryValue.id)
+              .then((provincesRes) => provinces.addAll(provincesRes));
+          setState(() {});
+        },
+        isExpanded: true,
+        hint: Text('Seleccione su pais'),
+        style: TextStyle(color: Colors.black, fontSize: 16),
+        icon: Row(
+          children: [
+            Icon(
+              Icons.arrow_drop_down,
+              size: 32,
             )
           ],
         ),
@@ -938,36 +999,36 @@ class _RegisterPageState extends State<RegisterPage> {
           border: Border.all(width: 2.5, color: Colors.black)),
       child: new DropdownButtonHideUnderline(
           child: DropdownButton<LocationModel>(
-            value: _provinceValue,
-            items: provinces.map((LocationModel province) {
-              return new DropdownMenuItem<LocationModel>(
-                  value: province,
-                  child: new Text(
-                    province.name,
-                    style: new TextStyle(color: Colors.black),
-                  ));
-            }).toList(),
-            onChanged: (value) async {
-              cities = [];
-              _cityValue = null;
-              _provinceValue = value;
-              await locationService
-                  .getCity(_countryValue.id, _provinceValue.id)
-                  .then((value) => cities.addAll(value));
-              setState(() {});
-            },
-            isExpanded: true,
-            hint: Text('Seleccione su provincia'),
-            style: TextStyle(color: Colors.black, fontSize: 16),
-            icon: Row(
-              children: [
-                Icon(
-                  Icons.arrow_drop_down,
-                  size: 32,
-                )
-             ],
-            ),
-            iconEnabledColor: Colors.black,
+        value: _provinceValue,
+        items: provinces.map((LocationModel province) {
+          return new DropdownMenuItem<LocationModel>(
+              value: province,
+              child: new Text(
+                province.name,
+                style: new TextStyle(color: Colors.black),
+              ));
+        }).toList(),
+        onChanged: (value) async {
+          cities = [];
+          _cityValue = null;
+          _provinceValue = value;
+          await locationService
+              .getCity(_countryValue.id, _provinceValue.id)
+              .then((value) => cities.addAll(value));
+          setState(() {});
+        },
+        isExpanded: true,
+        hint: Text('Seleccione su provincia'),
+        style: TextStyle(color: Colors.black, fontSize: 16),
+        icon: Row(
+          children: [
+            Icon(
+              Icons.arrow_drop_down,
+              size: 32,
+            )
+          ],
+        ),
+        iconEnabledColor: Colors.black,
       )),
     );
   }
@@ -983,32 +1044,32 @@ class _RegisterPageState extends State<RegisterPage> {
           border: Border.all(width: 2.5, color: Colors.black)),
       child: new DropdownButtonHideUnderline(
           child: DropdownButton<LocationModel>(
-            value: _cityValue,
-            items: cities.map((LocationModel city) {
-              return new DropdownMenuItem<LocationModel>(
-                  value: city,
-                  child: new Text(
-                    city.name,
-                    style: new TextStyle(color: Colors.black),
-                  ));
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                _cityValue = value;
-              });
-            },
-            isExpanded: true,
-            hint: Text('Seleccione su ciudad'),
-            style: TextStyle(color: Colors.black, fontSize: 16),
-            icon: Row(
-              children: [
-                Icon(
-                  Icons.arrow_drop_down,
-                  size: 32,
-                )
-              ],
-            ),
-            iconEnabledColor: Colors.black,
+        value: _cityValue,
+        items: cities.map((LocationModel city) {
+          return new DropdownMenuItem<LocationModel>(
+              value: city,
+              child: new Text(
+                city.name,
+                style: new TextStyle(color: Colors.black),
+              ));
+        }).toList(),
+        onChanged: (value) {
+          setState(() {
+            _cityValue = value;
+          });
+        },
+        isExpanded: true,
+        hint: Text('Seleccione su ciudad'),
+        style: TextStyle(color: Colors.black, fontSize: 16),
+        icon: Row(
+          children: [
+            Icon(
+              Icons.arrow_drop_down,
+              size: 32,
+            )
+          ],
+        ),
+        iconEnabledColor: Colors.black,
       )),
     );
   }
@@ -1053,6 +1114,7 @@ class _RegisterPageState extends State<RegisterPage> {
         body["country"] = _countryValue.id;
         body["province"] = _provinceValue.id;
         body["city"] = _cityValue.id;
+        body["description"] = _companie.description;
       }
 
       print(body);
@@ -1067,12 +1129,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
       if (response.statusCode == 200) {
         authService.sendEmailVerification().then((send) async {
-          if ( send ) {
+          if (send) {
             check = !check;
             vefiryEmail = !vefiryEmail;
             await authService.signOut();
-            setState(() {
-            });
+            setState(() {});
           }
         });
         return true;

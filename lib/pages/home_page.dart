@@ -30,6 +30,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
   String photoProfile;
   StorageService storage;
   AuthService auth;
+  bool loadingGoogleIn = false;
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
@@ -198,12 +199,16 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        CircleAvatar(
-                          maxRadius: 18,
-                          backgroundImage: NetworkImage( photoProfile == null ?
-                          'https://firebasestorage.googleapis.com/v0/b/handicraft-app.appspot.com/o/image%2Fprofile_pictures%2Fdefault_profile.png?alt=media&token=3610e4eb-44a4-4357-b877-f6bd16904aff'
-                              : photoProfile ),
-                        ),
+                        ClipOval(
+                          child: Image.network(
+                              photoProfile == null ?
+                              'https://firebasestorage.googleapis.com/v0/b/handicraft-app.appspot.com/o/image%2Fprofile_pictures%2Fdefault_profile.png?alt=media&token=3610e4eb-44a4-4357-b877-f6bd16904aff'
+                                  : photoProfile,
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.cover,
+                          )
+                        )
                       ],
                     ),
                   ),
@@ -309,9 +314,11 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                         padding: const EdgeInsets.only(right: 20.0, top: 5.0),
                         child: GestureDetector(
                             onTap: () {
-                              _controller.reverse();
-                              _expanded = false;
-                              _currentHeight = _minHeigth;
+                              if ( !loadingGoogleIn ) {
+                                _controller.reverse();
+                                _expanded = false;
+                                _currentHeight = _minHeigth;
+                              }
                             },
                             child: Text(
                               'Saltar',
@@ -375,7 +382,9 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                                 color: Colors.black,
                                 textColor: Colors.white,
                                 onPressed: () {
-                                  Navigator.popAndPushNamed(context, "login");
+                                  if ( !loadingGoogleIn ) {
+                                    Navigator.popAndPushNamed(context, "login");
+                                  }
                                 }),
                           ))
                     ],
@@ -397,17 +406,28 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Image.asset(
-                                          'assets/images/google_icon.png',
-                                          width: 15.0,
-                                        ),
-                                        Text(
-                                          '  Ingresa con tu cuenta de Google',
-                                          style: TextStyle(
-                                            fontFamily: 'Montserrat',
-                                            fontWeight: FontWeight.w800,
-                                            fontSize: 14,
+                                        !loadingGoogleIn ?
+                                        Row(
+                                          children: [
+                                            Image.asset(
+                                              'assets/images/google_icon.png',
+                                              width: 15.0,
+                                            ),
+                                            Text(
+                                              '  Ingresa con tu cuenta de Google',
+                                              style: TextStyle(
+                                                fontFamily: 'Montserrat',
+                                                fontWeight: FontWeight.w800,
+                                                fontSize: 14,
+                                              ),
+                                            )
+                                          ],
+                                        ) : Container(
+                                          child: CircularProgressIndicator(
+                                            color: Colors.black,
                                           ),
+                                          height: 15.0,
+                                          width: 15.0,
                                         ),
                                       ])),
                               shape: RoundedRectangleBorder(
@@ -419,19 +439,25 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                               color: Colors.white,
                               textColor: Colors.black,
                               onPressed: () {
-                                final provider =
-                                    Provider.of<GoogleSignInProvider>(context,
-                                        listen: false);
-                                provider.googleLogin().then((value) async {
-                                  provider.saveUser( auth ).then((value) async {
-                                    await _photoProfile();
-                                    await auth.stateAuth();
-                                    _controller.reverse();
-                                    _expanded = false;
-                                    setState(() {
+                                if ( !loadingGoogleIn ) {
+                                  loadingGoogleIn = !loadingGoogleIn;
+                                  setState(() {
+                                  });
+                                  final provider =
+                                  Provider.of<GoogleSignInProvider>(context,
+                                      listen: false);
+                                  provider.googleLogin().then((value) async {
+                                    provider.saveUser( auth ).then((value) async {
+                                      await _photoProfile();
+                                      await auth.stateAuth();
+                                      loadingGoogleIn = !loadingGoogleIn;
+                                      _controller.reverse();
+                                      _expanded = false;
+                                      setState(() {
+                                      });
                                     });
                                   });
-                                });
+                                }
                               },
                             ),
                           ))
@@ -441,7 +467,9 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                       padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.popAndPushNamed(context, 'register');
+                          if ( !loadingGoogleIn ) {
+                            Navigator.popAndPushNamed(context, 'register');
+                          }
                         },
                         child: Text(
                           'Crear Cuenta',
