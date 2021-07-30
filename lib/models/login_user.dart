@@ -1,22 +1,22 @@
 import 'dart:convert';
 
-LoginAcountModel userAcountModelFromJson(String str) =>
-    LoginAcountModel.fromJson(json.decode(str));
+LoginAccountModel loginAccountModelFromJson(String str) =>
+    LoginAccountModel.fromJson(json.decode(str));
 
-String loginAcountModelToJson(LoginAcountModel data) =>
+String loginAccountModelToJson(LoginAccountModel data) =>
     json.encode(data.toJson());
 
-class LoginAcountModel {
+class LoginAccountModel {
   String email;
   String password;
 
-  LoginAcountModel({
+  LoginAccountModel({
     this.email,
     this.password,
   });
 
-  factory LoginAcountModel.fromJson(Map<String, dynamic> json) =>
-      LoginAcountModel(
+  factory LoginAccountModel.fromJson(Map<String, dynamic> json) =>
+      LoginAccountModel(
         email: json["email"],
         password: json["password"],
       );

@@ -1,34 +1,33 @@
-// To parse this JSON data, do
-//
-//     final UserAcountModel = UserAcountModelFromJson(jsonString);
-
 import 'dart:convert';
 
-UserAcountModel userAcountModelFromJson(String str) =>
-    UserAcountModel.fromJson(json.decode(str));
+UserAccountModel userAccountModelFromJson(String str) =>
+    UserAccountModel.fromJson(json.decode(str));
 
-String userAcountModelToJson(UserAcountModel data) =>
+String userAccountModelToJson(UserAccountModel data) =>
     json.encode(data.toJson());
 
-class UserAcountModel {
+class UserAccountModel {
   String firstname;
   String lastname;
   String email;
   String password;
+  String phone;
 
-  UserAcountModel({
+  UserAccountModel({
     this.firstname,
     this.lastname,
     this.email,
     this.password,
+    this.phone,
   });
 
-  factory UserAcountModel.fromJson(Map<String, dynamic> json) =>
-      UserAcountModel(
+  factory UserAccountModel.fromJson(Map<String, dynamic> json) =>
+      UserAccountModel(
         firstname: json["firstname"],
         lastname: json["lastname"],
         email: json["email"],
         password: json["password"],
+        phone: json["phone"]
       );
 
   Map<String, dynamic> toJson() => {
@@ -36,5 +35,7 @@ class UserAcountModel {
         "lastname": lastname,
         "email": email,
         "password": password,
+        "phone": phone
       };
+
 }

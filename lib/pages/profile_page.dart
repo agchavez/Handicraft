@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:handicraft_app/provider/storage_service.dart';
+import 'package:handicraft_app/provider/auth_service.dart';
+import 'package:provider/provider.dart';
+
+import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/product.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/widgets/productNew.dart';
+
+AuthService auth;
 
 class PorfilePage extends StatefulWidget {
   @override
@@ -14,8 +21,10 @@ class _PorfilePageState extends State<PorfilePage> {
   @override
   Size size;
   int _selectedIndex = 0;
+  AuthService auth;
 
   Widget build(BuildContext context) {
+    auth = Provider.of<AuthService>(context);
     size = MediaQuery.of(context).size;
     return Scaffold(body: _createBody());
   }
@@ -57,7 +66,9 @@ class _PorfilePageState extends State<PorfilePage> {
                     color: Colors.white,
                   )),
               IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    auth.signOut();
+                  },
                   icon: Icon(
                     Icons.keyboard_control_outlined,
                     textDirection: TextDirection.rtl,

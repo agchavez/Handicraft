@@ -1,22 +1,33 @@
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/acount_user.dart';
-import 'package:handicraft_app/models/login_user.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 
 class AuthService with ChangeNotifier {
   FirebaseAuth auth = FirebaseAuth.instance;
-  final storage = new StorageService();
+  bool authState = false;
+  Widget navbarProfile;
+  StorageService storage = new StorageService();
+  final dio = Dio();
 
   Future<bool> login(String email, String password) async {
     try {
-      UserCredential userCredential = await auth.signInWithEmailAndPassword(
-          email: email, password: password);
-      print(userCredential.user);
-      if (userCredential.user != null) {
-        storage.setValue(userCredential.user.uid, "uid");
-        return true;
+      await auth.signInWithEmailAndPassword(
+          email: email.trim(), password: password);
+      final user = auth.currentUser;
+      if ( user.emailVerified ) {
+        if (user != null) {
+          return true;
+        } else {
+          return false;
+        }
       } else {
+        print('Usuario no verificado por correo');
         return false;
       }
     } catch (e) {
@@ -24,12 +35,11 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  Future<bool> register(UserAcountModel user) async {
+  Future<bool> register(UserAccountModel user) async {
     try {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
           email: user.email, password: user.password);
       if (userCredential.user != null) {
-        storage.setValue(userCredential.user.uid, "uid");
         return true;
       } else {
         return false;
@@ -48,17 +58,77 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  Future<bool> stateAuth() async {
-    User user = FirebaseAuth.instance.currentUser;
-    if ( user != null ) {
-      print( user.email );
-      return true;
+  Future<Widget> get photoURL async {
+    if ( await storage.getValue('photoProfile') != null) {
+      return CircleAvatar(
+        maxRadius: 18,
+        backgroundImage:
+            NetworkImage(await storage.getValue('photoProfile')),
+      );
     } else {
-      return false;
+      String name = await storage.getValue('displayName');
+      String displayName = ( name != null ) ? name : 'H C';
+      List names  = displayName.split(' ');
+      String initials = names[0][0] + names[1][0];
+      return CircleAvatar(
+        maxRadius: 18,
+        child: Text( initials,
+            style: TextStyle(
+              color: Colors.white,
+            )),
+        backgroundColor:
+            Colors.primaries[Random().nextInt(Colors.primaries.length)],
+      );
     }
+    print('eject');
+    notifyListeners();
+  }
+
+  Future<void> stateAuth() async {
+    final user = await FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      authState = true;
+    } else {
+      authState = false;
+    }
+    notifyListeners();
   }
 
   Future<bool> signOut() async {
     await FirebaseAuth.instance.signOut();
+    await stateAuth();
+    await storage.deleteAll();
+  }
+
+  Future<bool> sendEmailVerification() async {
+    if ( auth.currentUser != null ) {
+      await auth.currentUser.sendEmailVerification();
+      return true;
+    }
+  }
+
+  Future<bool> setUserStorage( Map<String, dynamic> user ) async {
+    user = user['data'];
+    await storage.deleteAll();
+    await storage.setValue(user["idUser"], 'uid');
+    await storage.setValue('${user["name"]} ${user['lastName']}', 'displayName');
+    await storage.setValue(user["email"], 'email');
+    await storage.setValue(user["photoProfile"], 'photoProfile');
+    await storage.setValue(user["phone"], 'phone');
+    return true;
+  }
+
+  Future<String> refreshUserToken() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if ( user != null) {
+      FirebaseAuth.instance.currentUser.getIdToken(true)
+          .then(( idToken ){
+            print(idToken);
+            return idToken;
+      })
+          .catchError((error) {
+            print('Dont got a token!. :(');
+      });
+    }
   }
 }
