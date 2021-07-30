@@ -15,6 +15,7 @@ class PorfilePage extends StatefulWidget {
 class _PorfilePageState extends State<PorfilePage> {
   @override
   Size size;
+  Map<String, String> userData;
   final List<String> categoriesSuscribe = [
     "Ropa y Calzado",
     "Joyeria y Complementos"
@@ -26,6 +27,7 @@ class _PorfilePageState extends State<PorfilePage> {
   @override
   void initState() {
     super.initState();
+
     productService = Provider.of<ProductService>(context, listen: false);
   }
 
@@ -36,24 +38,22 @@ class _PorfilePageState extends State<PorfilePage> {
 
   Widget _createBody() {
     return SafeArea(
-        child: Expanded(
-      child: Column(
-        children: [
-          _createAppbar(),
-          Visibility(
-            child: _createLikes(),
-            visible: _selectedIndex == 0,
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          _createNavbar(),
-          _createinformaction(),
-          SizedBox(
-            height: 60,
-          )
-        ],
-      ),
+        child: Column(
+      children: [
+        _createAppbar(),
+        Visibility(
+          child: _createLikes(),
+          visible: _selectedIndex == 0,
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        _createNavbar(),
+        _createinformaction(),
+        SizedBox(
+          height: 60,
+        )
+      ],
     ));
   }
 
@@ -89,67 +89,79 @@ class _PorfilePageState extends State<PorfilePage> {
               )
             ],
           ),
-          Center(
-              child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: size.width * 0.1,
-              ),
-              CircleAvatar(
-                backgroundColor: Colors.white,
-                radius: 37,
-                child: Text(
-                  "AC",
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                      width: 150,
+          FutureBuilder(
+            future: StorageService().getall(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData) {
+                userData = snapshot.data;
+                return Center(
+                    child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: size.width * 0.1,
+                    ),
+                    CircleAvatar(
+                      backgroundColor: Colors.white,
+                      radius: 37,
                       child: Text(
-                        "Angel Chavez",
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                            fontSize: 17,
-                            fontFamily: 'Montserrat',
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      )),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Container(
-                      width: 150,
-                      child: Text("agchavez@unah.hn",
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w300,
-                              fontFamily: 'Montserrat',
-                              decoration: TextDecoration.underline))),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Container(
-                      width: 150,
-                      child: Text("9993773",
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                              fontSize: 13,
-                              fontFamily: 'Montserrat',
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold)))
-                ],
-              )
-            ],
-          )),
+                        "AC",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                            width: 150,
+                            child: Text(
+                              "Angel Gabriel Chavez",
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                  fontSize: 17,
+                                  fontFamily: 'Montserrat',
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            )),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                            width: 150,
+                            child: Text("agchavez@unah.hn",
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w300,
+                                    fontFamily: 'Montserrat',
+                                    decoration: TextDecoration.underline))),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                            width: 150,
+                            child: Text("9993773",
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    fontFamily: 'Montserrat',
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold)))
+                      ],
+                    )
+                  ],
+                ));
+              } else {
+                return CircularProgressIndicator(
+                  color: Colors.transparent,
+                );
+              }
+            },
+          ),
           Container(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -220,6 +232,7 @@ class _PorfilePageState extends State<PorfilePage> {
               style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 16,
+                  color: _selectedIndex == 0 ? Colors.black : Colors.grey[500],
                   fontWeight: _selectedIndex == 0
                       ? FontWeight.bold
                       : FontWeight.normal),
@@ -236,6 +249,7 @@ class _PorfilePageState extends State<PorfilePage> {
               style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 16,
+                  color: _selectedIndex == 1 ? Colors.black : Colors.grey[500],
                   fontWeight: _selectedIndex == 1
                       ? FontWeight.bold
                       : FontWeight.normal),
@@ -252,6 +266,7 @@ class _PorfilePageState extends State<PorfilePage> {
               style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 16,
+                  color: _selectedIndex == 2 ? Colors.black : Colors.grey[500],
                   fontWeight: _selectedIndex == 2
                       ? FontWeight.bold
                       : FontWeight.normal),

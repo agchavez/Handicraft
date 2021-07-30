@@ -1,6 +1,4 @@
-import 'dart:ffi';
 import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/pages/menssange_pages.dart';
@@ -28,8 +26,11 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
   AnimationController _controller;
   bool _expanded = false;
   double _currentHeight = _minHeigth;
-  bool authUser = false;
   String uid = "";
+  String photoProfile;
+  StorageService storage;
+  AuthService auth;
+  bool loadingGoogleIn = false;
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
@@ -42,14 +43,12 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
 
   @override
   void initState() {
-    super.initState();
+    auth = Provider.of<AuthService>(context, listen: false);
+    auth.stateAuth();
+    _photoProfile();
     _controller = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 600));
-  }
-
-  _verifyAuth() async {
-    authUser = await AuthService().stateAuth();
-    uid = await StorageService().getValue("uid");
+    super.initState();
   }
 
   @override
@@ -58,36 +57,37 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
     _controller.dispose();
   }
 
+  _photoProfile() async {
+    photoProfile = await auth.storage.getValue('photoProfile');
+  }
+
   @override
   Widget build(BuildContext context) {
-    _verifyAuth();
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      floatingActionButton: _selectedIndex == 4
-          ? null
-          : authUser
-              ? Container(
-                  margin: EdgeInsets.only(bottom: 25),
-                  width: 60,
-                  height: 60,
-                  child: FittedBox(
-                    alignment: Alignment.center,
-                    child: FloatingActionButton(
-                        elevation: 3,
-                        backgroundColor: Colors.white,
-                        onPressed: () {
-                          setState(() {
-                            _selectedIndex = 4;
-                          });
-                        },
-                        child: Image.asset(
-                          'assets/icons/plus-icon.png',
-                          width: 15.0,
-                        )),
-                  ),
-                )
-              : null,
+      floatingActionButton: auth.authState
+          ? Container(
+              margin: EdgeInsets.only(bottom: 25),
+              width: 50,
+              height: 50,
+              child: FittedBox(
+                alignment: Alignment.center,
+                child: FloatingActionButton(
+                    elevation: 3,
+                    backgroundColor: Colors.white,
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 4;
+                      });
+                    },
+                    child: Image.asset(
+                      'assets/icons/plus-icon.png',
+                      width: 15.0,
+                    )),
+              ),
+            )
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(child: _body(size)),
     );
@@ -113,140 +113,121 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
     return Stack(
       children: [
         pages(),
-        authUser ? createNavbar(size) : createAccountMenu(size),
+        createAccountMenu(size),
       ],
     );
   }
 
-  Widget createNavbar(size) {
-    return Positioned(
-        top: size.height * 0.87,
-        child: Center(
-          child: Container(
-            width: size.width * 0.92,
-            margin: EdgeInsets.only(bottom: 5, left: size.width * 0.04),
-            child: BottomAppBar(
-              elevation: 0,
-              color: Colors.transparent,
-              notchMargin: 10,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                height: 55,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        MaterialButton(
-                          onPressed: () {
-                            setState(() {
-                              _selectedIndex = 0;
-                            });
-                          },
-                          minWidth: 50,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                'assets/icons/home-icon.png',
-                                width: 17.0,
-                              )
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        MaterialButton(
-                          onPressed: () {
-                            setState(() {
-                              _selectedIndex = 1;
-                            });
-                          },
-                          minWidth: 50,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                'assets/icons/message-icon.png',
-                                width: 19,
-                              )
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      width: size.width * 0.17,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        MaterialButton(
-                          onPressed: () {
-                            setState(() {
-                              _selectedIndex = 2;
-                            });
-                          },
-                          minWidth: 50,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                'assets/icons/notification-icon.png',
-                                width: 19,
-                              )
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        MaterialButton(
-                          onPressed: () {
-                            setState(() {
-                              _selectedIndex = 3;
-                            });
-                          },
-                          minWidth: 50,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CircleAvatar(
-                                maxRadius: 18,
-                                child: Text(
-                                  'AC',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                backgroundColor: _selectedIndex == 3
-                                    ? Colors.white
-                                    : Colors.pink,
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ),
+  Widget _buildNavBarContent(size) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 2, horizontal: size.width * 0.03),
+      child: BottomAppBar(
+        elevation: 0,
+        color: Colors.transparent,
+        notchMargin: 10,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.all(Radius.circular(15)),
           ),
-        ));
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          height: 60,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  MaterialButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 0;
+                      });
+                    },
+                    minWidth: 50,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/icons/home-icon.png',
+                          width: 17.0,
+                        )
+                      ],
+                    ),
+                  ),
+                  MaterialButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 1;
+                      });
+                    },
+                    minWidth: 50,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/icons/message-icon.png',
+                          width: 19,
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(width: 20.0),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  MaterialButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 2;
+                      });
+                    },
+                    minWidth: 50,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/icons/notification-icon.png',
+                          width: 19,
+                        )
+                      ],
+                    ),
+                  ),
+                  MaterialButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 3;
+                      });
+                    },
+                    minWidth: 50,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ClipOval(
+                            child: Image.network(
+                          photoProfile == null
+                              ? 'https://firebasestorage.googleapis.com/v0/b/handicraft-app.appspot.com/o/image%2Fprofile_pictures%2Fdefault_profile.png?alt=media&token=3610e4eb-44a4-4357-b877-f6bd16904aff'
+                              : photoProfile,
+                          height: 40,
+                          width: 40,
+                          fit: BoxFit.cover,
+                        ))
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget createAccountMenu(size) {
-    final menuWidth = size.width * 0.8;
+    final menuWidth = size.width * 0.93;
     return GestureDetector(
         onVerticalDragUpdate: _expanded
             ? (details) {
@@ -280,15 +261,14 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                     height: lerpDouble(_minHeigth, _currentHeight, value),
                     left: lerpDouble(size.width / 2 - menuWidth / 2, 0, value),
                     width: lerpDouble(menuWidth, size.width, value),
-                    bottom: lerpDouble(30.0, 0.0, value),
+                    bottom: lerpDouble(15.0, 0.0, value),
                     child: GestureDetector(
-                      onTap: () {
-                        if (!_expanded) {
-                          setState(() {
-                            _expanded = true;
-                            _currentHeight = _maxHeight;
-                            _controller.forward(from: 0.0);
-                          });
+                      onTap: () async {
+                        if (!_expanded && !auth.authState) {
+                          _expanded = true;
+                          _currentHeight = _maxHeight;
+                          _controller.forward(from: 0.0);
+                          setState(() {});
                         }
                       },
                       child: Container(
@@ -304,7 +284,9 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                             ? Opacity(
                                 opacity: _controller.value,
                                 child: _buildExpandedContent())
-                            : _buildMenuContent(),
+                            : (auth.authState
+                                ? _buildNavBarContent(size)
+                                : _buildMenuContent()),
                       ),
                     )),
               ],
@@ -325,15 +307,26 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
               child: Column(
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/icons/wade-minus-icon.png',
+                        width: 17.0,
+                      )
+                    ],
+                  ),
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(right: 20.0, top: 30.0),
+                        padding: const EdgeInsets.only(right: 20.0, top: 5.0),
                         child: GestureDetector(
                             onTap: () {
-                              _controller.reverse();
-                              _expanded = false;
-                              _currentHeight = _minHeigth;
+                              if (!loadingGoogleIn) {
+                                _controller.reverse();
+                                _expanded = false;
+                                _currentHeight = _minHeigth;
+                              }
                             },
                             child: Text(
                               'Saltar',
@@ -397,7 +390,9 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                                 color: Colors.black,
                                 textColor: Colors.white,
                                 onPressed: () {
-                                  Navigator.popAndPushNamed(context, "login");
+                                  if (!loadingGoogleIn) {
+                                    Navigator.popAndPushNamed(context, "login");
+                                  }
                                 }),
                           ))
                     ],
@@ -419,18 +414,32 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Image.asset(
-                                          'assets/images/google_icon.png',
-                                          width: 15.0,
-                                        ),
-                                        Text(
-                                          '  Ingresa con tu cuenta de Google',
-                                          style: TextStyle(
-                                            fontFamily: 'Montserrat',
-                                            fontWeight: FontWeight.w800,
-                                            fontSize: 14,
-                                          ),
-                                        ),
+                                        !loadingGoogleIn
+                                            ? Row(
+                                                children: [
+                                                  Image.asset(
+                                                    'assets/images/google_icon.png',
+                                                    width: 15.0,
+                                                  ),
+                                                  Text(
+                                                    '  Ingresa con tu cuenta de Google',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Montserrat',
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                      fontSize: 14,
+                                                    ),
+                                                  )
+                                                ],
+                                              )
+                                            : Container(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: Colors.black,
+                                                ),
+                                                height: 15.0,
+                                                width: 15.0,
+                                              ),
                                       ])),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0),
@@ -441,10 +450,23 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                               color: Colors.white,
                               textColor: Colors.black,
                               onPressed: () {
-                                final provider =
-                                    Provider.of<GoogleSignInProvider>(context,
-                                        listen: false);
-                                provider.googleLogin();
+                                if (!loadingGoogleIn) {
+                                  loadingGoogleIn = !loadingGoogleIn;
+                                  setState(() {});
+                                  final provider =
+                                      Provider.of<GoogleSignInProvider>(context,
+                                          listen: false);
+                                  provider.googleLogin().then((value) async {
+                                    // provider.saveUser(auth).then((value) async {
+                                    //   await _photoProfile();
+                                    //   await auth.stateAuth();
+                                    //   loadingGoogleIn = !loadingGoogleIn;
+                                    //   _controller.reverse();
+                                    //   _expanded = false;
+                                    //   setState(() {});
+                                    // });
+                                  });
+                                }
                               },
                             ),
                           ))
@@ -454,7 +476,9 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                       padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.popAndPushNamed(context, 'register');
+                          if (!loadingGoogleIn) {
+                            Navigator.popAndPushNamed(context, 'register');
+                          }
                         },
                         child: Text(
                           'Crear Cuenta',

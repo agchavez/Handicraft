@@ -22,6 +22,7 @@ class ProductService with ChangeNotifier {
   final uuid = Uuid();
 
   Future<bool> addProduct(List<File> imges, Map<String, dynamic> body) async {
+    final idUser = await StorageService().getValue("uid");
     List<String> imgUrl = [];
     try {
       for (var image in imges) {
@@ -30,8 +31,7 @@ class ProductService with ChangeNotifier {
         }
       }
       body["images"] = imgUrl;
-      Response response = await dio.post(
-          '${Enviroment.apiurl}/product/6htb1oKY61M8PXeVTtmY9ni8GUg2',
+      Response response = await dio.post('${Enviroment.apiurl}/product/$idUser',
           options: Options(headers: {
             HttpHeaders.contentTypeHeader: "application/json",
           }),
@@ -118,7 +118,6 @@ class ProductService with ChangeNotifier {
     final resp = productModelFromJson(response.body);
 
     cont = cont + 6;
-    print(resp.data);
 
     return resp.data;
   }

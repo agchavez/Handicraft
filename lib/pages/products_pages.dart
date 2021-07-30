@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:handicraft_app/models/product.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -54,7 +55,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
               Image(width: 140, image: AssetImage('assets/images/logo.png'))),
       body: FutureBuilder(
         future: ProductService().getPosts(),
-        builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<List<Product_Model>> snapshot) {
           if (snapshot.hasError) {
           } else if (snapshot.hasData) {
             //items = snapshot.data;
@@ -113,11 +114,11 @@ class _ProductsPgaesState extends State<ProductsPages> {
   }
 }
 
-Widget _information(dynamic data) {
+Widget _information(Product_Model data) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
-      _image(data['urlImage']),
+      _image(data.urlImage),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -125,11 +126,11 @@ Widget _information(dynamic data) {
             height: 1.0,
           ),
           Text(
-            data['name'],
+            data.name,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
           ),
           Text(
-            data['location'],
+            data.location,
             style: TextStyle(fontWeight: FontWeight.normal, fontSize: 10),
           ),
           Row(
@@ -137,7 +138,7 @@ Widget _information(dynamic data) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                data['cost'],
+                data.cost,
                 style: TextStyle(fontWeight: FontWeight.w200, fontSize: 10),
               ),
             ],
