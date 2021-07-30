@@ -74,7 +74,10 @@ class _PorfilePageState extends State<PorfilePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    await AuthService().signOut();
+                    Navigator.pushReplacementNamed(context, 'home');
+                  },
                   icon: Icon(
                     Icons.arrow_back_ios,
                     size: 20,
@@ -94,67 +97,68 @@ class _PorfilePageState extends State<PorfilePage> {
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
                 userData = snapshot.data;
-                return Center(
+                return Container(
+                    width: size.width * 1,
                     child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: size.width * 0.1,
-                    ),
-                    CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 37,
-                      child: Text(
-                        "AC",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
-                            width: 150,
-                            child: Text(
-                              "Angel Gabriel Chavez",
-                              textAlign: TextAlign.start,
-                              style: TextStyle(
-                                  fontSize: 17,
-                                  fontFamily: 'Montserrat',
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            )),
                         SizedBox(
-                          height: 5,
+                          width: size.width * 0.1,
                         ),
                         Container(
-                            width: 150,
-                            child: Text("agchavez@unah.hn",
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w300,
-                                    fontFamily: 'Montserrat',
-                                    decoration: TextDecoration.underline))),
-                        SizedBox(
-                          height: 5,
-                        ),
+                            width: 95.0,
+                            height: 95.0,
+                            decoration: new BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: new DecorationImage(
+                                    fit: BoxFit.fill,
+                                    image: new NetworkImage(
+                                        userData["photoProfile"])))),
                         Container(
-                            width: 150,
-                            child: Text("9993773",
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Container(
+                                  child: Text(
+                                userData["displayName"],
                                 textAlign: TextAlign.start,
                                 style: TextStyle(
-                                    fontSize: 13,
+                                    fontSize: 17,
                                     fontFamily: 'Montserrat',
                                     color: Colors.white,
-                                    fontWeight: FontWeight.bold)))
+                                    fontWeight: FontWeight.bold),
+                              )),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Container(
+                                  child: Text(userData["email"],
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w300,
+                                          fontFamily: 'Montserrat',
+                                          decoration:
+                                              TextDecoration.underline))),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(userData["phone"],
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          fontFamily: 'Montserrat',
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold)))
+                            ],
+                          ),
+                        )
                       ],
-                    )
-                  ],
-                ));
+                    ));
               } else {
                 return CircularProgressIndicator(
                   color: Colors.transparent,
@@ -218,8 +222,10 @@ class _PorfilePageState extends State<PorfilePage> {
 
   Widget _createNavbar() {
     return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      height: 60,
+      child: ListView(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
         children: [
           MaterialButton(
             onPressed: () {
@@ -263,6 +269,23 @@ class _PorfilePageState extends State<PorfilePage> {
             },
             child: Text(
               "Categorias Suscritas",
+              style: TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontSize: 16,
+                  color: _selectedIndex == 2 ? Colors.black : Colors.grey[500],
+                  fontWeight: _selectedIndex == 2
+                      ? FontWeight.bold
+                      : FontWeight.normal),
+            ),
+          ),
+          MaterialButton(
+            onPressed: () {
+              setState(() {
+                _selectedIndex = 2;
+              });
+            },
+            child: Text(
+              "Puto Jorge",
               style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 16,
@@ -323,27 +346,39 @@ class _PorfilePageState extends State<PorfilePage> {
                 padding: EdgeInsets.all(5),
                 child: Wrap(
                   children: data
-                      .map((item) => Container(
-                          height: 40,
-                          margin: EdgeInsets.all(5),
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              color: categoriesSuscribe.contains(item.name)
-                                  ? Colors.black
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              border:
-                                  Border.all(color: Colors.black, width: 2)),
-                          child: Text(
-                            item.name,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: categoriesSuscribe.contains(item.name)
-                                    ? Colors.white
-                                    : Colors.black,
-                                fontFamily: 'Montserrat',
-                                fontWeight: FontWeight.bold),
-                          )))
+                      .map((item) => GestureDetector(
+                            onTap: () {
+                              if (categoriesSuscribe.contains(item.name)) {
+                                categoriesSuscribe.remove(item.name);
+                              } else {
+                                categoriesSuscribe.add(item.name);
+                              }
+                              setState(() {});
+                            },
+                            child: Container(
+                                height: 40,
+                                margin: EdgeInsets.all(5),
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                    color:
+                                        categoriesSuscribe.contains(item.name)
+                                            ? Colors.black
+                                            : Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                        color: Colors.black, width: 2)),
+                                child: Text(
+                                  item.name,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color:
+                                          categoriesSuscribe.contains(item.name)
+                                              ? Colors.white
+                                              : Colors.black,
+                                      fontFamily: 'Montserrat',
+                                      fontWeight: FontWeight.bold),
+                                )),
+                          ))
                       .toList()
                       .cast<Widget>(),
                 ),
