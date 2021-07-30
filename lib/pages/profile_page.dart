@@ -21,8 +21,10 @@ class _PorfilePageState extends State<PorfilePage> {
   @override
   Size size;
   int _selectedIndex = 0;
+  AuthService auth;
 
   Widget build(BuildContext context) {
+    auth = Provider.of<AuthService>(context);
     size = MediaQuery.of(context).size;
     return Scaffold(body: _createBody());
   }
@@ -64,7 +66,9 @@ class _PorfilePageState extends State<PorfilePage> {
                     color: Colors.white,
                   )),
               IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    auth.signOut();
+                  },
                   icon: Icon(
                     Icons.keyboard_control_outlined,
                     textDirection: TextDirection.rtl,
