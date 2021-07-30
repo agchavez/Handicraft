@@ -74,15 +74,17 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
               child: FittedBox(
                 alignment: Alignment.center,
                 child: FloatingActionButton(
-                  elevation: 3,
-                  backgroundColor: Colors.white,
-                  onPressed: () {
-                    setState(() {
-                      _selectedIndex = 4;
-                    });
-                  },
-                  child: Image.asset('assets/icons/plus-icon.png', width: 15.0,)
-                ),
+                    elevation: 3,
+                    backgroundColor: Colors.white,
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 4;
+                      });
+                    },
+                    child: Image.asset(
+                      'assets/icons/plus-icon.png',
+                      width: 15.0,
+                    )),
               ),
             )
           : null,
@@ -146,7 +148,10 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset('assets/icons/home-icon.png', width: 17.0,)
+                        Image.asset(
+                          'assets/icons/home-icon.png',
+                          width: 17.0,
+                        )
                       ],
                     ),
                   ),
@@ -160,15 +165,16 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset('assets/icons/message-icon.png', width: 19,)
+                        Image.asset(
+                          'assets/icons/message-icon.png',
+                          width: 19,
+                        )
                       ],
                     ),
                   ),
                 ],
               ),
-              SizedBox(
-                width: 20.0
-              ),
+              SizedBox(width: 20.0),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -200,15 +206,14 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ClipOval(
-                          child: Image.network(
-                              photoProfile == null ?
-                              'https://firebasestorage.googleapis.com/v0/b/handicraft-app.appspot.com/o/image%2Fprofile_pictures%2Fdefault_profile.png?alt=media&token=3610e4eb-44a4-4357-b877-f6bd16904aff'
-                                  : photoProfile,
-                            height: 40,
-                            width: 40,
-                            fit: BoxFit.cover,
-                          )
-                        )
+                            child: Image.network(
+                          photoProfile == null
+                              ? 'https://firebasestorage.googleapis.com/v0/b/handicraft-app.appspot.com/o/image%2Fprofile_pictures%2Fdefault_profile.png?alt=media&token=3610e4eb-44a4-4357-b877-f6bd16904aff'
+                              : photoProfile,
+                          height: 40,
+                          width: 40,
+                          fit: BoxFit.cover,
+                        ))
                       ],
                     ),
                   ),
@@ -221,7 +226,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
     );
   }
 
-  Widget createAccountMenu(size)  {
+  Widget createAccountMenu(size) {
     final menuWidth = size.width * 0.93;
     return GestureDetector(
         onVerticalDragUpdate: _expanded
@@ -253,37 +258,37 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
             return Stack(
               children: [
                 Positioned(
-                  height: lerpDouble(_minHeigth, _currentHeight, value),
-                  left: lerpDouble(size.width / 2 - menuWidth / 2, 0, value),
-                  width: lerpDouble(menuWidth, size.width, value),
-                  bottom: lerpDouble(15.0, 0.0, value),
-                  child: GestureDetector(
-                    onTap: () async {
-                      if ( !_expanded && !auth.authState) {
-                        _expanded = true;
-                        _currentHeight = _maxHeight;
-                        _controller.forward(from: 0.0);
-                        setState(() {
-                        });
-                      }
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: _expanded ? Colors.white : Colors.black,
-                        borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(20),
-                            bottom: Radius.circular(
-                              lerpDouble(20.0, 0.0, value),
-                            )),
+                    height: lerpDouble(_minHeigth, _currentHeight, value),
+                    left: lerpDouble(size.width / 2 - menuWidth / 2, 0, value),
+                    width: lerpDouble(menuWidth, size.width, value),
+                    bottom: lerpDouble(15.0, 0.0, value),
+                    child: GestureDetector(
+                      onTap: () async {
+                        if (!_expanded && !auth.authState) {
+                          _expanded = true;
+                          _currentHeight = _maxHeight;
+                          _controller.forward(from: 0.0);
+                          setState(() {});
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: _expanded ? Colors.white : Colors.black,
+                          borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20),
+                              bottom: Radius.circular(
+                                lerpDouble(20.0, 0.0, value),
+                              )),
+                        ),
+                        child: _expanded
+                            ? Opacity(
+                                opacity: _controller.value,
+                                child: _buildExpandedContent())
+                            : (auth.authState
+                                ? _buildNavBarContent(size)
+                                : _buildMenuContent()),
                       ),
-                      child: _expanded
-                          ? Opacity(
-                          opacity: _controller.value,
-                          child: _buildExpandedContent())
-                          : ( auth.authState ? _buildNavBarContent(size) : _buildMenuContent()) ,
-                    ),
-                  )
-                ),
+                    )),
               ],
             );
           },
@@ -304,7 +309,10 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset('assets/icons/wade-minus-icon.png', width: 17.0,)
+                      Image.asset(
+                        'assets/icons/wade-minus-icon.png',
+                        width: 17.0,
+                      )
                     ],
                   ),
                   Row(
@@ -314,7 +322,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                         padding: const EdgeInsets.only(right: 20.0, top: 5.0),
                         child: GestureDetector(
                             onTap: () {
-                              if ( !loadingGoogleIn ) {
+                              if (!loadingGoogleIn) {
                                 _controller.reverse();
                                 _expanded = false;
                                 _currentHeight = _minHeigth;
@@ -382,7 +390,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                                 color: Colors.black,
                                 textColor: Colors.white,
                                 onPressed: () {
-                                  if ( !loadingGoogleIn ) {
+                                  if (!loadingGoogleIn) {
                                     Navigator.popAndPushNamed(context, "login");
                                   }
                                 }),
@@ -406,29 +414,32 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        !loadingGoogleIn ?
-                                        Row(
-                                          children: [
-                                            Image.asset(
-                                              'assets/images/google_icon.png',
-                                              width: 15.0,
-                                            ),
-                                            Text(
-                                              '  Ingresa con tu cuenta de Google',
-                                              style: TextStyle(
-                                                fontFamily: 'Montserrat',
-                                                fontWeight: FontWeight.w800,
-                                                fontSize: 14,
+                                        !loadingGoogleIn
+                                            ? Row(
+                                                children: [
+                                                  Image.asset(
+                                                    'assets/images/google_icon.png',
+                                                    width: 15.0,
+                                                  ),
+                                                  Text(
+                                                    '  Ingresa con tu cuenta de Google',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Montserrat',
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                      fontSize: 14,
+                                                    ),
+                                                  )
+                                                ],
+                                              )
+                                            : Container(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: Colors.black,
+                                                ),
+                                                height: 15.0,
+                                                width: 15.0,
                                               ),
-                                            )
-                                          ],
-                                        ) : Container(
-                                          child: CircularProgressIndicator(
-                                            color: Colors.black,
-                                          ),
-                                          height: 15.0,
-                                          width: 15.0,
-                                        ),
                                       ])),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0),
@@ -439,22 +450,20 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                               color: Colors.white,
                               textColor: Colors.black,
                               onPressed: () {
-                                if ( !loadingGoogleIn ) {
+                                if (!loadingGoogleIn) {
                                   loadingGoogleIn = !loadingGoogleIn;
-                                  setState(() {
-                                  });
+                                  setState(() {});
                                   final provider =
-                                  Provider.of<GoogleSignInProvider>(context,
-                                      listen: false);
+                                      Provider.of<GoogleSignInProvider>(context,
+                                          listen: false);
                                   provider.googleLogin().then((value) async {
-                                    provider.saveUser( auth ).then((value) async {
+                                    provider.saveUser(auth).then((value) async {
                                       await _photoProfile();
                                       await auth.stateAuth();
                                       loadingGoogleIn = !loadingGoogleIn;
                                       _controller.reverse();
                                       _expanded = false;
-                                      setState(() {
-                                      });
+                                      setState(() {});
                                     });
                                   });
                                 }
@@ -467,7 +476,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                       padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
                       child: GestureDetector(
                         onTap: () {
-                          if ( !loadingGoogleIn ) {
+                          if (!loadingGoogleIn) {
                             Navigator.popAndPushNamed(context, 'register');
                           }
                         },

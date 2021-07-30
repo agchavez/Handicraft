@@ -4,13 +4,22 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:dio/dio.dart';
+import 'package:handicraft_app/models/product.dart';
+import 'package:handicraft_app/models/product_general.dart';
+import 'package:handicraft_app/provider/storage_service.dart';
+import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 import 'package:handicraft_app/global/enviroment.dart';
 import 'package:handicraft_app/models/location_model.dart';
 import 'package:handicraft_app/models/locationresponse_model.dart';
 
+List<dynamic> data = [];
+int cont = 0;
+
 class ProductService with ChangeNotifier {
   final dio = Dio();
+  final uuid = Uuid();
 
   Future<bool> addProduct(List<File> imges, Map<String, dynamic> body) async {
     List<String> imgUrl = [];
@@ -21,7 +30,8 @@ class ProductService with ChangeNotifier {
         }
       }
       body["images"] = imgUrl;
-      Response response = await dio.post('${Enviroment.apiurl}/product/1',
+      Response response = await dio.post(
+          '${Enviroment.apiurl}/product/6htb1oKY61M8PXeVTtmY9ni8GUg2',
           options: Options(headers: {
             HttpHeaders.contentTypeHeader: "application/json",
           }),
@@ -38,15 +48,14 @@ class ProductService with ChangeNotifier {
 
   Future<String> uploadImg(File img) async {
     //Guardar imagenes en firebase y retornar el url
-    final namImg = new DateTime.now();
-    print(namImg);
+    String namImg = uuid.v4();
     try {
       await firebase_storage.FirebaseStorage.instance
           .ref('image')
           .child('productImg')
-          .child(namImg.toIso8601String())
+          .child(namImg)
           .putFile(img);
-      String url = await downloadURLExample(namImg.toIso8601String());
+      String url = await downloadURLExample(namImg);
       return url;
     } catch (e) {
       return "";
@@ -99,5 +108,18 @@ class ProductService with ChangeNotifier {
     } else {
       return list;
     }
+  }
+
+  //Obtener productos sin logearse
+  Future<List<Product_Model>> getPosts() async {
+    // print(endArray);
+    final response = await http.get(Uri.parse(
+        "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/0/12"));
+    final resp = productModelFromJson(response.body);
+
+    cont = cont + 6;
+    print(resp.data);
+
+    return resp.data;
   }
 }

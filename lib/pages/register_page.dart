@@ -167,26 +167,6 @@ class _RegisterPageState extends State<RegisterPage> {
     ));
   }
 
-  /*Widget _createImg(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        _navigateAndDisplaySelection(context);
-        //Navigator.pushNamed(context, "example");
-      },
-      child: Container(
-        width: size.width * 0.4,
-        child: ClipRRect(
-            borderRadius: BorderRadius.circular(90),
-            child: FadeInImage(
-                height: 120,
-                width: 140,
-                fit: BoxFit.fitHeight,
-                placeholder: AssetImage("assets/images/Spinner-1s-200px.gif"),
-                image: _mostrarFoto(""))),
-      ),
-    );
-  }*/
-
 /*IMAGEN*/
 
   _imgFromCamera() async {
@@ -1098,6 +1078,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     final authService = Provider.of<AuthService>(context, listen: false);
+
     await authService.register(_user).then((userResponse) async {
       Map<String, dynamic> body = {
         'idUser': FirebaseAuth.instance.currentUser.uid,
@@ -1117,7 +1098,6 @@ class _RegisterPageState extends State<RegisterPage> {
         body["description"] = _companie.description;
       }
 
-      print(body);
       Response response = await dio.post(
           _typeAcount
               ? "${Enviroment.apiurl}/user/user-company"

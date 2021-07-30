@@ -44,11 +44,12 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         title: Container(
           child: FloatingActionButton(
-            child: Image.asset('assets/icons/back-black-icon.png',
+            child: Image.asset(
+              'assets/icons/back-black-icon.png',
               width: 7.0,
             ),
             backgroundColor: Colors.white,
-            onPressed: ()  {
+            onPressed: () {
               Navigator.popAndPushNamed(context, 'home');
             },
           ),
@@ -314,13 +315,13 @@ class _LoginPageState extends State<LoginPage> {
 
     if (resp) {
       await auth.stateAuth();
-      if ( auth.authState ) {
-        Response responseInfoUser = await dio.get('${Enviroment.apiurl}/user/${ FirebaseAuth.instance.currentUser.uid}');
+      if (auth.authState) {
+        Response responseInfoUser = await dio.get(
+            '${Enviroment.apiurl}/user/${FirebaseAuth.instance.currentUser.uid}');
         Map<String, dynamic> userData = jsonDecode(responseInfoUser.toString());
-        await auth.setUserStorage(userData).then((value){
+        await auth.setUserStorage(userData).then((value) {
           Navigator.popAndPushNamed(context, "home");
         });
-
       }
     } else {
       showAlert(

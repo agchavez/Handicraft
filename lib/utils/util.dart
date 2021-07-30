@@ -45,3 +45,12 @@ bool passwordValid(String pass) {
     return true;
   }
 }
+
+showSnacbar(Text error, Color color, BuildContext context) {
+  var snackBar = SnackBar(
+    backgroundColor: color,
+    content: error,
+    duration: Duration(milliseconds: 600),
+  );
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+}

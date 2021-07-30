@@ -6,6 +6,7 @@ import 'package:handicraft_app/pages/login_page.dart';
 import 'package:handicraft_app/provider/location_service.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/utils/selectImage.dart';
+import 'package:handicraft_app/utils/util.dart';
 import 'package:handicraft_app/widgets/custon_input.dart';
 import 'package:handicraft_app/widgets/dropdown_widget.dart';
 import 'package:provider/provider.dart';
@@ -200,6 +201,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
           );
         }).toList(),
         onChanged: (value) async {
+          FocusScope.of(context).requestFocus(new FocusNode());
           _provincesValue = null;
           provinces = [];
           _countryValue = value;
@@ -581,12 +583,14 @@ class _NewpProductPageState extends State<NewpProductPage> {
   }
 
   void setCoins(LocationModel coinTemp) {
+    FocusScope.of(context).requestFocus(new FocusNode());
     setState(() {
       coin = coinTemp;
     });
   }
 
   void setCategories(LocationModel categorieTemp) {
+    FocusScope.of(context).requestFocus(new FocusNode());
     setState(() {
       categorie = categorieTemp;
     });
@@ -614,12 +618,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
 
   _addProduct() async {
     if (!_validate()) {
-      var snackBar = SnackBar(
-        backgroundColor: Colors.red,
-        content: Text('Error! Datos obligatorios!'),
-        duration: Duration(milliseconds: 600),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      showSnacbar(Text('Error! Datos obligatorios!'), Colors.red, context);
       setState(() {
         check = false;
       });
@@ -638,10 +637,31 @@ class _NewpProductPageState extends State<NewpProductPage> {
     };
     final images = [image1, image2, image3, image4];
     final resp = await productService.addProduct(images, body);
-    print("************** $resp");
+    if (resp) {
+      clearData();
+      showSnacbar(
+          Text(
+            'Producto agregado',
+            style: TextStyle(color: Colors.black),
+          ),
+          Colors.white,
+          context);
+    } else {}
     setState(() {
       check = false;
     });
+  }
+
+  void clearData() {
+    nameCtrl.text = "";
+    descripCtrl.text = "";
+    priceCtrl.text = "";
+    amountCtrl.text = "";
+    coin = null;
+    categorie = null;
+    _countryValue = null;
+    _provincesValue = null;
+    _cityValue = null;
   }
 
   bool _validate() {
