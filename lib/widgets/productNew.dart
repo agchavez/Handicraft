@@ -8,29 +8,32 @@ class ProductNew extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    print(this.product.name.length);
     return Container(
-      height: size.height * 0.4,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           _image(this.product.urlImage),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 1.0,
+                height: 5.0,
               ),
               Text(
                 this.product.name,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    fontFamily: 'Montserrat'),
               ),
               SizedBox(
                 height: 3.0,
               ),
               Text(
                 this.product.location,
-                style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12),
+                style: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 12,
+                    fontFamily: 'Montserrat'),
               ),
               SizedBox(
                 height: 3.0,
@@ -40,11 +43,21 @@ class ProductNew extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    this.product.cost,
-                    style: TextStyle(fontWeight: FontWeight.w300, fontSize: 10),
+                    "Price: ${this.product.cost}",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w300,
+                        fontSize: 10,
+                        color: Colors.grey[500],
+                        fontFamily: 'Montserrat'),
                   ),
                 ],
               ),
+              Text("Nuevo",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 10,
+                      color: Colors.grey[400],
+                      fontFamily: 'Montserrat')),
             ],
           )
         ],
@@ -54,13 +67,17 @@ class ProductNew extends StatelessWidget {
 
   Widget _image(String url) {
     //getHttp();
-    return ClipRRect(
-      child: Image.network(
-        url,
-        height: 135,
-        width: 155,
-      ),
-      borderRadius: BorderRadius.circular(15),
+    return Container(
+      height: 130,
+      alignment: Alignment.centerLeft,
+      decoration: BoxDecoration(
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            image: NetworkImage(
+              url,
+            ),
+          ),
+          borderRadius: BorderRadius.all(Radius.circular(8.0))),
     );
   }
 }
