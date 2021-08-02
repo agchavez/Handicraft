@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:handicraft_app/models/product.dart';
+import 'package:handicraft_app/pages/photoHero.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -14,6 +16,8 @@ class ProductsPages extends StatefulWidget {
 
 double heightScreen, widthScreen;
 
+int cont = 0;
+
 class _ProductsPgaesState extends State<ProductsPages> {
   //List<dynamic> items;
   void _onLoading() async {
@@ -23,7 +27,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
     //items.add((items.length + 1).toString());
     //PostsRepository().getPosts(1);
     //ProductService().getPosts(2);
-
+    cont = cont + 6;
     if (mounted) setState(() {});
     _refreshController.loadComplete();
   }
@@ -54,8 +58,9 @@ class _ProductsPgaesState extends State<ProductsPages> {
           title:
               Image(width: 140, image: AssetImage('assets/images/logo.png'))),
       body: FutureBuilder(
-        future: ProductService().getPosts(),
-        builder: (BuildContext context, AsyncSnapshot<List<Product_Model>> snapshot) {
+        future: ProductService().getPosts(cont),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<Product_Model>> snapshot) {
           if (snapshot.hasError) {
           } else if (snapshot.hasData) {
             //items = snapshot.data;
@@ -96,9 +101,10 @@ class _ProductsPgaesState extends State<ProductsPages> {
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.only(
-                            left: 20, right: 20, bottom: 8),
+                            left: 20, right: 10, bottom: 0),
                         child: Container(
-                          child: _information(snapshot.data[index]),
+                          width: 20,
+                          child: _information(snapshot.data[index], context),
                         ),
                       );
                     }));
@@ -112,51 +118,52 @@ class _ProductsPgaesState extends State<ProductsPages> {
       ),
     );
   }
-}
 
-Widget _information(Product_Model data) {
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.start,
-    children: [
-      _image(data.urlImage),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 1.0,
-          ),
-          Text(
-            data.name,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
-          ),
-          Text(
-            data.location,
-            style: TextStyle(fontWeight: FontWeight.normal, fontSize: 10),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                data.cost,
-                style: TextStyle(fontWeight: FontWeight.w200, fontSize: 10),
-              ),
-            ],
-          ),
-        ],
-      )
-    ],
-  );
-}
+  Widget _information(Product_Model data, context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        _image(data.urlImage, context, data),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              data.name,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+            ),
+            Text(
+              data.location,
+              style: TextStyle(fontWeight: FontWeight.normal, fontSize: 10),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  data.cost,
+                  style: TextStyle(fontWeight: FontWeight.w300, fontSize: 10),
+                ),
+              ],
+            ),
+          ],
+        )
+      ],
+    );
+  }
 
-Widget _image(String url) {
-  //getHttp();
-  return ClipRRect(
-    child: Image.network(
-      url,
-      height: 135,
-      width: 155,
-    ),
-    borderRadius: BorderRadius.circular(8),
-  );
+  Widget _image(String url, BuildContext context, Product_Model data) {
+    timeDilation = 3.0;
+
+    //getHttp();
+    return PhotoHero(
+      photo: url,
+      width: 135,
+      height: 130,
+      onTap: () {
+        setState(() {
+          Navigator.pushNamed(context, 'details', arguments: data.idProduct);
+        });
+      },
+    );
+  }
 }

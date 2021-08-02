@@ -17,6 +17,8 @@ class PorfilePage extends StatefulWidget {
   _PorfilePageState createState() => _PorfilePageState();
 }
 
+int cont = 0;
+
 class _PorfilePageState extends State<PorfilePage> {
   @override
   Size size;
@@ -242,7 +244,7 @@ class _PorfilePageState extends State<PorfilePage> {
   Widget _createinformaction() {
     return Expanded(
       child: FutureBuilder(
-          future: ProductService().getPosts(),
+          future: ProductService().getPosts(cont),
           builder: (context, AsyncSnapshot<List<Product_Model>> snapshot) {
             if (snapshot.hasData) {
               //items = snapshot.data;
