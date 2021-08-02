@@ -457,14 +457,14 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                                       Provider.of<GoogleSignInProvider>(context,
                                           listen: false);
                                   provider.googleLogin().then((value) async {
-                                    // provider.saveUser(auth).then((value) async {
-                                    //   await _photoProfile();
-                                    //   await auth.stateAuth();
-                                    //   loadingGoogleIn = !loadingGoogleIn;
-                                    //   _controller.reverse();
-                                    //   _expanded = false;
-                                    //   setState(() {});
-                                    // });
+                                    provider.saveUser(auth).then((value) async {
+                                      await _photoProfile();
+                                      await auth.stateAuth();
+                                      loadingGoogleIn = !loadingGoogleIn;
+                                      _controller.reverse();
+                                      _expanded = false;
+                                      setState(() {});
+                                    });
                                   });
                                 }
                               },

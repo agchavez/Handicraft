@@ -16,19 +16,26 @@ class _PorfilePageState extends State<PorfilePage> {
   @override
   Size size;
   Map<String, String> userData;
-  final List<String> categoriesSuscribe = [
-    "Ropa y Calzado",
-    "Joyeria y Complementos"
-  ];
+  List<String> categoriesSuscribe = [];
   int _selectedIndex = 0;
   ProductService productService;
   ScrollController _scrollController;
+  AuthService _authService;
 
   @override
   void initState() {
     super.initState();
 
     productService = Provider.of<ProductService>(context, listen: false);
+    _authService = Provider.of<AuthService>(context, listen: false);
+    init();
+  }
+
+  void init() async {
+    List<dynamic> resp = await productService.getCategoriesSuscribe();
+    for (var item in resp) {
+      categoriesSuscribe.add(item.toString());
+    }
   }
 
   Widget build(BuildContext context) {
@@ -41,13 +48,6 @@ class _PorfilePageState extends State<PorfilePage> {
         child: Column(
       children: [
         _createAppbar(),
-        Visibility(
-          child: _createLikes(),
-          visible: _selectedIndex == 0,
-        ),
-        SizedBox(
-          height: 20,
-        ),
         _createNavbar(),
         _createinformaction(),
         SizedBox(
@@ -75,19 +75,24 @@ class _PorfilePageState extends State<PorfilePage> {
             children: [
               IconButton(
                   onPressed: () async {
-                    await AuthService().signOut();
-                    Navigator.pushReplacementNamed(context, 'home');
+                    bool resp = await AuthService().signOut();
+                    Navigator.popAndPushNamed(context, 'home');
                   },
                   icon: Icon(
                     Icons.arrow_back_ios,
                     size: 20,
                     color: Colors.white,
                   )),
-              Container(
-                alignment: Alignment.bottomRight,
-                child: Image.asset(
-                  'assets/icons/menu-icon.png',
-                  width: 3,
+              GestureDetector(
+                onTap: () async {
+                  String token = await _authService.refreshUserToken();
+                },
+                child: Container(
+                  alignment: Alignment.bottomRight,
+                  child: Image.asset(
+                    'assets/icons/menu-icon.png',
+                    width: 3,
+                  ),
                 ),
               )
             ],
@@ -168,22 +173,46 @@ class _PorfilePageState extends State<PorfilePage> {
           ),
           Container(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Image.asset(
-                  'assets/icons/shop-icon.png',
-                  width: 18,
+                Row(
+                  children: [
+                    Image.asset(
+                      'assets/icons/like-icon.png',
+                      width: 17,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      "0 Likes",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Montserrat',
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  width: 5,
-                ),
-                Image.asset(
-                  'assets/icons/secure-icon.png',
-                  width: 18,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Image.asset(
+                      'assets/icons/shop-icon.png',
+                      width: 18,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Image.asset(
+                      'assets/icons/secure-icon.png',
+                      width: 18,
+                    ),
+                  ],
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -234,7 +263,7 @@ class _PorfilePageState extends State<PorfilePage> {
               });
             },
             child: Text(
-              "Productos",
+              "Mis productos",
               style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 16,
@@ -268,24 +297,7 @@ class _PorfilePageState extends State<PorfilePage> {
               });
             },
             child: Text(
-              "Categorias Suscritas",
-              style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontSize: 16,
-                  color: _selectedIndex == 2 ? Colors.black : Colors.grey[500],
-                  fontWeight: _selectedIndex == 2
-                      ? FontWeight.bold
-                      : FontWeight.normal),
-            ),
-          ),
-          MaterialButton(
-            onPressed: () {
-              setState(() {
-                _selectedIndex = 2;
-              });
-            },
-            child: Text(
-              "Puto Jorge",
+              "Categorias suscritas",
               style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 16,
@@ -305,7 +317,7 @@ class _PorfilePageState extends State<PorfilePage> {
       case 0:
         return Expanded(
           child: FutureBuilder(
-              future: productService.getPosts(),
+              future: productService.getProductsofUser(),
               builder: (context, AsyncSnapshot<List<Product_Model>> snapshot) {
                 if (snapshot.hasData) {
                   //items = snapshot.data;
@@ -347,11 +359,17 @@ class _PorfilePageState extends State<PorfilePage> {
                 child: Wrap(
                   children: data
                       .map((item) => GestureDetector(
-                            onTap: () {
+                            onTap: () async {
                               if (categoriesSuscribe.contains(item.name)) {
-                                categoriesSuscribe.remove(item.name);
+                                if (await productService
+                                    .removeSuscribeCategorie(item.id)) {
+                                  categoriesSuscribe.remove(item.name);
+                                }
                               } else {
-                                categoriesSuscribe.add(item.name);
+                                if (await productService
+                                    .suscribeCategorie(item.id)) {
+                                  categoriesSuscribe.add(item.name);
+                                }
                               }
                               setState(() {});
                             },

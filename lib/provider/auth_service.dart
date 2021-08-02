@@ -92,9 +92,13 @@ class AuthService with ChangeNotifier {
   }
 
   Future<bool> signOut() async {
-    await FirebaseAuth.instance.signOut();
-    await stateAuth();
-    await storage.deleteAll();
+    try {
+      await FirebaseAuth.instance.signOut();
+      await stateAuth();
+      await storage.deleteAll();
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<bool> sendEmailVerification() async {
@@ -102,6 +106,7 @@ class AuthService with ChangeNotifier {
       await auth.currentUser.sendEmailVerification();
       return true;
     }
+    return false;
   }
 
   Future<bool> setUserStorage(Map<String, dynamic> user) async {
@@ -119,12 +124,9 @@ class AuthService with ChangeNotifier {
   Future<String> refreshUserToken() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      FirebaseAuth.instance.currentUser.getIdToken(true).then((idToken) {
-        print(idToken);
-        return idToken;
-      }).catchError((error) {
-        print('Dont got a token!. :(');
-      });
+      String idToken = await FirebaseAuth.instance.currentUser.getIdToken(true);
+      return idToken;
     }
+    return "";
   }
 }

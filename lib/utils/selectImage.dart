@@ -52,6 +52,9 @@ Future<String> showPicker(context) async {
                     onTap: () async {
                       _image = await _imgFromGallery();
                       Navigator.of(context).pop();
+                      if (_image == null) {
+                        return;
+                      }
                     }),
                 new ListTile(
                   leading: new Icon(
@@ -65,6 +68,9 @@ Future<String> showPicker(context) async {
                   onTap: () async {
                     _image = await _imgFromCamera();
                     Navigator.of(context).pop();
+                    if (_image == null) {
+                      return;
+                    }
                   },
                 ),
               ],
