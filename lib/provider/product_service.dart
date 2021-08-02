@@ -4,9 +4,10 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:dio/dio.dart';
+import 'package:handicraft_app/models/model_Product_Infor.dart';
+import 'package:handicraft_app/models/model_details.dart';
 import 'package:handicraft_app/models/product.dart';
 import 'package:handicraft_app/models/product_general.dart';
-import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
@@ -111,15 +112,33 @@ class ProductService with ChangeNotifier {
   }
 
   //Obtener productos sin logearse
-  Future<List<Product_Model>> getPosts() async {
+  Future<List<Product_Model>> getPosts(int cont) async {
     // print(endArray);
     final response = await http.get(Uri.parse(
-        "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/0/12"));
-    final resp = productModelFromJson(response.body);
+        "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/2/${cont}/6"));
+    final resp = productModelFromJson(response.body).data;
+    print(resp);
+    print(cont);
+    if (cont != 0) {
+      dat2 = [...dat2, ...resp];
+      return dat2;
+    } else {
+      dat2 = resp;
+      return resp;
+    }
+  }
 
-    cont = cont + 6;
-    print(resp.data);
+  Future<List<Product_Info_Model>> getPostsDetail(int idProduct) async {
+    // print(endArray);
+    List<Product_Info_Model> detail = [];
+    final response = await http.get(Uri.parse(
+        "https://hechoencasa-backend.herokuapp.com/product/getInfo/${idProduct}"));
+    print(response.body);
+    final resp = productInforModelFromJson(response.body).data;
+    print('***********************');
+    print(resp.idProduct);
+    detail.add(resp);
 
-    return resp.data;
+    return detail;
   }
 }
