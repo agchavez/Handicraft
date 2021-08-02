@@ -5,6 +5,7 @@ import 'package:handicraft_app/models/model_details.dart';
 import 'package:handicraft_app/pages/photoHero.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 import 'package:provider/provider.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -51,14 +52,7 @@ class _ProductsDetailState extends State<ProductsDetail> {
               // The blue background emphasizes that it's a new route.
 
               children: [
-                PhotoHero(
-                  photo: snapshot.data[0].images[0],
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                  width: 400,
-                  height: 300,
-                ),
+                carousel(data.images),
                 SizedBox(
                   height: 6,
                 ),
@@ -125,19 +119,7 @@ class _ProductsDetailState extends State<ProductsDetail> {
                     ])),
                 Container(
                   decoration: BoxDecoration(color: Colors.white),
-                  child: Center(
-                      child: Column(
-                    children: [
-                      Text(
-                        'Coments and chat',
-                        textDirection: TextDirection.ltr,
-                        style: TextStyle(
-                          fontSize: 32,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  )),
+                  child: Text('Chat and Comments'),
                 )
               ],
             );
