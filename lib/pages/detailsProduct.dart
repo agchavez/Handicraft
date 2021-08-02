@@ -1,11 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:handicraft_app/models/model_details.dart';
 import 'package:handicraft_app/pages/photoHero.dart';
 import 'package:handicraft_app/provider/product_service.dart';
-import 'package:provider/provider.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
