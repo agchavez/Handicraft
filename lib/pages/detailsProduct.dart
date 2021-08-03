@@ -25,7 +25,6 @@ class _ProductsDetailState extends State<ProductsDetail> {
   @override
   Widget build(BuildContext context) {
     idProduct = ModalRoute.of(context).settings.arguments;
-    print(idProduct);
 
     final size = MediaQuery.of(context).size;
     final heightScreen = MediaQuery.of(context).size.height;
@@ -152,11 +151,12 @@ Widget comments(Size size) {
           initialValue: 'Hola, sigue disponible?',
           style: TextStyle(color: Colors.grey[600]),
           decoration: InputDecoration(
-              focusedBorder: InputBorder.none,
-              suffixIcon: Icon(
-                Icons.send_sharp,
-                color: Colors.black,
-              )),
+            focusedBorder: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            suffixIcon: Image.asset(
+              'assets/icons/chat2.png',
+            ),
+          ),
         ),
       ),
       Container(
@@ -230,11 +230,7 @@ Widget comments(Size size) {
           initialValue: 'Escribe un comentario...',
           style: TextStyle(color: Colors.grey[600]),
           decoration: InputDecoration(
-              focusedBorder: InputBorder.none,
-              suffixIcon: Icon(
-                Icons.comment_rounded,
-                color: Colors.black,
-              )),
+              focusedBorder: InputBorder.none, enabledBorder: InputBorder.none),
         ),
       ),
     ],
