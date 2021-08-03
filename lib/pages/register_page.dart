@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:custom_switch_button/custom_switch_button.dart';
+import 'package:handicraft_app/pages/login_page.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
 
 import 'package:handicraft_app/utils/util.dart' as utils;
@@ -39,10 +40,13 @@ class _RegisterPageState extends State<RegisterPage> {
   bool check = false;
   bool vefiryEmail = false;
   bool nowCompanie = false;
+  bool sendingVerification = false;
   TextEditingController _textDescriptionController = TextEditingController();
   double currentOpacity = 1.0;
+  double currentOpacityPage = 1.0;
   bool _validateDescription = false;
   final dio = Dio();
+  int currentPage = 0;
 
   LocationModel _countryValue, _cityValue, _provinceValue;
   List<LocationModel> cities = [], contries = [], provinces = [];
@@ -63,6 +67,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   void dispose() {
     super.dispose();
+    auth.signOut();
     _validateDescription = false;
     formkey.currentState?.reset();
     form2key.currentState?.reset();
@@ -81,40 +86,34 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
+    List<Widget> pages = [_createFormsInteract(), _createVerifyEmailView()];
     return Scaffold(
-      appBar: AppBar(
-        title: Container(
-          child: FloatingActionButton(
-            child: Image.asset(
-              'assets/icons/back-black-icon.png',
-              width: 7.0,
+        appBar: AppBar(
+          title: Container(
+            child: FloatingActionButton(
+              child: Image.asset(
+                'assets/icons/back-black-icon.png',
+                width: 7.0,
+              ),
+              backgroundColor: Colors.white,
+              onPressed: () {
+                Navigator.popAndPushNamed(context, 'home');
+              },
             ),
-            backgroundColor: Colors.white,
-            onPressed: () {
-              Navigator.popAndPushNamed(context, 'home');
-            },
+            height: 43.0,
+            width: 43.0,
           ),
-          height: 43.0,
-          width: 43.0,
+          backgroundColor: Colors.transparent,
+          bottomOpacity: 0.0,
+          elevation: 0,
         ),
-        backgroundColor: Colors.transparent,
-        bottomOpacity: 0.0,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        child: PageTransitionSwitcher(
-          duration: Duration(seconds: 1),
-          transitionBuilder: (child, animation, secondaryAnimation) =>
-              FadeThroughTransition(
-            animation: animation,
-            secondaryAnimation: secondaryAnimation,
-            child: child,
+        body: SingleChildScrollView(
+          child: AnimatedOpacity(
+            opacity: currentOpacityPage,
+            duration: Duration(milliseconds: 400),
+            child: pages[currentPage],
           ),
-          child:
-              vefiryEmail ? _createVerifyEmailView() : _createFormsInteract(),
-        ),
-      ),
-    );
+        ));
   }
 
   void showPicker(context) {
@@ -235,8 +234,12 @@ class _RegisterPageState extends State<RegisterPage> {
           // if (_typeAcount) _createFormCompanies(),
           !check
               ? _createBottom(context)
-              : CircularProgressIndicator(
-                  color: Colors.black,
+              : Container(
+                  height: 10.0,
+                  width: 10.0,
+                  child: CircularProgressIndicator(
+                    color: Colors.black,
+                  ),
                 ),
           SizedBox(
             height: 10.0,
@@ -281,7 +284,7 @@ class _RegisterPageState extends State<RegisterPage> {
           Container(
             width: size.width * 0.73,
             child: Text(
-              "Al hacer clic en iniciar sesión o continuar con google, acepta los términos de uso de Handicraft y política de privacidad.",
+              "Al pulsar sobre el boton de Registrar estas aceptando los términos de uso de Handicraft y política de privacidad.",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey[600], fontSize: 12),
             ),
@@ -391,20 +394,39 @@ class _RegisterPageState extends State<RegisterPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  vefiryEmail = false;
-                                });
-                                // auth.currentUser.sendEmailVerification();
+                              onTap: () async {
+                                if (!sendingVerification &&
+                                    auth.currentUser != null) {
+                                  setState(() {
+                                    sendingVerification = !sendingVerification;
+                                  });
+                                  try {
+                                    await auth.currentUser
+                                        .sendEmailVerification();
+                                  } catch (e) {
+                                    setState(() {
+                                      sendingVerification =
+                                          !sendingVerification;
+                                    });
+                                  }
+                                }
                               },
-                              child: Text(
-                                'Reenviar confirmación',
-                                style: TextStyle(
-                                    fontFamily: 'Montserrat',
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 14,
-                                    decoration: TextDecoration.underline),
-                              ),
+                              child: !sendingVerification
+                                  ? Text(
+                                      'Reenviar confirmación',
+                                      style: TextStyle(
+                                          fontFamily: 'Montserrat',
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 14,
+                                          decoration: TextDecoration.underline),
+                                    )
+                                  : Container(
+                                      width: 15.0,
+                                      height: 15.0,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.black,
+                                      ),
+                                    ),
                             )
                           ])),
                   shape: RoundedRectangleBorder(
@@ -419,7 +441,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       currentOpacity = 0.0;
                     });
                     Future.delayed(const Duration(milliseconds: 600), () {
-                      form2key.currentState.save();
+                      form2key.currentState?.save();
                       setState(() {
                         nowCompanie = !nowCompanie;
                         currentOpacity = 1.0;
@@ -490,6 +512,7 @@ class _RegisterPageState extends State<RegisterPage> {
         width: size.width * 0.75,
         padding: EdgeInsets.symmetric(vertical: 0.0),
         child: TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             scrollPadding: EdgeInsets.symmetric(vertical: 0.0),
             style: TextStyle(decorationColor: Colors.white),
             keyboardType: TextInputType.name,
@@ -528,6 +551,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return Container(
         width: size.width * 0.75,
         child: TextFormField(
+          textCapitalization: TextCapitalization.sentences,
           style: TextStyle(decorationColor: Colors.white),
           keyboardType: TextInputType.name,
           initialValue: _user.lastname,
@@ -601,6 +625,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _createPassword() {
+    bool ban = false;
     return Container(
         width: size.width * 0.75,
         child: TextFormField(
@@ -612,10 +637,20 @@ class _RegisterPageState extends State<RegisterPage> {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide(
+                width: 2.7,
+                color: Colors.black,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
                 width: 2.5,
                 color: Colors.black,
               ),
             ),
+            border: OutlineInputBorder(
+                borderSide: BorderSide(width: 100, color: Colors.white10),
+                borderRadius: BorderRadius.circular(10.0)),
             suffixIcon: GestureDetector(
               child: _showpasword
                   ? Icon(
@@ -632,15 +667,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 })
               },
             ),
-            focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(width: 2.5, color: Colors.black),
-                borderRadius: BorderRadius.circular(10.0)),
             hintText: 'Contraseña',
           ),
-          onSaved: (value1) => _user.password = value1,
+          onSaved: (value) => {_user.password = value.toString()},
           validator: (value) {
             if (value.isEmpty) {
-              return 'Contraseña obligatoria';
+              return 'Se requiere de una contraseña.';
             } else {
               return null;
             }
@@ -803,42 +835,41 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget _createNameCompanie() {
     return Container(
         width: size.width * 0.75,
-        height: 58,
+        padding: EdgeInsets.symmetric(vertical: 0.0),
         child: TextFormField(
-          style: TextStyle(
-            decorationColor: Colors.white,
-          ),
-          keyboardType: TextInputType.name,
-          initialValue: _companie.name,
-          decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(
-                width: 2.5,
-                color: Colors.black,
+            textCapitalization: TextCapitalization.sentences,
+            scrollPadding: EdgeInsets.symmetric(vertical: 0.0),
+            style: TextStyle(decorationColor: Colors.white),
+            keyboardType: TextInputType.name,
+            initialValue: _companie.name,
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide(
+                  width: 2.5,
+                  color: Colors.black,
+                ),
               ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(
-                width: 2.5,
-                color: Colors.black,
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide(
+                  width: 2.5,
+                  color: Colors.black,
+                ),
               ),
+              border: OutlineInputBorder(
+                  borderSide: BorderSide(width: 100, color: Colors.white10),
+                  borderRadius: BorderRadius.circular(10.0)),
+              hintText: 'Nombre de la empresa',
             ),
-            border: OutlineInputBorder(
-                borderSide: BorderSide(width: 100, color: Colors.white10),
-                borderRadius: BorderRadius.circular(10.0)),
-            hintText: 'Nombre de la empresa',
-          ),
-          onSaved: (value) => _companie.name = value,
-          validator: (value) {
-            if (value.isEmpty || utils.isNumeric(value)) {
-              return 'Campo obligatorio';
-            } else {
-              return null;
-            }
-          },
-        ));
+            onSaved: (value) => _companie.name = value,
+            validator: (value) {
+              if (value.isEmpty || utils.isNumeric(value)) {
+                return 'Campo obligatorio';
+              } else {
+                return null;
+              }
+            }));
   }
 
   Widget _createDescription() {
@@ -846,6 +877,7 @@ class _RegisterPageState extends State<RegisterPage> {
         width: size.width * 0.75,
         padding: EdgeInsets.symmetric(vertical: 0.0),
         child: TextFormField(
+          textCapitalization: TextCapitalization.sentences,
           style: TextStyle(decorationColor: Colors.white),
           keyboardType: TextInputType.multiline,
           initialValue: _companie.description,
@@ -925,133 +957,199 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget _createCountry() {
     return Container(
-      width: size.width * 0.75,
-      height: 58,
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(width: 2.5, color: Colors.black)),
-      child: new DropdownButtonHideUnderline(
-          child: DropdownButton<LocationModel>(
-        value: _countryValue,
-        items: contries.map((LocationModel location) {
-          return new DropdownMenuItem<LocationModel>(
-              value: location,
-              child: new Text(
-                location.name,
-                style: new TextStyle(color: Colors.black),
-              ));
-        }).toList(),
-        onChanged: (value) async {
-          _provinceValue = null;
-          provinces = [];
-          _countryValue = value;
-          await locationService
-              .getProvinces(_countryValue.id)
-              .then((provincesRes) => provinces.addAll(provincesRes));
-          setState(() {});
-        },
-        isExpanded: true,
-        hint: Text('Seleccione su pais'),
-        style: TextStyle(color: Colors.black, fontSize: 16),
-        icon: Row(
-          children: [
-            Icon(
-              Icons.arrow_drop_down,
-              size: 32,
-            )
-          ],
-        ),
-        iconEnabledColor: Colors.black,
-      )),
-    );
+        width: size.width * 0.75,
+        child: DropdownButtonFormField<LocationModel>(
+          value: _countryValue,
+          itemHeight: size.height * 0.07,
+          decoration: InputDecoration(
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                width: 2.5,
+                color: Colors.black,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                width: 2.5,
+                color: Colors.black,
+              ),
+            ),
+            border: OutlineInputBorder(
+                borderSide: BorderSide(width: 100, color: Colors.white10),
+                borderRadius: BorderRadius.circular(10.0)),
+          ),
+          items: contries.map((LocationModel location) {
+            return new DropdownMenuItem<LocationModel>(
+                value: location,
+                child: new Text(
+                  location.name,
+                  style: new TextStyle(color: Colors.black),
+                ));
+          }).toList(),
+          onTap: () {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
+          onChanged: (value) async {
+            _provinceValue = null;
+            provinces = [];
+            _countryValue = value;
+            await locationService
+                .getProvinces(_countryValue.id)
+                .then((provincesRes) => provinces.addAll(provincesRes));
+            setState(() {});
+          },
+          isExpanded: true,
+          hint: Text('Seleccione su pais'),
+          style: TextStyle(color: Colors.black, fontSize: 16),
+          icon: Row(
+            children: [
+              Icon(
+                Icons.arrow_drop_down,
+                size: 32,
+              )
+            ],
+          ),
+          iconEnabledColor: Colors.black,
+          validator: (value) {
+            if (value == null) {
+              return "Campo requerido";
+            } else {
+              return null;
+            }
+          },
+        ));
   }
 
   Widget _createState() {
     return Container(
-      width: size.width * 0.75,
-      height: 58,
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(width: 2.5, color: Colors.black)),
-      child: new DropdownButtonHideUnderline(
-          child: DropdownButton<LocationModel>(
-        value: _provinceValue,
-        items: provinces.map((LocationModel province) {
-          return new DropdownMenuItem<LocationModel>(
-              value: province,
-              child: new Text(
-                province.name,
-                style: new TextStyle(color: Colors.black),
-              ));
-        }).toList(),
-        onChanged: (value) async {
-          cities = [];
-          _cityValue = null;
-          _provinceValue = value;
-          await locationService
-              .getCity(_countryValue.id, _provinceValue.id)
-              .then((value) => cities.addAll(value));
-          setState(() {});
-        },
-        isExpanded: true,
-        hint: Text('Seleccione su provincia'),
-        style: TextStyle(color: Colors.black, fontSize: 16),
-        icon: Row(
-          children: [
-            Icon(
-              Icons.arrow_drop_down,
-              size: 32,
-            )
-          ],
-        ),
-        iconEnabledColor: Colors.black,
-      )),
-    );
+        width: size.width * 0.75,
+        child: DropdownButtonFormField<LocationModel>(
+          value: _provinceValue,
+          itemHeight: size.height * 0.07,
+          decoration: InputDecoration(
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                width: 2.5,
+                color: Colors.black,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                width: 2.5,
+                color: Colors.black,
+              ),
+            ),
+            border: OutlineInputBorder(
+                borderSide: BorderSide(width: 100, color: Colors.white10),
+                borderRadius: BorderRadius.circular(10.0)),
+          ),
+          items: provinces.map((LocationModel location) {
+            return new DropdownMenuItem<LocationModel>(
+                value: location,
+                child: new Text(
+                  location.name,
+                  style: new TextStyle(color: Colors.black),
+                ));
+          }).toList(),
+          onTap: () {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
+          onChanged: (value) async {
+            cities = [];
+            _cityValue = null;
+            _provinceValue = value;
+            await locationService
+                .getCity(_countryValue.id, _provinceValue.id)
+                .then((value) => cities.addAll(value));
+            setState(() {});
+          },
+          isExpanded: true,
+          hint: Text('Seleccione su provincia'),
+          style: TextStyle(color: Colors.black, fontSize: 16),
+          icon: Row(
+            children: [
+              Icon(
+                Icons.arrow_drop_down,
+                size: 32,
+              )
+            ],
+          ),
+          iconEnabledColor: Colors.black,
+          validator: (value) {
+            if (value == null) {
+              return "Campo requerido";
+            } else {
+              return null;
+            }
+          },
+        ));
   }
 
   Widget _createCity() {
     return Container(
-      width: size.width * 0.75,
-      height: 58,
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(width: 2.5, color: Colors.black)),
-      child: new DropdownButtonHideUnderline(
-          child: DropdownButton<LocationModel>(
-        value: _cityValue,
-        items: cities.map((LocationModel city) {
-          return new DropdownMenuItem<LocationModel>(
-              value: city,
-              child: new Text(
-                city.name,
-                style: new TextStyle(color: Colors.black),
-              ));
-        }).toList(),
-        onChanged: (value) {
-          setState(() {
-            _cityValue = value;
-          });
-        },
-        isExpanded: true,
-        hint: Text('Seleccione su ciudad'),
-        style: TextStyle(color: Colors.black, fontSize: 16),
-        icon: Row(
-          children: [
-            Icon(
-              Icons.arrow_drop_down,
-              size: 32,
-            )
-          ],
-        ),
-        iconEnabledColor: Colors.black,
-      )),
-    );
+        width: size.width * 0.75,
+        child: DropdownButtonFormField<LocationModel>(
+          value: _cityValue,
+          itemHeight: size.height * 0.07,
+          decoration: InputDecoration(
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                width: 2.5,
+                color: Colors.black,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                width: 2.5,
+                color: Colors.black,
+              ),
+            ),
+            border: OutlineInputBorder(
+                borderSide: BorderSide(width: 100, color: Colors.white10),
+                borderRadius: BorderRadius.circular(10.0)),
+          ),
+          items: cities.map((LocationModel location) {
+            return new DropdownMenuItem<LocationModel>(
+                value: location,
+                child: new Text(
+                  location.name,
+                  style: new TextStyle(color: Colors.black),
+                ));
+          }).toList(),
+          onTap: () {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
+          onChanged: (value) {
+            setState(() {
+              _cityValue = value;
+            });
+          },
+          isExpanded: true,
+          hint: Text('Seleccione su cuidad'),
+          style: TextStyle(color: Colors.black, fontSize: 16),
+          icon: Row(
+            children: [
+              Icon(
+                Icons.arrow_drop_down,
+                size: 32,
+              )
+            ],
+          ),
+          iconEnabledColor: Colors.black,
+          validator: (value) {
+            if (value == null) {
+              return "Campo requerido";
+            } else {
+              return null;
+            }
+          },
+        ));
   }
 
   _createAcount() async {
@@ -1112,8 +1210,16 @@ class _RegisterPageState extends State<RegisterPage> {
           if (send) {
             check = !check;
             vefiryEmail = !vefiryEmail;
-            await authService.signOut();
-            setState(() {});
+            setState(() {
+              currentOpacityPage = 0.0;
+            });
+
+            Future.delayed(const Duration(milliseconds: 400), () {
+              setState(() {
+                currentPage = 1;
+                currentOpacityPage = 1.0;
+              });
+            });
           }
         });
         return true;

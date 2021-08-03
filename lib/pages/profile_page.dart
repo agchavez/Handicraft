@@ -68,6 +68,7 @@ class _PorfilePageState extends State<PorfilePage> {
               IconButton(
                   onPressed: () {
                     auth.signOut();
+                    Navigator.popAndPushNamed(context, 'home');
                   },
                   icon: Icon(
                     Icons.keyboard_control_outlined,

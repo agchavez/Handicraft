@@ -73,9 +73,6 @@ class ProductService with ChangeNotifier {
   }
 
   Future<List<LocationModel>> getCategories() async {
-    /*
-        /app/categories
-    */
     List<LocationModel> list = [];
     Response response = await dio.get(
       '${Enviroment.apiurl}/app/categories',
@@ -92,9 +89,6 @@ class ProductService with ChangeNotifier {
   }
 
   Future<List<LocationModel>> getCoins() async {
-    /*
-        /app/coines
-    */
     List<LocationModel> list = [];
     Response response = await dio.get(
       '${Enviroment.apiurl}/app/coines',
@@ -110,16 +104,12 @@ class ProductService with ChangeNotifier {
     }
   }
 
-  //Obtener productos sin logearse
   Future<List<Product_Model>> getPosts() async {
-    // print(endArray);
     final response = await http.get(Uri.parse(
         "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/0/12"));
     final resp = productModelFromJson(response.body);
 
     cont = cont + 6;
-    print(resp.data);
-
     return resp.data;
   }
 }

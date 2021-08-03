@@ -58,32 +58,6 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  Future<Widget> get photoURL async {
-    if ( await storage.getValue('photoProfile') != null) {
-      return CircleAvatar(
-        maxRadius: 18,
-        backgroundImage:
-            NetworkImage(await storage.getValue('photoProfile')),
-      );
-    } else {
-      String name = await storage.getValue('displayName');
-      String displayName = ( name != null ) ? name : 'H C';
-      List names  = displayName.split(' ');
-      String initials = names[0][0] + names[1][0];
-      return CircleAvatar(
-        maxRadius: 18,
-        child: Text( initials,
-            style: TextStyle(
-              color: Colors.white,
-            )),
-        backgroundColor:
-            Colors.primaries[Random().nextInt(Colors.primaries.length)],
-      );
-    }
-    print('eject');
-    notifyListeners();
-  }
-
   Future<void> stateAuth() async {
     final user = await FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -110,11 +84,23 @@ class AuthService with ChangeNotifier {
   Future<bool> setUserStorage( Map<String, dynamic> user ) async {
     user = user['data'];
     await storage.deleteAll();
-    await storage.setValue(user["idUser"], 'uid');
-    await storage.setValue('${user["name"]} ${user['lastName']}', 'displayName');
-    await storage.setValue(user["email"], 'email');
-    await storage.setValue(user["photoProfile"], 'photoProfile');
-    await storage.setValue(user["phone"], 'phone');
+    if (user['idCompany'] != null) {
+      await storage.setValue(user["idUser"], 'uid');
+      await storage.setValue('${user["name"]} ${user['lastName']}', 'displayName');
+      await storage.setValue(user["email"], 'email');
+      await storage.setValue(user["photoProfile"], 'photoProfile');
+      await storage.setValue(user['State_idState'], 'state');
+      await storage.setValue(user["phone"], 'phone');
+    } else {
+      await storage.setValue(user["idUser"], 'uid');
+      await storage.setValue(user["idCompany"], 'idCompany');
+      await storage.setValue(user["nameCompany"], 'displayName');
+      await storage.setValue(user["email"], 'email');
+      await storage.setValue(user['State_idState'], 'state');
+      await storage.setValue(user["description"], "companyDescription");
+      await storage.setValue(user["photoProfile"], 'photoProfile');
+      await storage.setValue(user["phone"], 'phone');
+    }
     return true;
   }
 

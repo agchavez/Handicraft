@@ -66,28 +66,35 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      floatingActionButton: auth.authState
-          ? Container(
-              margin: EdgeInsets.only(bottom: 25),
-              width: 50,
-              height: 50,
-              child: FittedBox(
-                alignment: Alignment.center,
-                child: FloatingActionButton(
-                    elevation: 3,
-                    backgroundColor: Colors.white,
-                    onPressed: () {
-                      setState(() {
-                        _selectedIndex = 4;
-                      });
-                    },
-                    child: Image.asset(
-                      'assets/icons/plus-icon.png',
-                      width: 15.0,
-                    )),
-              ),
-            )
-          : null,
+      floatingActionButton: FutureBuilder(
+        future: auth.stateAuth(),
+        builder: (context, snapshot) {
+          if ( auth.authState ) {
+              return Container(
+                margin: EdgeInsets.only(bottom: 25),
+                width: 50,
+                height: 50,
+                child: FittedBox(
+                  alignment: Alignment.center,
+                  child: FloatingActionButton(
+                      elevation: 3,
+                      backgroundColor: Colors.white,
+                      onPressed: () {
+                        setState(() {
+                          _selectedIndex = 4;
+                        });
+                      },
+                      child: Image.asset(
+                        'assets/icons/plus-icon.png',
+                        width: 15.0,
+                      )),
+                ),
+              );
+          } else {
+            return Container();
+          }
+        },
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(child: _body(size)),
     );
@@ -210,8 +217,8 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                           photoProfile == null
                               ? 'https://firebasestorage.googleapis.com/v0/b/handicraft-app.appspot.com/o/image%2Fprofile_pictures%2Fdefault_profile.png?alt=media&token=3610e4eb-44a4-4357-b877-f6bd16904aff'
                               : photoProfile,
-                          height: 40,
-                          width: 40,
+                          height: 35,
+                          width: 35,
                           fit: BoxFit.cover,
                         ))
                       ],
@@ -284,9 +291,15 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                             ? Opacity(
                                 opacity: _controller.value,
                                 child: _buildExpandedContent())
-                            : (auth.authState
-                                ? _buildNavBarContent(size)
-                                : _buildMenuContent()),
+                            : FutureBuilder(
+                                future: auth.stateAuth(),
+                                builder: (context, snapshot) {
+                                  if ( auth.authState ) {
+                                    return _buildNavBarContent(size);
+                                  } else {
+                                    return _buildMenuContent();
+                                  }
+                                }),
                       ),
                     )),
               ],
