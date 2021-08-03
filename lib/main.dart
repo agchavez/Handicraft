@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 // @dart=2.9
 import 'package:flutter/material.dart';
+import 'package:handicraft_app/pages/detailsProduct.dart';
 
 import 'package:handicraft_app/pages/home_page.dart';
 import 'package:handicraft_app/pages/login_page.dart';
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
           'home': (BuildContext context) => MainExpandableNavBar(),
           'register': (BuildContext context) => RegisterPage(),
           'login': (BuildContext context) => LoginPage(),
+          'details': (BuildContext context) => ProductsDetail(),
         },
 
         // Tema de la aplicacion, poder cambiar los colores por defecto de la aplicacion
