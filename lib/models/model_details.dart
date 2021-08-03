@@ -11,6 +11,7 @@ class Product_Info_Model {
     this.idUser,
     this.name,
     this.email,
+    this.profilePicture,
     this.verification,
     this.description,
     this.location,
@@ -28,6 +29,7 @@ class Product_Info_Model {
   String idUser;
   String name;
   String email;
+  String profilePicture;
   int verification;
   String description;
   String location;
@@ -46,6 +48,7 @@ class Product_Info_Model {
         idUser: json["idUser"],
         name: json["name"],
         email: json["email"],
+        profilePicture: json["profilePicture"],
         verification: json["verification"],
         description: json["description"],
         location: json["location"],
@@ -63,6 +66,7 @@ class Product_Info_Model {
         idUser: "idUser",
         name: "name",
         email: "email",
+        profilePicture: "profilePicture",
         verification: "verification",
         description: "description",
         location: "location",
