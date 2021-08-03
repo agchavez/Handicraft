@@ -109,7 +109,7 @@ class AuthService with ChangeNotifier {
     return false;
   }
 
-  Future<bool> setUserStorage(Map<String, dynamic> user) async {
+  Future<bool> setUserStorage(Map<dynamic, dynamic> user) async {
     user = user['data'];
     await storage.deleteAll();
     await storage.setValue(user["idUser"], 'uid');
