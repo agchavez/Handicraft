@@ -41,6 +41,7 @@ dependencies:
   firebase_core:
   firebase_storage:
   animations: ^1.1.2
+  carousel_slider: ^4.0.0
 
 dev_dependencies:
   flutter_test:

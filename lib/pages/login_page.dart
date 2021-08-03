@@ -21,10 +21,15 @@ final formkey = GlobalKey<FormState>();
 bool _showpasword = true, check = false;
 LoginAccountModel login_user = new LoginAccountModel();
 AuthService auth;
+List<Widget> actions = [];
+bool _sendingEmail = false;
+Map<String, dynamic> _alert = {'title': '', 'content': ''};
+
 final dio = Dio();
 
 class _LoginPageState extends State<LoginPage> {
   Size size = Size(1000, 5000);
+  bool _duplicateEmail = false;
 
   @override
   void initState() {
@@ -35,6 +40,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void dispose() {
     super.dispose();
+    check = false;
   }
 
   @override
@@ -72,13 +78,17 @@ class _LoginPageState extends State<LoginPage> {
             ),
             _form(),
             SizedBox(
-              height: 10,
+              height: size.height * 0.06,
             ),
             !check
                 ? _createBottom(context)
-                : CircularProgressIndicator(
+                : Container(
+                  height: 10.0,
+                  width: 10.0,
+                  child: CircularProgressIndicator(
                     color: Colors.black,
                   ),
+            ),
             SizedBox(
               height: size.height * 0.06,
             ),
@@ -124,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
             Container(
               width: size.width * 0.74,
               child: Text(
-                "Al hacer clic en iniciar sesión o continuar con google, acepta los términos de uso de Handicraft y política de privacidad.",
+                "Al Pulsar en Iniciar sesión acepta los términos de uso de Handicraft y política de privacidad.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontFamily: 'Montserrat',
@@ -206,6 +216,8 @@ class _LoginPageState extends State<LoginPage> {
           validator: (value) {
             if (!utils.validatorEmail(value.toString())) {
               return 'Correo no válido';
+            } else if ( _duplicateEmail ) {
+              return 'Email en uso.';
             } else {
               return null;
             }
@@ -215,55 +227,57 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _password() {
     bool ban = false;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-            width: size.width * 0.75,
-            child: TextFormField(
-              obscureText: _showpasword,
-              style: TextStyle(decorationColor: Colors.white),
-              keyboardType: TextInputType.name,
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide(
-                    width: 2.5,
-                    color: Colors.black,
-                  ),
-                ),
-                suffixIcon: GestureDetector(
-                  child: _showpasword
-                      ? Icon(
-                          Icons.lock,
-                          color: Colors.black,
-                        )
-                      : Icon(
-                          Icons.lock_open,
-                          color: Colors.black,
-                        ),
-                  onTap: () => {
-                    setState(() {
-                      _showpasword = !_showpasword;
-                    })
-                  },
-                ),
-                focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 2.5, color: Colors.black),
-                    borderRadius: BorderRadius.circular(10.0)),
-                hintText: 'Contraseña',
+    return Container(
+        width: size.width * 0.75,
+        child: TextFormField(
+          obscureText: _showpasword,
+          style: TextStyle(decorationColor: Colors.white),
+          keyboardType: TextInputType.name,
+          decoration: InputDecoration(
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                width: 2.7,
+                color: Colors.black,
               ),
-              onSaved: (login) => login_user.password = login,
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Correo electrónico';
-                } else {
-                  return null;
-                }
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                width: 2.5,
+                color: Colors.black,
+              ),
+            ),
+            border: OutlineInputBorder(
+                borderSide: BorderSide(width: 100, color: Colors.white10),
+                borderRadius: BorderRadius.circular(10.0)),
+            suffixIcon: GestureDetector(
+              child: _showpasword
+                  ? Icon(
+                Icons.lock,
+                color: Colors.black,
+              )
+                  : Icon(
+                Icons.lock_open,
+                color: Colors.black,
+              ),
+              onTap: () => {
+                setState(() {
+                  _showpasword = !_showpasword;
+                })
               },
-            )),
-      ],
-    );
+            ),
+            hintText: 'Contraseña',
+          ),
+          onSaved: (value) => {login_user.password = value.toString()},
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Se requiere de una contraseña.';
+            } else {
+              return null;
+            }
+          },
+        ));
   }
 
   _error() {
@@ -309,23 +323,83 @@ class _LoginPageState extends State<LoginPage> {
     formkey.currentState.save();
     final resp = await auth.login(login_user.email, login_user.password);
 
-    setState(() {
-      check = !check;
-    });
-
     if (resp) {
       await auth.stateAuth();
       if (auth.authState) {
         Response responseInfoUser = await dio.get(
-            '${Enviroment.apiurl}/user/profile/${FirebaseAuth.instance.currentUser.uid}');
-        Map<String, dynamic> userData = responseInfoUser.data;
+            '${Enviroment.ipAddressLocalhost}/user/${FirebaseAuth.instance.currentUser.uid}');
+        Map<String, dynamic> userData = jsonDecode(responseInfoUser.toString());
+
         await auth.setUserStorage(userData).then((value) {
+          setState(() {
+            check = !check;
+          });
           Navigator.popAndPushNamed(context, "home");
         });
       }
+    } else if ( !FirebaseAuth.instance.currentUser.emailVerified ) {
+      setState(() {
+        check = !check;
+      });
+      _alert['title'] = 'Verificación de correo';
+      _alert['content'] = 'Tu correo aun no ha sido verificado, para iniciar sesión verifica tu correo.';
+      actions = [
+        FlatButton(onPressed: () async {
+          await auth.signOut();
+          Navigator.pop(context);
+        }, child: Text('Ok')),
+        FlatButton(onPressed: () async {
+          _sendingEmail = true;
+          setState(() {
+          });
+          if ( FirebaseAuth.instance.currentUser != null ) {
+            await auth.sendEmailVerification();
+            _sendingEmail = false;
+            Navigator.pop(context);
+            setState(() {
+            });
+          }
+        }, child: _sendingEmail ? CircularProgressIndicator(
+          color: Colors.black,
+        ) : Text('Reenviar verificacion.')),
+      ];
+      setState(() {
+      });
+      showDialog(
+        context: context,
+        builder: (_) => alert(
+            _alert['title'],
+            _alert['content'],
+            actions
+        ),
+      );
     } else {
+      setState(() {
+        check = !check;
+      });
       showAlert(
           context, "Error", "Datos incorrectos - Verifique la informacion");
     }
   }
+
+  AlertDialog alert(String title, String content, List<Widget> actions ) => AlertDialog(
+    title: Text(
+        title,
+        style: TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 17.5
+        )
+    ),
+    content: Text(
+        content,
+        textAlign: TextAlign.justify,
+        style: TextStyle(
+          fontFamily: 'Montserrat',
+          color: Colors.grey[600],
+          fontSize: 13
+        ),
+    ),
+    actions: actions,
+    elevation: 24.0,
+    contentPadding: EdgeInsets.only( right: 25.0, left: 25.0, bottom: 1.0, top: 15.0),
+  );
 }

@@ -23,49 +23,69 @@ class DropdownHan extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(bottom: 0, left: 16, right: 10),
-      height: height,
-      width: this.width,
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(width: 2, color: Colors.black)),
-      child: Container(
-        child: DropdownButton<LocationModel>(
-          value: this.value,
-          items: this.list.map((LocationModel location) {
-            return new DropdownMenuItem<LocationModel>(
-              value: location,
-              child: new Text(
-                location.name,
-                style: new TextStyle(color: Colors.black, fontSize: size),
+      child: DropdownButtonFormField<LocationModel>(
+        value: this.value,
+          decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(
+                      width: 2.5,
+                      color: Colors.black
+                  )
               ),
-            );
-          }).toList(),
-          onChanged: (value) async {
-            this.fnOnchage(value);
-          },
-          isExpanded: true,
-          elevation: 16,
-          iconSize: 25,
-          hint: Text(this.hint),
-          style: TextStyle(color: Colors.black, fontSize: 16),
-          icon: Row(
-            children: [
-              Icon(
-                Icons.arrow_drop_down,
-                size: 32,
+              focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(
+                      width: 2.5,
+                      color: Colors.black
+                  )
               ),
-              this.error
-                  ? Icon(
-                      Icons.error_outline_outlined,
-                      color: Colors.red,
-                    )
-                  : Container()
-            ],
+              border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      width: 100,
+                      color: Colors.white10
+                  )
+              )
           ),
-          iconEnabledColor: Colors.black,
+        items: this.list.map((LocationModel location) {
+          return new DropdownMenuItem<LocationModel>(
+            value: location,
+            child: new Text(
+              location.name,
+              style: new TextStyle(color: Colors.black, fontSize: size),
+            ),
+          );
+        }).toList(),
+        onChanged: (value) async {
+          this.fnOnchage(value);
+        },
+        isExpanded: true,
+        elevation: 16,
+        iconSize: 25,
+        hint: Text(this.hint),
+        style: TextStyle(color: Colors.black, fontSize: 16),
+        icon: Row(
+          children: [
+            Icon(
+              Icons.arrow_drop_down,
+              size: 32,
+            ),
+            this.error
+                ? Icon(
+              Icons.error_outline_outlined,
+              color: Colors.red,
+            )
+                : Container()
+          ],
         ),
+        iconEnabledColor: Colors.black,
+        validator: (value) {
+          if (value == null) {
+            return "Campo requerido";
+          } else {
+            return null;
+          }
+        },
       ),
     );
   }
