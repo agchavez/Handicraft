@@ -1,16 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:handicraft_app/provider/storage_service.dart';
-import 'package:handicraft_app/provider/auth_service.dart';
-import 'package:provider/provider.dart';
 
 import 'package:flutter/material.dart';
+import 'package:handicraft_app/models/location_model.dart';
 import 'package:handicraft_app/models/product.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/widgets/productNew.dart';
-
-AuthService auth;
+import 'package:provider/provider.dart';
 
 class PorfilePage extends StatefulWidget {
   @override
@@ -20,11 +16,30 @@ class PorfilePage extends StatefulWidget {
 class _PorfilePageState extends State<PorfilePage> {
   @override
   Size size;
+  Map<String, String> userData;
+  List<String> categoriesSuscribe = [];
   int _selectedIndex = 0;
-  AuthService auth;
+  ProductService productService;
+  ScrollController _scrollController;
+  AuthService _authService;
+
+  @override
+  void initState() {
+    super.initState();
+
+    productService = Provider.of<ProductService>(context, listen: false);
+    _authService = Provider.of<AuthService>(context, listen: false);
+    init();
+  }
+
+  void init() async {
+    List<dynamic> resp = await productService.getCategoriesSuscribe();
+    for (var item in resp) {
+      categoriesSuscribe.add(item.toString());
+    }
+  }
 
   Widget build(BuildContext context) {
-    auth = Provider.of<AuthService>(context);
     size = MediaQuery.of(context).size;
     return Scaffold(body: _createBody());
   }
@@ -34,20 +49,20 @@ class _PorfilePageState extends State<PorfilePage> {
         child: Column(
       children: [
         _createAppbar(),
-        _selectedIndex == 0 ? _createLikes() : Container(),
-        SizedBox(
-          height: 20,
-        ),
         _createNavbar(),
-        _createinformaction()
+        _createinformaction(),
+        SizedBox(
+          height: 60,
+        )
       ],
     ));
   }
 
   Widget _createAppbar() {
     return Container(
-      padding: EdgeInsets.all(10),
-      height: size.height * 0.32,
+      width: size.width * 1,
+      padding: EdgeInsets.all(15),
+      height: size.height * 0.30,
       decoration: BoxDecoration(
           color: Colors.black,
           borderRadius: BorderRadius.only(
@@ -60,95 +75,145 @@ class _PorfilePageState extends State<PorfilePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.arrow_back_ios,
-                    color: Colors.white,
-                  )),
-              IconButton(
-                  onPressed: () {
-                    auth.signOut();
+                  onPressed: () async {
+                    bool resp = await AuthService().signOut();
                     Navigator.popAndPushNamed(context, 'home');
                   },
                   icon: Icon(
-                    Icons.keyboard_control_outlined,
-                    textDirection: TextDirection.rtl,
+                    Icons.arrow_back_ios,
+                    size: 20,
                     color: Colors.white,
-                  ))
-            ],
-          ),
-          Center(
-              child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: size.width * 0.1,
-              ),
-              CircleAvatar(
-                radius: 37,
-                child: Text("AC"),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                      width: 150,
-                      child: Text(
-                        "Angel Chavez",
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                            fontSize: 17,
-                            fontFamily: 'Montserrat',
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      )),
-                  SizedBox(
-                    height: 5,
+                  )),
+              GestureDetector(
+                onTap: () async {
+                  String token = await _authService.refreshUserToken();
+                },
+                child: Container(
+                  alignment: Alignment.bottomRight,
+                  child: Image.asset(
+                    'assets/icons/menu-icon.png',
+                    width: 3,
                   ),
-                  Container(
-                      width: 150,
-                      child: Text("agchavez@unah.hn",
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w300,
-                              fontFamily: 'Montserrat',
-                              decoration: TextDecoration.underline))),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Container(
-                      width: 150,
-                      child: Text("9993773",
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                              fontSize: 13,
-                              fontFamily: 'Montserrat',
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold)))
-                ],
+                ),
               )
             ],
-          )),
+          ),
+          FutureBuilder(
+            future: StorageService().getall(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData) {
+                userData = snapshot.data;
+                return Container(
+                    width: size.width * 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: size.width * 0.1,
+                        ),
+                        Container(
+                            width: 95.0,
+                            height: 95.0,
+                            decoration: new BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: new DecorationImage(
+                                    fit: BoxFit.fill,
+                                    image: new NetworkImage(
+                                        userData["photoProfile"])))),
+                        Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Container(
+                                  child: Text(
+                                userData["displayName"],
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                    fontSize: 17,
+                                    fontFamily: 'Montserrat',
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              )),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Container(
+                                  child: Text(userData["email"],
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w300,
+                                          fontFamily: 'Montserrat',
+                                          decoration:
+                                              TextDecoration.underline))),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(userData["phone"],
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          fontFamily: 'Montserrat',
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold)))
+                            ],
+                          ),
+                        )
+                      ],
+                    ));
+              } else {
+                return CircularProgressIndicator(
+                  color: Colors.transparent,
+                );
+              }
+            },
+          ),
           Container(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(
-                  Icons.add,
-                  color: Colors.white,
+                Row(
+                  children: [
+                    Image.asset(
+                      'assets/icons/like-icon.png',
+                      width: 17,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      "0 Likes",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Montserrat',
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-                Icon(
-                  Icons.delete,
-                  color: Colors.white,
-                )
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Image.asset(
+                      'assets/icons/shop-icon.png',
+                      width: 18,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Image.asset(
+                      'assets/icons/secure-icon.png',
+                      width: 18,
+                    ),
+                  ],
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -158,23 +223,26 @@ class _PorfilePageState extends State<PorfilePage> {
     return Container(
       margin: EdgeInsets.only(top: 20),
       width: size.width * 0.4,
-      height: 50,
+      height: 55,
       decoration: BoxDecoration(
           color: Colors.black,
           borderRadius: BorderRadius.all(Radius.circular(15))),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.link_rounded,
-            color: Colors.white,
+          Image.asset(
+            'assets/icons/like-icon.png',
+            width: 17,
+          ),
+          SizedBox(
+            width: 10,
           ),
           Text(
             "75 Likes",
             style: TextStyle(
                 color: Colors.white,
                 fontFamily: 'Montserrat',
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: FontWeight.bold),
           )
         ],
@@ -184,8 +252,10 @@ class _PorfilePageState extends State<PorfilePage> {
 
   Widget _createNavbar() {
     return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      height: 60,
+      child: ListView(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
         children: [
           MaterialButton(
             onPressed: () {
@@ -194,10 +264,11 @@ class _PorfilePageState extends State<PorfilePage> {
               });
             },
             child: Text(
-              "Productos",
+              "Mis productos",
               style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 16,
+                  color: _selectedIndex == 0 ? Colors.black : Colors.grey[500],
                   fontWeight: _selectedIndex == 0
                       ? FontWeight.bold
                       : FontWeight.normal),
@@ -214,6 +285,7 @@ class _PorfilePageState extends State<PorfilePage> {
               style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 16,
+                  color: _selectedIndex == 1 ? Colors.black : Colors.grey[500],
                   fontWeight: _selectedIndex == 1
                       ? FontWeight.bold
                       : FontWeight.normal),
@@ -226,10 +298,11 @@ class _PorfilePageState extends State<PorfilePage> {
               });
             },
             child: Text(
-              "Categorias Suscritas",
+              "Categorias suscritas",
               style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 16,
+                  color: _selectedIndex == 2 ? Colors.black : Colors.grey[500],
                   fontWeight: _selectedIndex == 2
                       ? FontWeight.bold
                       : FontWeight.normal),
@@ -241,36 +314,111 @@ class _PorfilePageState extends State<PorfilePage> {
   }
 
   Widget _createinformaction() {
-    return Expanded(
-      child: FutureBuilder(
-          future: ProductService().getPosts(),
-          builder: (context, AsyncSnapshot<List<Product_Model>> snapshot) {
-            if (snapshot.hasData) {
-              //items = snapshot.data;
-              data = snapshot.data;
-              return GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                  ),
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding:
-                          const EdgeInsets.only(left: 20, right: 20, bottom: 8),
-                      child: Container(
-                        child: ProductNew(
-                          product: data[index],
-                        ),
+    switch (_selectedIndex) {
+      case 0:
+        return Expanded(
+          child: FutureBuilder(
+              future: productService.getProductsofUser(),
+              builder: (context, AsyncSnapshot<List<Product_Model>> snapshot) {
+                if (snapshot.hasData) {
+                  //items = snapshot.data;
+                  data = snapshot.data;
+                  return GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        childAspectRatio: 0.9,
+                        crossAxisCount: 2,
                       ),
-                    );
-                  });
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          height: 180,
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          margin: EdgeInsets.only(bottom: 15),
+                          child: ProductNew(
+                            product: data[index],
+                          ),
+                        );
+                      });
+                } else {
+                  return Center(
+                      child: CircularProgressIndicator(
+                    color: Colors.black,
+                  ));
+                }
+              }),
+        );
+        break;
+      case 2:
+        return FutureBuilder(
+          future: productService.getCategories(),
+          builder: (context, AsyncSnapshot<List<LocationModel>> snapshot) {
+            if (snapshot.hasData) {
+              List<LocationModel> data = snapshot.data;
+              return Container(
+                padding: EdgeInsets.all(5),
+                child: Wrap(
+                  children: data
+                      .map((item) => GestureDetector(
+                            onTap: () async {
+                              if (categoriesSuscribe.contains(item.name)) {
+                                if (await productService
+                                    .removeSuscribeCategorie(item.id)) {
+                                  categoriesSuscribe.remove(item.name);
+                                }
+                              } else {
+                                if (await productService
+                                    .suscribeCategorie(item.id)) {
+                                  categoriesSuscribe.add(item.name);
+                                }
+                              }
+                              setState(() {});
+                            },
+                            child: Container(
+                                height: 40,
+                                margin: EdgeInsets.all(5),
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                    color:
+                                        categoriesSuscribe.contains(item.name)
+                                            ? Colors.black
+                                            : Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                        color: Colors.black, width: 2)),
+                                child: Text(
+                                  item.name,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color:
+                                          categoriesSuscribe.contains(item.name)
+                                              ? Colors.white
+                                              : Colors.black,
+                                      fontFamily: 'Montserrat',
+                                      fontWeight: FontWeight.bold),
+                                )),
+                          ))
+                      .toList()
+                      .cast<Widget>(),
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Center(child: Text("No tienes categorias"));
             } else {
               return Center(
-                  child: CircularProgressIndicator(
-                color: Colors.black,
-              ));
+                child: CircularProgressIndicator(
+                  color: Colors.black,
+                ),
+              );
             }
-          }),
-    );
+          },
+        );
+        break;
+      case 1:
+        return Container();
+        break;
+      default:
+        return Container();
+    }
   }
 }

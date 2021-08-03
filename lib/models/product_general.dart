@@ -1,8 +1,9 @@
 import 'dart:convert';
 
+import 'package:handicraft_app/models/model_details.dart';
 import 'package:handicraft_app/models/product.dart';
 
-Product productModelFromJson(String str) => Product.fromJson(json.decode(str));
+Product productModelFromJson(dynamic str) => Product.fromJson(str);
 
 String productModelToJson(Product data) => json.encode(data.toJson());
 

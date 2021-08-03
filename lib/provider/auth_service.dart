@@ -20,7 +20,7 @@ class AuthService with ChangeNotifier {
       await auth.signInWithEmailAndPassword(
           email: email.trim(), password: password);
       final user = auth.currentUser;
-      if ( user.emailVerified ) {
+      if (user.emailVerified) {
         if (user != null) {
           return true;
         } else {
@@ -58,6 +58,28 @@ class AuthService with ChangeNotifier {
     }
   }
 
+  Future<Widget> get photoURL async {
+    if (await storage.getValue('photoProfile') != null) {
+      return CircleAvatar(
+        maxRadius: 18,
+        backgroundImage: NetworkImage(await storage.getValue('photoProfile')),
+      );
+    } else {
+      String name = await storage.getValue('displayName');
+      String displayName = (name != null) ? name : 'H C';
+      List names = displayName.split(' ');
+      String initials = names[0][0] + names[1][0];
+      return CircleAvatar(
+        maxRadius: 18,
+        child: Text(initials,
+            style: TextStyle(
+              color: Colors.white,
+            )),
+        backgroundColor:
+            Colors.primaries[Random().nextInt(Colors.primaries.length)],
+      );
+    }
+  }
   Future<void> stateAuth() async {
     final user = await FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -69,19 +91,24 @@ class AuthService with ChangeNotifier {
   }
 
   Future<bool> signOut() async {
-    await FirebaseAuth.instance.signOut();
-    await stateAuth();
-    await storage.deleteAll();
-  }
-
-  Future<bool> sendEmailVerification() async {
-    if ( auth.currentUser != null ) {
-      await auth.currentUser.sendEmailVerification();
-      return true;
+    try {
+      await FirebaseAuth.instance.signOut();
+      await stateAuth();
+      await storage.deleteAll();
+    } catch (e) {
+      return false;
     }
   }
 
-  Future<bool> setUserStorage( Map<String, dynamic> user ) async {
+  Future<bool> sendEmailVerification() async {
+    if (auth.currentUser != null) {
+      await auth.currentUser.sendEmailVerification();
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> setUserStorage(Map<dynamic, dynamic> user) async {
     user = user['data'];
     await storage.deleteAll();
     if (user['idCompany'] != null) {
@@ -101,20 +128,16 @@ class AuthService with ChangeNotifier {
       await storage.setValue(user["photoProfile"], 'photoProfile');
       await storage.setValue(user["phone"], 'phone');
     }
+
     return true;
   }
 
   Future<String> refreshUserToken() async {
     final user = FirebaseAuth.instance.currentUser;
-    if ( user != null) {
-      FirebaseAuth.instance.currentUser.getIdToken(true)
-          .then(( idToken ){
-            print(idToken);
-            return idToken;
-      })
-          .catchError((error) {
-            print('Dont got a token!. :(');
-      });
+    if (user != null) {
+      String idToken = await FirebaseAuth.instance.currentUser.getIdToken(true);
+      return idToken;
     }
+    return "";
   }
 }

@@ -329,6 +329,7 @@ class _LoginPageState extends State<LoginPage> {
         Response responseInfoUser = await dio.get(
             '${Enviroment.ipAddressLocalhost}/user/${FirebaseAuth.instance.currentUser.uid}');
         Map<String, dynamic> userData = jsonDecode(responseInfoUser.toString());
+
         await auth.setUserStorage(userData).then((value) {
           setState(() {
             check = !check;

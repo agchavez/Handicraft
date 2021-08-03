@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:handicraft_app/models/product.dart';
+import 'package:handicraft_app/pages/photoHero.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -14,12 +16,19 @@ class ProductsPages extends StatefulWidget {
 
 double heightScreen, widthScreen;
 
+int cont = 0;
+
 class _ProductsPgaesState extends State<ProductsPages> {
   //List<dynamic> items;
   void _onLoading() async {
     // monitor network fetch
     await Future.delayed(Duration(milliseconds: 1000));
 
+    // if failed,use loadFailed(),if no data return,use LoadNodata()
+    //items.add((items.length + 1).toString());
+    //PostsRepository().getPosts(1);
+    //ProductService().getPosts(2);
+    cont = cont + 6;
     if (mounted) setState(() {});
     _refreshController.loadComplete();
   }
@@ -48,6 +57,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
           ],
           title:
               Image(width: 140, image: AssetImage('assets/images/logo.png'))),
+
       body: Column(
         children: [
           Padding(
@@ -128,8 +138,6 @@ class _ProductsPgaesState extends State<ProductsPages> {
       ),
     );
   }
-}
-
 Widget _information(Product_Model data) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.start,
@@ -246,4 +254,5 @@ Widget _image(String url) {
         )
     ),
   );
+
 }

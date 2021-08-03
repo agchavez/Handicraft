@@ -44,9 +44,14 @@ class StorageService with ChangeNotifier {
       return false;
     }
   }
+
+  Future<Map<String, String>> getall() async {
+    Map<String, String> allValues = await storage.readAll();
+    return allValues;
+  }
 }
 // // Read all values
-// Map<String, String> allValues = await storage.readAll();
+// 
 
 // // Delete value
 // await storage.delete(key: key);
