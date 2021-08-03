@@ -317,8 +317,8 @@ class _LoginPageState extends State<LoginPage> {
       await auth.stateAuth();
       if (auth.authState) {
         Response responseInfoUser = await dio.get(
-            '${Enviroment.apiurl}/user/${FirebaseAuth.instance.currentUser.uid}');
-        Map<String, dynamic> userData = jsonDecode(responseInfoUser.toString());
+            '${Enviroment.apiurl}/user/profile/${FirebaseAuth.instance.currentUser.uid}');
+        Map<String, dynamic> userData = responseInfoUser.data;
         await auth.setUserStorage(userData).then((value) {
           Navigator.popAndPushNamed(context, "home");
         });

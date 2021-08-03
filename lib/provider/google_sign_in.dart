@@ -28,8 +28,7 @@ class GoogleSignInProvider extends ChangeNotifier {
         idToken: googleAuth.idToken,
       );
 
-      await FirebaseAuth.instance
-          .signInWithCredential(credential);
+      await FirebaseAuth.instance.signInWithCredential(credential);
       notifyListeners();
       if (credential != null) {
         return true;
@@ -41,34 +40,33 @@ class GoogleSignInProvider extends ChangeNotifier {
     }
   }
 
-   Future<bool> saveUser( AuthService auth ) async {
-     if ( FirebaseAuth.instance.currentUser != null ) {
-       final user = FirebaseAuth.instance.currentUser;
+  Future<bool> saveUser(AuthService auth) async {
+    if (FirebaseAuth.instance.currentUser != null) {
+      final user = FirebaseAuth.instance.currentUser;
 
-       List names = user.displayName.split(' ');
-       Map<String, dynamic> body = {
-         'idUser': user.uid,
-         'firstName': names[0],
-         'lastName': names[1],
-         'email': user.email,
-         'phoneNumber': user.phoneNumber,
-         'photoProfile': user.photoURL
-       };
+      List names = user.displayName.split(' ');
+      Map<String, dynamic> body = {
+        'idUser': user.uid,
+        'firstName': names[0],
+        'lastName': names[1],
+        'email': user.email,
+        'phoneNumber': user.phoneNumber,
+        'photoProfile': user.photoURL
+      };
 
-       Response response = await dio.post("${Enviroment.apiurl}/user",
-           options: Options(
-               headers: {
-                 HttpHeaders.contentTypeHeader: "application/json",
-               }),
-           data: jsonEncode(body));
+      Response response = await dio.post("${Enviroment.apiurl}/user",
+          options: Options(headers: {
+            HttpHeaders.contentTypeHeader: "application/json",
+          }),
+          data: jsonEncode(body));
 
-       if ( response.statusCode == 200 ) {
-         Map<String, dynamic> userdata = jsonDecode(response.toString());
-         await auth.setUserStorage(userdata);
-         return true;
-       } else {
-         return false;
-       }
-     }
+      if (response.statusCode == 200) {
+        Map<String, dynamic> userdata = jsonDecode(response.toString());
+        await auth.setUserStorage(userdata);
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 }
