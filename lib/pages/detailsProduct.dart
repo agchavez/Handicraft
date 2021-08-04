@@ -6,8 +6,6 @@ import 'package:handicraft_app/provider/product_service.dart';
 
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-RefreshController _refreshController = RefreshController(initialRefresh: false);
-
 class ProductsDetail extends StatefulWidget {
   @override
   _ProductsDetailState createState() => _ProductsDetailState();
@@ -27,8 +25,6 @@ class _ProductsDetailState extends State<ProductsDetail> {
     idProduct = ModalRoute.of(context).settings.arguments;
 
     final size = MediaQuery.of(context).size;
-    final heightScreen = MediaQuery.of(context).size.height;
-    final widthScreen = MediaQuery.of(context).size.height;
 
     return Scaffold(
         appBar: AppBar(

@@ -4,6 +4,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:handicraft_app/models/product.dart';
 import 'package:handicraft_app/pages/photoHero.dart';
 import 'package:handicraft_app/provider/product_service.dart';
+import 'package:handicraft_app/widgets/image.dart';
 
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -76,7 +77,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
           ),
           Expanded(
               child: FutureBuilder(
-            future: ProductService().getPosts(6),
+            future: ProductService().getPosts(cont),
             builder: (BuildContext context,
                 AsyncSnapshot<List<Product_Model>> snapshot) {
               if (snapshot.hasError) {
@@ -142,7 +143,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
       children: [
         Row(
           children: [
-            _image(data.urlImage),
+            _image(data.urlImage, context, data),
           ],
         ),
         SizedBox(
@@ -206,7 +207,6 @@ class _ProductsPgaesState extends State<ProductsPages> {
     Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        _image(data.urlImage),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -237,13 +237,19 @@ class _ProductsPgaesState extends State<ProductsPages> {
     );
   }
 
-  Widget _image(String url) {
-    return Container(
-      height: 140,
-      width: 140,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          image: DecorationImage(image: NetworkImage(url), fit: BoxFit.fill)),
+  Widget _image(String url, BuildContext context, Product_Model data) {
+    timeDilation = 3.0;
+
+    //getHttp();
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, 'details', arguments: data.idProduct);
+      },
+      child: Image(
+        image: NetworkImage(url),
+        width: 135,
+        height: 130,
+      ),
     );
   }
 }
