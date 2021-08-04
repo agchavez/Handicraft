@@ -238,7 +238,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
   }
 
   Widget _image(String url, BuildContext context, Product_Model data) {
-    timeDilation = 3.0;
+    timeDilation = 0.5;
 
     //getHttp();
     return GestureDetector(
