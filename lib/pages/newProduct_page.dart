@@ -43,6 +43,8 @@ class _NewpProductPageState extends State<NewpProductPage> {
       priceErro = false;
   LocationService locationService;
   ProductService productService;
+  List<String> categoriesSuscribe = [];
+  int selectedCategory;
 
   @override
   void initState() {
@@ -171,7 +173,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
           ),
           _createFormProduct(),
           SizedBox(
-            height: 20,
+            height: 15,
           ),
           Container(
             alignment: Alignment.centerLeft,
@@ -659,16 +661,76 @@ class _NewpProductPageState extends State<NewpProductPage> {
             ),
           ),
           SizedBox(
-            height: 15,
+            height: 10,
           ),
-          DropdownHan(
-              hint: "Seleccionar categoria",
-              height: 55,
-              error: categorieError,
-              value: categorie,
-              fnOnchage: setCategories,
-              list: categories,
-              width: size.width * 0.9)
+          FutureBuilder(
+            future: productService.getCategories(),
+            builder: (context, AsyncSnapshot<List<LocationModel>> snapshot) {
+              if (snapshot.hasData) {
+                List<LocationModel> data = snapshot.data;
+                return Container(
+                  padding: EdgeInsets.all(5),
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    children: data
+                        .map((item) => GestureDetector(
+                      onTap: () async {
+                        if (categoriesSuscribe.contains(item.name)) {
+                          categoriesSuscribe.remove(item.name);
+                          selectedCategory = null;
+                        } else if ( categoriesSuscribe.length == 1 ) {
+                          print('Solo puede seleccionar una categoria');
+                          return;
+                        } else {
+                          categoriesSuscribe.add(item.name);
+                          selectedCategory = item.id;
+                          print(selectedCategory);
+                        }
+                        setState(() {});
+                      },
+                      child: Container(
+                          height: 40,
+                          margin: EdgeInsets.all(5),
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              color:
+                              categoriesSuscribe.contains(item.name)
+                                  ? Colors.black
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                  color: Colors.black, width: 2)),
+                          child: Text(
+                            item.name,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color:
+                                categoriesSuscribe.contains(item.name)
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontFamily: 'Montserrat',
+                                fontWeight: FontWeight.bold),
+                          )),
+                    ))
+                        .toList()
+                        .cast<Widget>(),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Center(child: Text("Error al obtener las categorias"));
+              } else {
+                return Center(
+                  child: Container(
+                    height: 10,
+                    width: 10,
+                    child: CircularProgressIndicator(
+                      color: Colors.black,
+                    ),
+                  ),
+                );
+              }
+            },
+          )
         ],
       ),
     );
@@ -688,26 +750,6 @@ class _NewpProductPageState extends State<NewpProductPage> {
     });
   }
 
-  // Widget _createButtom() {
-  //   return Container(
-  //     width: size.width * 0.6,
-  //     child: ElevatedButton(
-  //       style: ButtonStyle(
-  //           backgroundColor: MaterialStateProperty.all<Color>(Colors.black)),
-  //       onPressed: () {
-  //         setState(() {
-  //           check = true;
-  //         });
-  //         _addProduct();
-  //       },
-  //       child: Text(
-  //         "Agregar producto",
-  //         style: TextStyle(fontSize: 15, fontFamily: 'Montserrat'),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   _addProduct() async {
     if (!_validate()) {
       showSnacbar(Text('Error! Datos obligatorios!'), Colors.red, context);
@@ -722,7 +764,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
       "price": int.parse(priceCtrl.text),
       "quantity": int.parse(amountCtrl.text),
       "coin": coin.id,
-      "category": categorie.id,
+      "category": selectedCategory,
       "country": _countryValue.id,
       "province": _provincesValue.id,
       "city": _cityValue.id,
@@ -781,7 +823,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
       contrieError = true;
     }
 
-    if (categorie != null) {
+    if (selectedCategory != null) {
       categorieError = false;
     } else {
       categorieError = true;
