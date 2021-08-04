@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/location_model.dart';
 import 'package:handicraft_app/models/product.dart';
@@ -103,6 +102,8 @@ class _PorfilePageState extends State<PorfilePage> {
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
                 userData = snapshot.data;
+                print("***************");
+                print(userData);
                 return Container(
                     width: size.width * 1,
                     child: Row(

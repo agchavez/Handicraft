@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'dart:io';
 
@@ -136,7 +135,6 @@ class ProductService with ChangeNotifier {
   Future<bool> removeSuscribeCategorie(int id) async {
     try {
       String token = await authService.refreshUserToken();
-      print(token);
       Response resp = await dio.delete(
           '${Enviroment.apiurl}/user/category/$id/unsubscribe',
           options: Options(headers: {
@@ -177,9 +175,7 @@ class ProductService with ChangeNotifier {
     // print(endArray);
     final response = await http.get(Uri.parse(
         "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/2/${cont}/6"));
-    final resp = productModelFromJson(response.body).data;
-    print(resp);
-    print(cont);
+    final resp = productModelFromJson(jsonDecode(response.body)).data;
     if (cont != 0) {
       dat2 = [...dat2, ...resp];
       return dat2;

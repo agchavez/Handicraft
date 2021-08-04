@@ -83,12 +83,12 @@ class _LoginPageState extends State<LoginPage> {
             !check
                 ? _createBottom(context)
                 : Container(
-                  height: 10.0,
-                  width: 10.0,
-                  child: CircularProgressIndicator(
-                    color: Colors.black,
+                    height: 10.0,
+                    width: 10.0,
+                    child: CircularProgressIndicator(
+                      color: Colors.black,
+                    ),
                   ),
-            ),
             SizedBox(
               height: size.height * 0.06,
             ),
@@ -216,7 +216,7 @@ class _LoginPageState extends State<LoginPage> {
           validator: (value) {
             if (!utils.validatorEmail(value.toString())) {
               return 'Correo no válido';
-            } else if ( _duplicateEmail ) {
+            } else if (_duplicateEmail) {
               return 'Email en uso.';
             } else {
               return null;
@@ -254,13 +254,13 @@ class _LoginPageState extends State<LoginPage> {
             suffixIcon: GestureDetector(
               child: _showpasword
                   ? Icon(
-                Icons.lock,
-                color: Colors.black,
-              )
+                      Icons.lock,
+                      color: Colors.black,
+                    )
                   : Icon(
-                Icons.lock_open,
-                color: Colors.black,
-              ),
+                      Icons.lock_open,
+                      color: Colors.black,
+                    ),
               onTap: () => {
                 setState(() {
                   _showpasword = !_showpasword;
@@ -327,7 +327,9 @@ class _LoginPageState extends State<LoginPage> {
       await auth.stateAuth();
       if (auth.authState) {
         Response responseInfoUser = await dio.get(
-            '${Enviroment.ipAddressLocalhost}/user/${FirebaseAuth.instance.currentUser.uid}');
+            '${Enviroment.apiurl}/user/profile/${FirebaseAuth.instance.currentUser.uid}',
+            options: Options(
+                headers: {HttpHeaders.contentTypeHeader: "application/json"}));
         Map<String, dynamic> userData = jsonDecode(responseInfoUser.toString());
 
         await auth.setUserStorage(userData).then((value) {
@@ -337,41 +339,41 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.popAndPushNamed(context, "home");
         });
       }
-    } else if ( !FirebaseAuth.instance.currentUser.emailVerified ) {
+    } else if (!FirebaseAuth.instance.currentUser.emailVerified) {
       setState(() {
         check = !check;
       });
       _alert['title'] = 'Verificación de correo';
-      _alert['content'] = 'Tu correo aun no ha sido verificado, para iniciar sesión verifica tu correo.';
+      _alert['content'] =
+          'Tu correo aun no ha sido verificado, para iniciar sesión verifica tu correo.';
       actions = [
-        FlatButton(onPressed: () async {
-          await auth.signOut();
-          Navigator.pop(context);
-        }, child: Text('Ok')),
-        FlatButton(onPressed: () async {
-          _sendingEmail = true;
-          setState(() {
-          });
-          if ( FirebaseAuth.instance.currentUser != null ) {
-            await auth.sendEmailVerification();
-            _sendingEmail = false;
-            Navigator.pop(context);
-            setState(() {
-            });
-          }
-        }, child: _sendingEmail ? CircularProgressIndicator(
-          color: Colors.black,
-        ) : Text('Reenviar verificacion.')),
+        FlatButton(
+            onPressed: () async {
+              await auth.signOut();
+              Navigator.pop(context);
+            },
+            child: Text('Ok')),
+        FlatButton(
+            onPressed: () async {
+              _sendingEmail = true;
+              setState(() {});
+              if (FirebaseAuth.instance.currentUser != null) {
+                await auth.sendEmailVerification();
+                _sendingEmail = false;
+                Navigator.pop(context);
+                setState(() {});
+              }
+            },
+            child: _sendingEmail
+                ? CircularProgressIndicator(
+                    color: Colors.black,
+                  )
+                : Text('Reenviar verificacion.')),
       ];
-      setState(() {
-      });
+      setState(() {});
       showDialog(
         context: context,
-        builder: (_) => alert(
-            _alert['title'],
-            _alert['content'],
-            actions
-        ),
+        builder: (_) => alert(_alert['title'], _alert['content'], actions),
       );
     } else {
       setState(() {
@@ -382,24 +384,19 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  AlertDialog alert(String title, String content, List<Widget> actions ) => AlertDialog(
-    title: Text(
-        title,
-        style: TextStyle(
-            fontWeight: FontWeight.bold, fontSize: 17.5
-        )
-    ),
-    content: Text(
-        content,
-        textAlign: TextAlign.justify,
-        style: TextStyle(
-          fontFamily: 'Montserrat',
-          color: Colors.grey[600],
-          fontSize: 13
+  AlertDialog alert(String title, String content, List<Widget> actions) =>
+      AlertDialog(
+        title: Text(title,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.5)),
+        content: Text(
+          content,
+          textAlign: TextAlign.justify,
+          style: TextStyle(
+              fontFamily: 'Montserrat', color: Colors.grey[600], fontSize: 13),
         ),
-    ),
-    actions: actions,
-    elevation: 24.0,
-    contentPadding: EdgeInsets.only( right: 25.0, left: 25.0, bottom: 1.0, top: 15.0),
-  );
+        actions: actions,
+        elevation: 24.0,
+        contentPadding:
+            EdgeInsets.only(right: 25.0, left: 25.0, bottom: 1.0, top: 15.0),
+      );
 }
