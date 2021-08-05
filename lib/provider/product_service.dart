@@ -155,6 +155,7 @@ class ProductService with ChangeNotifier {
     /*
         /app/coines
     */
+
     List<LocationModel> list = [];
     Response response = await dio.get(
       '${Enviroment.apiurl}/app/coines',
@@ -173,15 +174,30 @@ class ProductService with ChangeNotifier {
   //Obtener productos sin logearse
   Future<List<Product_Model>> getPosts(int cont) async {
     // print(endArray);
-    final response = await http.get(Uri.parse(
-        "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/2/${cont}/6"));
-    final resp = productModelFromJson(jsonDecode(response.body)).data;
-    if (cont != 0) {
-      dat2 = [...dat2, ...resp];
-      return dat2;
+    String uid = await StorageService().getValue("uid");
+    print("uid == $uid");
+    if (uid == null || uid == "") {
+      final response = await http.get(Uri.parse(
+          "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/$cont/12"));
+      final resp = productModelFromJson(jsonDecode(response.body)).data;
+      if (cont != 0) {
+        dat2 = [...dat2, ...resp];
+        return dat2;
+      } else {
+        dat2 = resp;
+        return resp;
+      }
     } else {
-      dat2 = resp;
-      return resp;
+      final response = await http.get(Uri.parse(
+          "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/$uid/$cont/12"));
+      final resp = productModelFromJson(jsonDecode(response.body)).data;
+      if (cont != 0) {
+        dat2 = [...dat2, ...resp];
+        return dat2;
+      } else {
+        dat2 = resp;
+        return resp;
+      }
     }
   }
 
@@ -192,8 +208,6 @@ class ProductService with ChangeNotifier {
         "https://hechoencasa-backend.herokuapp.com/product/getInfo/${idProduct}"));
     print(response.body);
     final resp = productInforModelFromJson(response.body).data;
-    print('***********************');
-    print(resp.idProduct);
     detail.add(resp);
 
     return detail;

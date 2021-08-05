@@ -102,8 +102,6 @@ class _PorfilePageState extends State<PorfilePage> {
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
                 userData = snapshot.data;
-                print("***************");
-                print(userData);
                 return Container(
                     width: size.width * 1,
                     child: Row(
