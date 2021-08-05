@@ -29,7 +29,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
     //items.add((items.length + 1).toString());
     //PostsRepository().getPosts(1);
     //ProductService().getPosts(2);
-    cont = cont + 6;
+    cont = cont;
     if (mounted) setState(() {});
     _refreshController.loadComplete();
   }
@@ -82,48 +82,20 @@ class _ProductsPgaesState extends State<ProductsPages> {
                 AsyncSnapshot<List<Product_Model>> snapshot) {
               if (snapshot.hasError) {
               } else if (snapshot.hasData) {
-                return SmartRefresher(
-                    enablePullDown: true,
-                    enablePullUp: true,
-                    header: WaterDropHeader(),
-                    footer: CustomFooter(
-                      builder: (BuildContext context, LoadStatus mode) {
-                        Widget body;
-                        if (mode == LoadStatus.idle) {
-                          body = Text("pull up load");
-                        } else if (mode == LoadStatus.loading) {
-                          body = CupertinoActivityIndicator();
-                        } else if (mode == LoadStatus.failed) {
-                          body = Text("Load Failed!Click retry!");
-                        } else if (mode == LoadStatus.canLoading) {
-                          body = Text("release to load more");
-                        } else {
-                          body = Text("No more Data");
-                        }
-                        return Container(
-                          height: 55.0,
-                          child: Center(child: body),
-                        );
-                      },
-                    ),
-                    controller: _refreshController,
-                    onRefresh: _onRefresh,
-                    onLoading: _onLoading,
-                    physics: ScrollPhysics(),
-                    child: GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2, childAspectRatio: 0.78),
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                                left: 20, right: 20, bottom: 20),
-                            child: Container(
-                              child: _information(snapshot.data[index]),
-                            ),
-                          );
-                        }));
+                return GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2, childAspectRatio: 0.78),
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(
+                            left: 20, right: 20, bottom: 20),
+                        child: Container(
+                          child: _information(snapshot.data[index]),
+                        ),
+                      );
+                    });
               }
               return Center(
                 child: CircularProgressIndicator(
@@ -154,7 +126,9 @@ class _ProductsPgaesState extends State<ProductsPages> {
             Padding(
               padding: EdgeInsets.only(top: 5.0, left: 5.0),
               child: Text(
-                data.name,
+                (data.name.length > 14)
+                    ? "${data.name.substring(1, 14)}..."
+                    : data.name,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 13.5,
@@ -242,14 +216,21 @@ class _ProductsPgaesState extends State<ProductsPages> {
 
     //getHttp();
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, 'details', arguments: data.idProduct);
-      },
-      child: Image(
-        image: NetworkImage(url),
-        width: 135,
-        height: 130,
-      ),
-    );
+        onTap: () {
+          Navigator.pushNamed(context, 'details', arguments: data.idProduct);
+        },
+        child: Container(
+          height: 130,
+          width: 145,
+          alignment: Alignment.centerLeft,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: NetworkImage(
+                  url,
+                ),
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(8.0))),
+        ));
   }
 }
