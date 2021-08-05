@@ -1,6 +1,6 @@
-//import 'package:runxatruch_app/pages/account_pages.dart';
-
-//verificando que sean tipo numerico
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/tap_bounce_container.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -46,11 +46,17 @@ bool passwordValid(String pass) {
   }
 }
 
-showSnacbar(Text error, Color color, BuildContext context) {
-  var snackBar = SnackBar(
-    backgroundColor: color,
-    content: error,
-    duration: Duration(milliseconds: 600),
+showSnacbar(Text error, Color color, Icon icon, BuildContext context) {
+  showTopSnackBar(
+    context,
+    Container(
+      height: 60,
+      child: CustomSnackBar.success(
+        textStyle: error.style,
+        icon: icon,
+        backgroundColor: color,
+        message: error.data,
+      ),
+    ),
   );
-  ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
