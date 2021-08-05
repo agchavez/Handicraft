@@ -327,16 +327,22 @@ class _LoginPageState extends State<LoginPage> {
       await auth.stateAuth();
       if (auth.authState) {
         Response responseInfoUser = await dio.get(
-            '${Enviroment.apiurl}/user/profile/${FirebaseAuth.instance.currentUser.uid}',
+            '${Enviroment.ipAddressLocalhost}/user/profile/${FirebaseAuth.instance.currentUser.uid}',
             options: Options(
                 headers: {HttpHeaders.contentTypeHeader: "application/json"}));
         Map<String, dynamic> userData = jsonDecode(responseInfoUser.toString());
 
-        await auth.setUserStorage(userData).then((value) {
+        await auth.setUserStorage(userData).then((value) async {
           setState(() {
             check = !check;
           });
-          Navigator.popAndPushNamed(context, "home");
+          final state = await auth.storage.getValue('state');
+          print(state);
+          if ( state == "1" ) {
+            Navigator.popAndPushNamed(context, 'tips');
+          } else {
+            Navigator.popAndPushNamed(context, "home");
+          }
         });
       }
     } else if (!FirebaseAuth.instance.currentUser.emailVerified) {

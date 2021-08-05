@@ -114,7 +114,6 @@ class AuthService with ChangeNotifier {
     await storage.deleteAll();
     String name = '${user["name"]} ${user['lastname']}';
     if (user['idCompany'] == null) {
-      print(name);
       await storage.setValue(user["idUser"], 'uid');
       await storage.setValue(name, 'displayName');
       await storage.setValue(user["email"], 'email');
@@ -123,7 +122,7 @@ class AuthService with ChangeNotifier {
       await storage.setValue(user["phone"], 'phone');
     } else {
       await storage.setValue(user["idUser"], 'uid');
-      await storage.setValue(user["idCompany"], 'idCompany');
+      await storage.setValue(user["idCompany"].toString(), 'idCompany');
       await storage.setValue(user["nameCompany"], 'displayName');
       await storage.setValue(user["email"], 'email');
       await storage.setValue(user['State_idState'].toString(), 'state');

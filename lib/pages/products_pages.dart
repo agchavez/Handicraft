@@ -50,10 +50,15 @@ class _ProductsPgaesState extends State<ProductsPages> {
           bottomOpacity: 0.0,
           elevation: 0.0,
           actions: [
-            Container(
-              margin: EdgeInsets.only(right: 22),
-              child:
-                  Image.asset('assets/icons/search-black-icon.png', width: 20),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, 'tips');
+              },
+              child: Container(
+                margin: EdgeInsets.only(right: 22),
+                child: Image.asset('assets/icons/search-black-icon.png',
+                    width: 20),
+              ),
             ),
           ],
           title:
