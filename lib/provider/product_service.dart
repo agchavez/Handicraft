@@ -8,6 +8,8 @@ import 'package:handicraft_app/models/model_Product_Infor.dart';
 import 'package:handicraft_app/models/model_details.dart';
 import 'package:handicraft_app/models/product.dart';
 import 'package:handicraft_app/models/product_general.dart';
+import 'package:handicraft_app/models/product_stock.dart';
+import 'package:handicraft_app/models/product_stock_model.dart';
 
 import 'package:handicraft_app/pages/login_page.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
@@ -217,6 +219,7 @@ class ProductService with ChangeNotifier {
     Product resp;
     try {
       String token = await authService.refreshUserToken();
+      print(token);
       Response response = await dio.get(
         '${Enviroment.apiurl}/user/product',
         options: Options(headers: {
@@ -225,6 +228,30 @@ class ProductService with ChangeNotifier {
         }),
       );
       resp = productModelFromJson(response.data);
+      if (response.statusCode == 200) {
+        return resp.data;
+      } else {
+        return resp.data;
+      }
+    } catch (e) {
+      print("Error al obtener los productos de un usuario $e");
+      return [];
+    }
+  }
+
+  Future<List<ProductStock>> getHistoryProductUser() async {
+    Product_Stock resp;
+    try {
+      String token = await authService.refreshUserToken();
+      print(token);
+      Response response = await dio.get(
+        '${Enviroment.apiurl}/user/products-history',
+        options: Options(headers: {
+          HttpHeaders.contentTypeHeader: "application/json",
+          "token": token
+        }),
+      );
+      resp = productStockModelFromJson(response.data);
       if (response.statusCode == 200) {
         return resp.data;
       } else {

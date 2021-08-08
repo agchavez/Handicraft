@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/location_model.dart';
 import 'package:handicraft_app/models/product.dart';
+import 'package:handicraft_app/models/product_stock.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
+import 'package:handicraft_app/widgets/ProdctStock.dart';
 import 'package:handicraft_app/widgets/productNew.dart';
 import 'package:provider/provider.dart';
 
@@ -414,7 +416,38 @@ class _PorfilePageState extends State<PorfilePage> {
         );
         break;
       case 1:
-        return Container();
+        return Expanded(
+          child: FutureBuilder(
+              future: productService.getHistoryProductUser(),
+              builder: (context, AsyncSnapshot<List> snapshot) {
+                if (snapshot.hasData) {
+                  //items = snapshot.data;
+                  data = snapshot.data;
+                  return GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        childAspectRatio: 0.9,
+                        crossAxisCount: 2,
+                      ),
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          height: 180,
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          margin: EdgeInsets.only(bottom: 15),
+                          child: ProductStockWidget(
+                            product: data[index],
+                          ),
+                        );
+                      });
+                } else {
+                  return Center(
+                      child: CircularProgressIndicator(
+                    color: Colors.black,
+                  ));
+                }
+              }),
+        );
         break;
       default:
         return Container();
