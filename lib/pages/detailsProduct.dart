@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/model_details.dart';
 import 'package:handicraft_app/pages/photoHero.dart';
+import 'package:handicraft_app/pages/seller_page.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -50,69 +51,95 @@ class _ProductsDetailState extends State<ProductsDetail> {
                       height: 6,
                     ),
                     Container(
-                        padding: EdgeInsets.fromLTRB(30, 10, 6, 10),
+                        padding: EdgeInsets.fromLTRB(15, 10, 6, 10),
                         height: size.height * 0.17,
                         width: size.height * 0.47,
                         decoration: BoxDecoration(
                           color: Colors.black,
                           borderRadius: BorderRadius.all(Radius.circular(15)),
                         ),
-                        child: Column(children: [
-                          Row(
+                        child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Container(
-                                child: Image.network(
-                                  data.profilePicture,
-                                  height: 50,
-                                ),
-                                alignment: Alignment.topCenter,
-                              ),
-                              Container(
-                                width: 20,
-                              ),
-                              Container(
-                                  //color: Colors.amber,
-                                  child: Column(
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    data.name,
-                                    style: TextStyle(
-                                        fontSize: 12, color: Colors.white),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        child: Image.network(
+                                          data.profilePicture,
+                                          height: 50,
+                                        ),
+                                        alignment: Alignment.topCenter,
+                                      ),
+                                      Container(
+                                          //color: Colors.amber,
+                                          child: Column(
+                                        children: [
+                                          Text(
+                                            data.name,
+                                            style: TextStyle(
+                                                fontFamily: "Montserrat",
+                                                fontSize: 19,
+                                                color: Colors.white),
+                                          ),
+                                        ],
+                                      )),
+                                    ],
                                   ),
-                                  Text(
-                                    data.email,
-                                    style: TextStyle(
-                                        fontSize: 12,
+                                  IconButton(
+                                      onPressed: () async {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  SellerPage(uid: data.idUser)),
+                                        );
+                                      },
+                                      icon: Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 15,
                                         color: Colors.white,
-                                        decoration: TextDecoration.underline),
-                                  ),
+                                      )),
                                 ],
-                              )),
-                            ],
-                          ),
-                          Container(
-                            width: size.height,
-                            child: Text(
-                              data.description,
-                              style:
-                                  TextStyle(fontSize: 15, color: Colors.white),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Container(
-                            width: size.height,
-                            child: Text(
-                              data.cost,
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ])),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(left: 10),
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  data.email,
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white,
+                                      decoration: TextDecoration.underline),
+                                ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(left: 10),
+                                width: size.height,
+                                child: Text(
+                                  data.description,
+                                  style: TextStyle(
+                                      fontSize: 15, color: Colors.white),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(left: 10),
+                                width: size.height,
+                                child: Text(
+                                  data.cost,
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ])),
                     SizedBox(
                       height: 5,
                     ),
