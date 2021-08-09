@@ -235,4 +235,23 @@ class ProductService with ChangeNotifier {
       return [];
     }
   }
+
+  Future<bool> addComentary(Map<String, dynamic> body, int idProduct) async {
+    final idUser = await StorageService().getValue("uid");
+    try {
+      Response response = await dio.post(
+          '${Enviroment.apiurl}/comment/product/$idUser/$idProduct',
+          options: Options(headers: {
+            HttpHeaders.contentTypeHeader: "application/json",
+          }),
+          data: jsonEncode(body));
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
 }
