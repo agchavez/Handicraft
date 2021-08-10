@@ -200,7 +200,9 @@ class _SellerPageState extends State<SellerPage> {
 
   Future<Map<dynamic, dynamic>> getdata() async {
     String uid = await StorageService().getValue("uid");
-    _like = await UserService().verifyLike(this.uid);
+    if (uid != null) {
+      _like = await UserService().verifyLike(this.uid);
+    }
     uidUser = uid;
 
     return {"uid": uid, "megusta": _like};
