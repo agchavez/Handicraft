@@ -4,8 +4,7 @@ import 'package:handicraft_app/models/model_comments.dart';
 import 'package:handicraft_app/models/model_details.dart';
 import 'package:handicraft_app/pages/photoHero.dart';
 import 'package:handicraft_app/provider/product_service.dart';
-
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:handicraft_app/provider/storage_service.dart';
 
 class ProductsDetail extends StatefulWidget {
   @override
@@ -17,6 +16,7 @@ double heightScreen, widthScreen;
 int cont = 0;
 int idProduct;
 Product_Info_Model data;
+bool idUser = false;
 
 class _ProductsDetailState extends State<ProductsDetail> {
   //List<dynamic> items;
@@ -34,177 +34,149 @@ class _ProductsDetailState extends State<ProductsDetail> {
     idProduct = ModalRoute.of(context).settings.arguments;
 
     final size = MediaQuery.of(context).size;
+    existUser();
 
     return Scaffold(
-        bottomSheet: Container(
-          margin: EdgeInsets.fromLTRB(20, 0, 10, 5),
-          padding: EdgeInsets.only(left: 20),
-          height: size.height * 0.059,
-          width: size.height * 0.5,
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-          ),
-          child: TextFormField(
-            controller: myController,
-            keyboardType: TextInputType.text,
-            style: TextStyle(color: Colors.grey[600]),
-            decoration: InputDecoration(
-                hintText: 'Escribe un comentario...',
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                suffixIcon: RaisedButton(
-                  elevation: 0.0,
-                  color: Colors.transparent,
-                  child: Icon(
-                    Icons.send,
-                    color: Colors.black,
-                  ),
-                  onPressed: () {
-                    _addCommentary(myController.text);
-                  },
-                )),
-          ),
-        ),
         body: SafeArea(
-          child: FutureBuilder(
-            future: ProductService().getPostsDetail(idProduct),
-            builder: (BuildContext context,
-                AsyncSnapshot<List<Product_Info_Model>> snapshot) {
-              if (snapshot.hasError) {
-              } else if (snapshot.hasData) {
-                data = snapshot.data[0];
-                //items = snapshot.data;
-                return Column(
-                  // The blue background emphasizes that it's a new route.
+      child: FutureBuilder(
+        future: ProductService().getPostsDetail(idProduct),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<Product_Info_Model>> snapshot) {
+          if (snapshot.hasError) {
+          } else if (snapshot.hasData) {
+            data = snapshot.data[0];
+            //items = snapshot.data;
+            return Column(
+              // The blue background emphasizes that it's a new route.
 
-                  children: [
-                    carousel(data.images),
-                    SizedBox(
-                      height: 6,
+              children: [
+                carousel(data.images),
+                SizedBox(
+                  height: 6,
+                ),
+                Container(
+                    padding: EdgeInsets.fromLTRB(30, 10, 6, 10),
+                    height: size.height * 0.20,
+                    width: size.height * 0.47,
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
                     ),
-                    Container(
-                        padding: EdgeInsets.fromLTRB(30, 10, 6, 10),
-                        height: size.height * 0.20,
-                        width: size.height * 0.47,
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.all(Radius.circular(15)),
-                        ),
-                        child: Column(children: [
+                    child: Column(children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 50,
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: NetworkImage(
-                                              data.profilePicture)),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(30.0)),
-                                    ),
-                                    alignment: Alignment.topCenter,
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Container(
-                                      alignment: Alignment.centerLeft,
-                                      //color: Colors.amber,
-                                      child: Text(
-                                        data.name,
-                                        style: TextStyle(
-                                            fontFamily: 'Montserrat',
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white),
-                                      )),
-                                ],
+                              Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(data.profilePicture)),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                ),
+                                alignment: Alignment.topCenter,
                               ),
-                              IconButton(
-                                  onPressed: () async {},
-                                  icon: Icon(
-                                    Icons.arrow_forward_ios_outlined,
-                                    size: 20,
-                                    color: Colors.white,
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  //color: Colors.amber,
+                                  child: Text(
+                                    data.name,
+                                    style: TextStyle(
+                                        fontFamily: 'Montserrat',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
                                   )),
                             ],
                           ),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              data.email,
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  fontFamily: 'Montserrat',
-                                  color: Colors.white,
-                                  decoration: TextDecoration.underline),
-                            ),
-                          ),
-                          Container(
-                            width: size.height,
-                            child: Text(
-                              data.description,
-                              style:
-                                  TextStyle(fontSize: 15, color: Colors.white),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Container(
-                            width: size.height,
-                            child: Text(
-                              data.cost,
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: 'Montserrat',
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ])),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(30, 10, 6, 8),
-                      height: size.height * 0.052,
-                      width: size.height * 0.44,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                          IconButton(
+                              onPressed: () async {},
+                              icon: Icon(
+                                Icons.arrow_forward_ios_outlined,
+                                size: 20,
+                                color: Colors.white,
+                              )),
+                        ],
                       ),
-                      child: TextFormField(
-                        keyboardType: TextInputType.text,
-                        initialValue: 'Hola, sigue disponible?',
-                        style: TextStyle(color: Colors.grey[600]),
-                        decoration: InputDecoration(
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          suffixIcon: Image.asset(
-                            'assets/icons/chat2.png',
-                          ),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          data.email,
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontFamily: 'Montserrat',
+                              color: Colors.white,
+                              decoration: TextDecoration.underline),
                         ),
                       ),
-                    ),
-                    Expanded(child: comments(size, context)),
-                  ],
-                );
-              }
-              return Center(
-                child: CircularProgressIndicator(
-                  color: Colors.black,
+                      Container(
+                        width: size.height,
+                        child: Text(
+                          data.description,
+                          style: TextStyle(fontSize: 15, color: Colors.white),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Container(
+                        width: size.height,
+                        child: Text(
+                          data.cost,
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontFamily: 'Montserrat',
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ])),
+                SizedBox(
+                  height: 15,
                 ),
-              );
-            },
-          ),
-        ));
+                Container(
+                  padding: EdgeInsets.fromLTRB(30, 10, 6, 8),
+                  height: size.height * 0.052,
+                  width: size.height * 0.44,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                  ),
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
+                    initialValue: 'Hola, sigue disponible?',
+                    style: TextStyle(color: Colors.grey[600]),
+                    decoration: InputDecoration(
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      suffixIcon: Image.asset(
+                        'assets/icons/chat2.png',
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Expanded(child: comments(size, context)),
+              ],
+            );
+          }
+          return Center(
+            child: CircularProgressIndicator(
+              color: Colors.black,
+            ),
+          );
+        },
+      ),
+    ));
   }
 
 //agregar comentarios
@@ -236,12 +208,70 @@ class _ProductsDetailState extends State<ProductsDetail> {
                   color: Colors.grey[400],
                   fontWeight: FontWeight.bold)),
         ),
+        SizedBox(
+          height: 15,
+        ),
         _showComments(size, data.comments, context),
         Container(
-          height: 80,
-        )
+          height: 20,
+        ),
+        _comentary(size),
       ],
     ));
+  }
+
+  existUser() async {
+    //idUser = false;
+    final user = await StorageService().getValue("uid");
+
+    if (user == null || user == '') {
+      idUser = false;
+      print('USUSARIO ' + idUser.toString());
+
+      return false;
+    } else {
+      idUser = true;
+      print('USUSARIO ' + idUser.toString());
+
+      return true;
+    }
+  }
+
+  Widget _comentary(Size size) {
+    if (idUser == true) {
+      return Container(
+        margin: EdgeInsets.fromLTRB(20, 0, 10, 5),
+        padding: EdgeInsets.only(left: 20),
+        height: size.height * 0.059,
+        width: size.height * 0.5,
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.all(Radius.circular(15)),
+        ),
+        child: TextFormField(
+          controller: myController,
+          keyboardType: TextInputType.text,
+          style: TextStyle(color: Colors.grey[600]),
+          decoration: InputDecoration(
+              hintText: 'Escribe un comentario...',
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              suffixIcon: RaisedButton(
+                elevation: 0.0,
+                color: Colors.transparent,
+                child: Icon(
+                  Icons.send,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  _addCommentary(myController.text);
+                },
+              )),
+        ),
+      );
+    } else {
+      return Text('');
+    }
   }
 
   Widget _showComments(

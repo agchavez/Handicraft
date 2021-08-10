@@ -206,7 +206,7 @@ class ProductService with ChangeNotifier {
     List<Product_Info_Model> detail = [];
     final response = await http.get(Uri.parse(
         "https://hechoencasa-backend.herokuapp.com/product/getInfo/${idProduct}"));
-    print(response.body);
+    //print(response.body);
     final resp = productInforModelFromJson(response.body).data;
     detail.add(resp);
 
