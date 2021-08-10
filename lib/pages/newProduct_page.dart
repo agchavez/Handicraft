@@ -64,7 +64,6 @@ class _NewpProductPageState extends State<NewpProductPage> {
       categories.addAll(value);
     });
     await productService.getCoins().then((value) {
-      print(value);
       coines.addAll(value);
     });
     setState(() {
@@ -670,12 +669,10 @@ class _NewpProductPageState extends State<NewpProductPage> {
                                   categoriesSuscribe.remove(item.name);
                                   selectedCategory = null;
                                 } else if (categoriesSuscribe.length == 1) {
-                                  print('Solo puede seleccionar una categoria');
                                   return;
                                 } else {
                                   categoriesSuscribe.add(item.name);
                                   selectedCategory = item.id;
-                                  print(selectedCategory);
                                 }
                                 setState(() {});
                               },

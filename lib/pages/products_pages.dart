@@ -39,9 +39,10 @@ class _ProductsPgaesState extends State<ProductsPages> {
     _refreshController.refreshCompleted();
   }
 
+  Size size;
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    size = MediaQuery.of(context).size;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -220,8 +221,8 @@ class _ProductsPgaesState extends State<ProductsPages> {
           Navigator.pushNamed(context, 'details', arguments: data.idProduct);
         },
         child: Container(
-          height: 130,
-          width: 145,
+          height: size.height * 0.2,
+          width: size.width * 0.40,
           alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
               image: DecorationImage(

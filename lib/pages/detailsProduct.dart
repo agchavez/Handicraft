@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/model_comments.dart';
 import 'package:handicraft_app/models/model_details.dart';
 import 'package:handicraft_app/pages/photoHero.dart';
+import 'package:handicraft_app/pages/seller_page.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 
@@ -68,36 +69,47 @@ class _ProductsDetailState extends State<ProductsDetail> {
                         children: [
                           Row(
                             children: [
-                              Container(
-                                width: 50,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: NetworkImage(data.profilePicture)),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30.0)),
-                                ),
-                                alignment: Alignment.topCenter,
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        child: Image.network(
+                                          data.profilePicture,
+                                          height: 50,
+                                        ),
+                                        alignment: Alignment.topCenter,
+                                      ),
+                                      Container(
+                                          //color: Colors.amber,
+                                          child: Column(
+                                        children: [
+                                          Text(
+                                            data.name,
+                                            style: TextStyle(
+                                                fontFamily: "Montserrat",
+                                                fontSize: 19,
+                                                color: Colors.white),
+                                          ),
+                                        ],
+                                      )),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  //color: Colors.amber,
-                                  child: Text(
-                                    data.name,
-                                    style: TextStyle(
-                                        fontFamily: 'Montserrat',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white),
-                                  )),
                             ],
                           ),
                           IconButton(
-                              onPressed: () async {},
+                              onPressed: () async {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SellerPage(uid: data.idUser)),
+                                );
+                              },
                               icon: Icon(
                                 Icons.arrow_forward_ios_outlined,
                                 size: 20,
