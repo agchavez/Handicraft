@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:handicraft_app/global/enviroment.dart';
+import 'package:handicraft_app/models/product.dart';
+import 'package:handicraft_app/models/product_general.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 
@@ -84,6 +86,27 @@ class UserService with ChangeNotifier {
       }
     } catch (e) {
       return false;
+    }
+  }
+
+  Future<List<Product_Model>> getProductsSeller(String id) async {
+    Product resp;
+    try {
+      Response response = await dio.get(
+        '${Enviroment.apiurl}/user/product-public/$id',
+        options: Options(headers: {
+          HttpHeaders.contentTypeHeader: "application/json",
+        }),
+      );
+      resp = productModelFromJson(response.data);
+      if (response.statusCode == 200) {
+        return resp.data;
+      } else {
+        return resp.data;
+      }
+    } catch (e) {
+      print("Error al obtener los productos de un usuario $e");
+      return [];
     }
   }
 }

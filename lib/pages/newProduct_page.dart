@@ -1,9 +1,7 @@
 import 'dart:io';
 
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/location_model.dart';
-import 'package:handicraft_app/pages/login_page.dart';
 import 'package:handicraft_app/provider/location_service.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/utils/selectImage.dart';
@@ -18,7 +16,6 @@ class NewpProductPage extends StatefulWidget {
 }
 
 class _NewpProductPageState extends State<NewpProductPage> {
-  @override
   LocationModel _countryValue, _cityValue, _provincesValue, categorie, coin;
   List<LocationModel> citys = [],
       contries = [],
@@ -66,9 +63,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
     await productService.getCoins().then((value) {
       coines.addAll(value);
     });
-    setState(() {
-      contries;
-    });
+    setState(() {});
   }
 
   Widget build(BuildContext context) {
@@ -566,6 +561,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
             height: size.height * 0.12,
             width: size.width,
             child: DropdownHan(
+                height: size.height * 0.12,
                 hint: "Modena",
                 error: coinError,
                 value: coin,

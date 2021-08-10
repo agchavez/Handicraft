@@ -43,7 +43,7 @@ class _SellerPageState extends State<SellerPage> {
                   color: Colors.black,
                   fontWeight: FontWeight.bold)),
         ),
-        //_createinformaction(),
+        _createinformaction(),
       ],
     ));
   }
@@ -93,6 +93,7 @@ class _SellerPageState extends State<SellerPage> {
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
                   userData = snapshot.data;
+                  String name = "${userData["name"]} ${userData["lastname"]}";
                   return Column(
                     children: [
                       Container(
@@ -119,7 +120,9 @@ class _SellerPageState extends State<SellerPage> {
                                   children: [
                                     Container(
                                         child: Text(
-                                      "${userData["name"]} ${userData["lastname"]}",
+                                      (name.length > 14)
+                                          ? "${name.substring(0, 17)}..."
+                                          : name,
                                       textAlign: TextAlign.start,
                                       style: TextStyle(
                                           fontSize: 17,
@@ -493,7 +496,7 @@ class _SellerPageState extends State<SellerPage> {
   Widget _createinformaction() {
     return Expanded(
       child: FutureBuilder(
-          future: ProductService().getProductsofUser(),
+          future: UserService().getProductsSeller(this.uid),
           builder: (context, AsyncSnapshot<List<Product_Model>> snapshot) {
             if (snapshot.hasData) {
               //items = snapshot.data;

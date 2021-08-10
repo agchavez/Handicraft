@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/location_model.dart';
 import 'package:handicraft_app/models/product.dart';
-import 'package:handicraft_app/models/product_stock.dart';
+
 import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
@@ -78,7 +78,8 @@ class _PorfilePageState extends State<PorfilePage> {
             children: [
               GestureDetector(
                 onTap: () async {
-                  String token = await _authService.refreshUserToken();
+                  await AuthService().signOut();
+                  Navigator.popAndPushNamed(context, "home");
                 },
                 child: Container(
                   alignment: Alignment.bottomRight,

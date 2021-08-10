@@ -782,7 +782,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _viewEventSignUpOrCompanie() {
+  _viewEventSignUpOrCompanie() {
     if (_typeAcount && !nowCompanie) {
       if (formkey.currentState.validate()) {
         formkey.currentState.save();

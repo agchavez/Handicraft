@@ -22,7 +22,9 @@ class ProductStockWidget extends StatelessWidget {
                 height: 5.0,
               ),
               Text(
-                this.product.name,
+                (this.product.name.length > 19)
+                    ? "${this.product.name.substring(0, 17)}..."
+                    : this.product.name,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,

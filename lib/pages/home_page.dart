@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:handicraft_app/pages/detailsProduct.dart';
+
 import 'package:handicraft_app/pages/menssange_pages.dart';
 import 'package:handicraft_app/pages/newProduct_page.dart';
 import 'package:handicraft_app/pages/notification_page.dart';

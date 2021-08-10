@@ -87,7 +87,9 @@ class _ProductsDetailState extends State<ProductsDetail> {
                                           child: Column(
                                         children: [
                                           Text(
-                                            data.name,
+                                            (data.name.length > 17)
+                                                ? "${data.name.substring(0, 17)}..."
+                                                : data.name,
                                             style: TextStyle(
                                                 fontFamily: "Montserrat",
                                                 fontSize: 19,
@@ -199,7 +201,7 @@ class _ProductsDetailState extends State<ProductsDetail> {
       final body = {
         "comentary": data,
       };
-      final resp = await ProductService().addComentary(body, idProduct);
+      await ProductService().addComentary(body, idProduct);
     }
   }
 
