@@ -208,7 +208,7 @@ class ProductService with ChangeNotifier {
     List<Product_Info_Model> detail = [];
     final response = await http.get(Uri.parse(
         "https://hechoencasa-backend.herokuapp.com/product/getInfo/${idProduct}"));
-    print(response.body);
+
     final resp = productInforModelFromJson(response.body).data;
     detail.add(resp);
 
@@ -219,7 +219,7 @@ class ProductService with ChangeNotifier {
     Product resp;
     try {
       String token = await authService.refreshUserToken();
-      print(token);
+
       Response response = await dio.get(
         '${Enviroment.apiurl}/user/product',
         options: Options(headers: {
@@ -243,7 +243,6 @@ class ProductService with ChangeNotifier {
     Product_Stock resp;
     try {
       String token = await authService.refreshUserToken();
-      print(token);
       Response response = await dio.get(
         '${Enviroment.apiurl}/user/products-history',
         options: Options(headers: {

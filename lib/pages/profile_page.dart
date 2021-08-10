@@ -5,6 +5,7 @@ import 'package:handicraft_app/models/product_stock.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
+import 'package:handicraft_app/provider/user_service.dart';
 import 'package:handicraft_app/widgets/ProdctStock.dart';
 import 'package:handicraft_app/widgets/productNew.dart';
 import 'package:provider/provider.dart';
@@ -73,18 +74,8 @@ class _PorfilePageState extends State<PorfilePage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              IconButton(
-                  onPressed: () async {
-                    bool resp = await AuthService().signOut();
-                    Navigator.popAndPushNamed(context, 'home');
-                  },
-                  icon: Icon(
-                    Icons.arrow_back_ios,
-                    size: 20,
-                    color: Colors.white,
-                  )),
               GestureDetector(
                 onTap: () async {
                   String token = await _authService.refreshUserToken();
@@ -186,13 +177,29 @@ class _PorfilePageState extends State<PorfilePage> {
                     SizedBox(
                       width: 10,
                     ),
-                    Text(
-                      "0 Likes",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Montserrat',
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold),
+                    FutureBuilder(
+                      future: UserService().getLikesById(),
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        if (snapshot.hasData) {
+                          return Text(
+                            "${snapshot.data} Seguidores",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'Montserrat',
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold),
+                          );
+                        } else {
+                          return Text(
+                            "0 Seguidores",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'Montserrat',
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold),
+                          );
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -359,6 +366,7 @@ class _PorfilePageState extends State<PorfilePage> {
               return Container(
                 padding: EdgeInsets.all(5),
                 child: Wrap(
+                  alignment: WrapAlignment.center,
                   children: data
                       .map((item) => GestureDetector(
                             onTap: () async {

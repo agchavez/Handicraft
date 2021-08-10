@@ -3,6 +3,7 @@ import 'package:handicraft_app/models/product.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
+import 'package:handicraft_app/provider/user_service.dart';
 import 'package:handicraft_app/widgets/productNew.dart';
 
 class SellerPage extends StatefulWidget {
@@ -51,7 +52,7 @@ class _SellerPageState extends State<SellerPage> {
     return Container(
       width: size.width * 1,
       padding: EdgeInsets.all(15),
-      height: size.height * 0.30,
+      height: size.height * 0.35,
       decoration: BoxDecoration(
           color: Colors.black,
           borderRadius: BorderRadius.only(
@@ -196,10 +197,10 @@ class _SellerPageState extends State<SellerPage> {
 
   Future<Map<dynamic, dynamic>> getdata() async {
     String uid = await StorageService().getValue("uid");
-    final likes = 56;
+    _like = await UserService().verifyLike(this.uid);
     uidUser = uid;
 
-    return {"uid": uid, "likes": likes, "megusta": true};
+    return {"uid": uid, "megusta": _like};
   }
 
   _report() {
@@ -431,12 +432,20 @@ class _SellerPageState extends State<SellerPage> {
         if (snapshot.hasData) {
           final data = snapshot.data;
           return GestureDetector(
-            onTap: () {
-              data["uid"] == null
-                  ? null
-                  : setState(() {
-                      _like = !_like;
-                    });
+            onTap: () async {
+              if (data["uid"] != null) {
+                if (!_like) {
+                  if (await UserService().addLike(this.uid)) {
+                    _like = true;
+                  }
+                } else {
+                  if (await UserService().removeLike(this.uid)) {
+                    _like = false;
+                  }
+                }
+
+                setState(() {});
+              }
             },
             child: Container(
               margin: EdgeInsets.only(top: 20),
@@ -448,10 +457,16 @@ class _SellerPageState extends State<SellerPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    'assets/icons/like-icon.png',
-                    width: 17,
-                  ),
+                  _like
+                      ? Image.asset(
+                          'assets/icons/liked-icon.png',
+                          width: 17,
+                        )
+                      : Image.asset(
+                          'assets/icons/like-icon.png',
+                          width: 17,
+                        ),
+                  //
                   SizedBox(
                     width: 10,
                   ),
