@@ -43,7 +43,7 @@ class _SellerPageState extends State<SellerPage> {
                   color: Colors.black,
                   fontWeight: FontWeight.bold)),
         ),
-        _createinformaction(),
+        //_createinformaction(),
       ],
     ));
   }
@@ -484,7 +484,7 @@ class _SellerPageState extends State<SellerPage> {
             ),
           );
         } else {
-          return CircularProgressIndicator();
+          return Container();
         }
       },
     );
