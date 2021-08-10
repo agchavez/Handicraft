@@ -34,7 +34,7 @@ class _ProductsDetailState extends State<ProductsDetail> {
     idProduct = ModalRoute.of(context).settings.arguments;
 
     final size = MediaQuery.of(context).size;
-    existUser();
+    existUserbool();
 
     return Scaffold(
         body: SafeArea(
@@ -220,7 +220,7 @@ class _ProductsDetailState extends State<ProductsDetail> {
     ));
   }
 
-  existUser() async {
+  existUserbool() async {
     //idUser = false;
     final user = await StorageService().getValue("uid");
 
