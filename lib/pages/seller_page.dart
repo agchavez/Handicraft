@@ -112,6 +112,9 @@ class _SellerPageState extends State<SellerPage> {
                                           fit: BoxFit.fill,
                                           image: new NetworkImage(
                                               userData["photoProfile"])))),
+                              SizedBox(
+                                width: 5,
+                              ),
                               Container(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,7 +171,7 @@ class _SellerPageState extends State<SellerPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             FutureBuilder(
-                              future: UserService().getLikesById(),
+                              future: UserService().getLikesById(this.uid),
                               builder: (BuildContext context,
                                   AsyncSnapshot snapshot) {
                                 if (snapshot.hasData) {

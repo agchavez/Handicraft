@@ -18,6 +18,7 @@ class PorfilePage extends StatefulWidget {
 class _PorfilePageState extends State<PorfilePage> {
   @override
   Size size;
+  String uid;
   Map<String, String> userData;
   List<String> categoriesSuscribe = [];
   int _selectedIndex = 0;
@@ -184,7 +185,7 @@ class _PorfilePageState extends State<PorfilePage> {
                       width: 10,
                     ),
                     FutureBuilder(
-                      future: UserService().getLikesById(),
+                      future: UserService().getLikesById("uid"),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (snapshot.hasData) {
                           return Text(

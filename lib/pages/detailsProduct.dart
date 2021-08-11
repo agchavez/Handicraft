@@ -76,11 +76,20 @@ class _ProductsDetailState extends State<ProductsDetail> {
                                   Row(
                                     children: [
                                       Container(
-                                        child: Image.network(
-                                          data.profilePicture,
-                                          height: 50,
+                                        width: 60,
+                                        height: 60,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.cover,
+                                              image: NetworkImage(
+                                                  data.profilePicture)),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(30.0)),
                                         ),
                                         alignment: Alignment.topCenter,
+                                      ),
+                                      SizedBox(
+                                        width: 5,
                                       ),
                                       Container(
                                           //color: Colors.amber,

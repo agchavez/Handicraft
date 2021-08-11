@@ -14,10 +14,13 @@ class UserService with ChangeNotifier {
   final dio = Dio();
   AuthService authService = AuthService();
 
-  Future<String> getLikesById() async {
+  Future<String> getLikesById(String id) async {
+    if (id == "uid") {
+      id = await StorageService().getValue("uid");
+    }
     try {
       String token = await authService.refreshUserToken();
-      String id = await storage.getValue("uid");
+
       Response responseInfoUser = await dio.get(
           '${Enviroment.apiurl}/quali/likesUser/$id',
           options: Options(headers: {
@@ -34,6 +37,7 @@ class UserService with ChangeNotifier {
   Future<bool> addLike(String id) async {
     try {
       String token = await authService.refreshUserToken();
+
       Response responseInfoUser = await dio.post(
           '${Enviroment.apiurl}/quali/giveLike/$id',
           options: Options(headers: {
@@ -51,6 +55,7 @@ class UserService with ChangeNotifier {
   }
 
   Future<bool> removeLike(String id) async {
+    print(id);
     try {
       String token = await authService.refreshUserToken();
       Response responseInfoUser = await dio.post(
