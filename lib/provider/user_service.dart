@@ -93,7 +93,7 @@ class UserService with ChangeNotifier {
     }
   }
 
-  Future<List<Product_Model>> getProductsSeller(String id) async {
+  Future<List<ProductModel>> getProductsSeller(String id) async {
     Product resp;
     try {
       Response response = await dio.get(
