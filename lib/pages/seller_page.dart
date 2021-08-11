@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:handicraft_app/models/product.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
+import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:handicraft_app/provider/user_service.dart';
+import 'package:handicraft_app/widgets/productNew.dart';
 
 class SellerPage extends StatefulWidget {
   final String uid;
@@ -40,7 +43,7 @@ class _SellerPageState extends State<SellerPage> {
                   color: Colors.black,
                   fontWeight: FontWeight.bold)),
         ),
-        //_createinformaction(),
+        _createinformaction(),
       ],
     ));
   }
@@ -90,6 +93,7 @@ class _SellerPageState extends State<SellerPage> {
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
                   userData = snapshot.data;
+                  String name = "${userData["name"]} ${userData["lastname"]}";
                   return Column(
                     children: [
                       Container(
@@ -108,6 +112,9 @@ class _SellerPageState extends State<SellerPage> {
                                           fit: BoxFit.fill,
                                           image: new NetworkImage(
                                               userData["photoProfile"])))),
+                              SizedBox(
+                                width: 5,
+                              ),
                               Container(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,7 +123,9 @@ class _SellerPageState extends State<SellerPage> {
                                   children: [
                                     Container(
                                         child: Text(
-                                      "${userData["name"]} ${userData["lastname"]}",
+                                      (name.length > 14)
+                                          ? "${name.substring(0, 17)}..."
+                                          : name,
                                       textAlign: TextAlign.start,
                                       style: TextStyle(
                                           fontSize: 17,
@@ -159,21 +168,51 @@ class _SellerPageState extends State<SellerPage> {
                       ),
                       Container(
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Image.asset(
-                              'assets/icons/shop-icon.png',
-                              width: 18,
+                            FutureBuilder(
+                              future: UserService().getLikesById(this.uid),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot snapshot) {
+                                if (snapshot.hasData) {
+                                  return Text(
+                                    "${snapshot.data} Seguidores",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'Montserrat',
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold),
+                                  );
+                                } else {
+                                  return Text(
+                                    "0 Seguidores",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'Montserrat',
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold),
+                                  );
+                                }
+                              },
                             ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            userData["Verification"] == 1
-                                ? Image.asset(
-                                    'assets/icons/secure-icon.png',
-                                    width: 18,
-                                  )
-                                : Container()
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Image.asset(
+                                  'assets/icons/shop-icon.png',
+                                  width: 18,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                userData["Verification"] == 1
+                                    ? Image.asset(
+                                        'assets/icons/secure-icon.png',
+                                        width: 18,
+                                      )
+                                    : Container()
+                              ],
+                            )
                           ],
                         ),
                       ),
@@ -194,7 +233,9 @@ class _SellerPageState extends State<SellerPage> {
 
   Future<Map<dynamic, dynamic>> getdata() async {
     String uid = await StorageService().getValue("uid");
-    _like = await UserService().verifyLike(this.uid);
+    if (uid != null) {
+      _like = await UserService().verifyLike(this.uid);
+    }
     uidUser = uid;
 
     return {"uid": uid, "megusta": _like};
@@ -410,7 +451,8 @@ class _SellerPageState extends State<SellerPage> {
                       style: TextStyle(color: Colors.black),
                     ),
                     elevation: 3,
-                    onPressed: () => Navigator.pop(context)),
+                    onPressed: () =>
+                        Navigator.popAndPushNamed(context, "register")),
                 MaterialButton(
                     child: Text(
                       "ok",
@@ -484,6 +526,41 @@ class _SellerPageState extends State<SellerPage> {
           return Container();
         }
       },
+    );
+  }
+
+
+  Widget _createinformaction() {
+    return Expanded(
+      child: FutureBuilder(
+          future: UserService().getProductsSeller(this.uid),
+          builder: (context, AsyncSnapshot<List<ProductModel>> snapshot) {
+            if (snapshot.hasData) {
+              //items = snapshot.data;
+              data = snapshot.data;
+              return GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    childAspectRatio: 0.9,
+                    crossAxisCount: 2,
+                  ),
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      height: 180,
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      margin: EdgeInsets.only(bottom: 15),
+                      child: ProductNew(
+                        product: data[index],
+                      ),
+                    );
+                  });
+            } else {
+              return Center(
+                  child: CircularProgressIndicator(
+                color: Colors.black,
+              ));
+            }
+          }),
     );
   }
 }

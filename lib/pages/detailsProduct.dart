@@ -76,18 +76,29 @@ class _ProductsDetailState extends State<ProductsDetail> {
                                   Row(
                                     children: [
                                       Container(
-                                        child: Image.network(
-                                          data.profilePicture,
-                                          height: 50,
+                                        width: 60,
+                                        height: 60,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.cover,
+                                              image: NetworkImage(
+                                                  data.profilePicture)),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(30.0)),
                                         ),
                                         alignment: Alignment.topCenter,
+                                      ),
+                                      SizedBox(
+                                        width: 5,
                                       ),
                                       Container(
                                           //color: Colors.amber,
                                           child: Column(
                                         children: [
                                           Text(
-                                            data.name,
+                                            (data.name.length > 17)
+                                                ? "${data.name.substring(0, 17)}..."
+                                                : data.name,
                                             style: TextStyle(
                                                 fontFamily: "Montserrat",
                                                 fontSize: 19,
@@ -192,7 +203,7 @@ class _ProductsDetailState extends State<ProductsDetail> {
   }
 
 //agregar comentarios
-  _addCommentary(String data) async {
+ _addCommentary(String data) async {
     if (data != '') {
       setState(() {});
       myController.clear();

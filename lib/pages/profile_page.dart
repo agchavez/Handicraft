@@ -18,6 +18,7 @@ class PorfilePage extends StatefulWidget {
 class _PorfilePageState extends State<PorfilePage> {
   @override
   Size size;
+  String uid;
   Map<String, String> userData;
   List<String> categoriesSuscribe = [];
   int _selectedIndex = 0;
@@ -134,8 +135,10 @@ class _PorfilePageState extends State<PorfilePage> {
                               ),
                               Container(
                                   child: Text(
+
                                       (userData["email"].length > 17)
                                           ? "${userData["email"].substring(0, 18)}..."
+
                                           : userData["email"],
                                       textAlign: TextAlign.start,
                                       style: TextStyle(
@@ -183,7 +186,7 @@ class _PorfilePageState extends State<PorfilePage> {
                       width: 10,
                     ),
                     FutureBuilder(
-                      future: UserService().getLikesById(),
+                      future: UserService().getLikesById("uid"),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (snapshot.hasData) {
                           return Text(
