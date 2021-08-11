@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -6,18 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 
-List<PickedFile> _tempimageFileList;
-File _image;
 final picker = ImagePicker();
 @override
 Widget build(BuildContext context) {
   return Container(
     child: null,
   );
-}
-
-set _imageFile(PickedFile value) {
-  _tempimageFileList = value == null ? null : [value];
 }
 
 _imgFromCamera() async {

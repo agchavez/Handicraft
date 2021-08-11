@@ -11,7 +11,6 @@ import 'package:handicraft_app/models/product_general.dart';
 import 'package:handicraft_app/models/product_stock.dart';
 import 'package:handicraft_app/models/product_stock_model.dart';
 
-import 'package:handicraft_app/pages/login_page.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 
@@ -174,7 +173,7 @@ class ProductService with ChangeNotifier {
   }
 
   //Obtener productos sin logearse
-  Future<List<Product_Model>> getPosts(int cont) async {
+  Future<List<ProductModel>> getPosts(int cont) async {
     // print(endArray);
     String uid = await StorageService().getValue("uid");
     print("uid == $uid");
@@ -203,9 +202,9 @@ class ProductService with ChangeNotifier {
     }
   }
 
-  Future<List<Product_Info_Model>> getPostsDetail(int idProduct) async {
+  Future<List<ProductInfoModel>> getPostsDetail(int idProduct) async {
     // print(endArray);
-    List<Product_Info_Model> detail = [];
+    List<ProductInfoModel> detail = [];
     final response = await http.get(Uri.parse(
         "https://hechoencasa-backend.herokuapp.com/product/getInfo/${idProduct}"));
     //print(response.body);
@@ -215,7 +214,7 @@ class ProductService with ChangeNotifier {
     return detail;
   }
 
-  Future<List<Product_Model>> getProductsofUser() async {
+  Future<List<ProductModel>> getProductsofUser() async {
     Product resp;
     try {
       String token = await authService.refreshUserToken();
@@ -259,7 +258,7 @@ class ProductService with ChangeNotifier {
   }
 
   Future<List<ProductStock>> getHistoryProductUser() async {
-    Product_Stock resp;
+    ProductStockModel resp;
     try {
       String token = await authService.refreshUserToken();
       Response response = await dio.get(

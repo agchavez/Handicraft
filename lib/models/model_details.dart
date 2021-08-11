@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:handicraft_app/models/model_comments.dart';
 
-Product_Info_Model productInfoFromJson(String str) =>
-    Product_Info_Model.fromJson(json.decode(str));
+ProductInfoModel productInfoFromJson(String str) =>
+    ProductInfoModel.fromJson(json.decode(str));
 
-String productToJson(Product_Info_Model data) => json.encode(data.toJson());
+String productToJson(ProductInfoModel data) => json.encode(data.toJson());
 
-class Product_Info_Model {
-  Product_Info_Model({
+class ProductInfoModel {
+  ProductInfoModel({
     this.idProduct,
     this.idUser,
     this.name,
@@ -39,13 +39,13 @@ class Product_Info_Model {
   int calification;
   int company;
   List<dynamic> images;
-  List<Product_Comments_Model> comments;
+  List<ProductCommentsModel> comments;
   int idCompany;
   String nameCompany;
   String descCompany;
 
-  factory Product_Info_Model.fromJson(Map<dynamic, dynamic> json) =>
-      Product_Info_Model(
+  factory ProductInfoModel.fromJson(Map<dynamic, dynamic> json) =>
+      ProductInfoModel(
         idProduct: json["idProduct"],
         idUser: json["idUser"],
         name: json["name"],
@@ -58,8 +58,8 @@ class Product_Info_Model {
         calification: json["calification"],
         company: json["company"],
         images: json["images"],
-        comments: List<Product_Comments_Model>.from(
-            json["comments"].map((x) => Product_Comments_Model.fromJson(x))),
+        comments: List<ProductCommentsModel>.from(
+            json["comments"].map((x) => ProductCommentsModel.fromJson(x))),
         idCompany: json["idCompany"],
         nameCompany: json["nameCompany"],
         descCompany: json["descCompany"],

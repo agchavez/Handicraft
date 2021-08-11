@@ -16,7 +16,7 @@ double heightScreen, widthScreen;
 
 int cont = 0;
 int idProduct;
-Product_Info_Model data;
+ProductInfoModel data;
 bool idUser = false;
 
 class _ProductsDetailState extends State<ProductsDetail> {
@@ -38,11 +38,11 @@ class _ProductsDetailState extends State<ProductsDetail> {
     existUserbool();
 
     return Scaffold(
-        body: SafeArea(
+        body: SingleChildScrollView(
       child: FutureBuilder(
         future: ProductService().getPostsDetail(idProduct),
         builder: (BuildContext context,
-            AsyncSnapshot<List<Product_Info_Model>> snapshot) {
+            AsyncSnapshot<List<ProductInfoModel>> snapshot) {
           if (snapshot.hasError) {
           } else if (snapshot.hasData) {
             data = snapshot.data[0];
@@ -177,7 +177,7 @@ class _ProductsDetailState extends State<ProductsDetail> {
                 SizedBox(
                   height: 15,
                 ),
-                Expanded(child: comments(size, context)),
+                comments(size, context),
               ],
             );
           }
@@ -200,12 +200,12 @@ class _ProductsDetailState extends State<ProductsDetail> {
         "comentary": data,
       };
       final resp = await ProductService().addComentary(body, idProduct);
+      print(resp);
     }
   }
 
   Widget comments(Size size, BuildContext context) {
-    return SingleChildScrollView(
-        child: Column(
+    return Column(
       children: [
         Container(
           padding: EdgeInsets.fromLTRB(10, 10, 6, 10),
@@ -229,7 +229,7 @@ class _ProductsDetailState extends State<ProductsDetail> {
         ),
         _comentary(size),
       ],
-    ));
+    );
   }
 
   existUserbool() async {
@@ -268,9 +268,9 @@ class _ProductsDetailState extends State<ProductsDetail> {
               hintText: 'Escribe un comentario...',
               focusedBorder: InputBorder.none,
               enabledBorder: InputBorder.none,
-              suffixIcon: RaisedButton(
-                elevation: 0.0,
-                color: Colors.transparent,
+              suffixIcon: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    elevation: 0.0, primary: Colors.transparent),
                 child: Icon(
                   Icons.send,
                   color: Colors.black,
@@ -287,7 +287,7 @@ class _ProductsDetailState extends State<ProductsDetail> {
   }
 
   Widget _showComments(
-      Size size, List<Product_Comments_Model> data, BuildContext context) {
+      Size size, List<ProductCommentsModel> data, BuildContext context) {
     return Flex(
       direction: Axis.vertical,
       children: <Widget>[
@@ -325,7 +325,9 @@ class _ProductsDetailState extends State<ProductsDetail> {
                               child: Column(
                             children: [
                               Text(
-                                data[i].name,
+                                (data[i].name.length > 14)
+                                    ? "${data[i].name.substring(0, 14)}..."
+                                    : data[i].name,
                                 style: TextStyle(
                                     fontFamily: 'Montserrat',
                                     fontSize: 12,

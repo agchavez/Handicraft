@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/location_model.dart';
 import 'package:handicraft_app/models/product.dart';
-import 'package:handicraft_app/models/product_stock.dart';
+
 import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
@@ -22,7 +22,6 @@ class _PorfilePageState extends State<PorfilePage> {
   List<String> categoriesSuscribe = [];
   int _selectedIndex = 0;
   ProductService productService;
-  ScrollController _scrollController;
   AuthService _authService;
 
   @override
@@ -76,12 +75,13 @@ class _PorfilePageState extends State<PorfilePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              GestureDetector(
-                onTap: () async {
-                  String token = await _authService.refreshUserToken();
-                },
-                child: Container(
-                  alignment: Alignment.bottomRight,
+              Container(
+                alignment: Alignment.bottomRight,
+                child: GestureDetector(
+                  onTap: () async {
+                    await AuthService().signOut();
+                    Navigator.popAndPushNamed(context, "home");
+                  },
                   child: Image.asset(
                     'assets/icons/menu-icon.png',
                     width: 3,
@@ -119,7 +119,9 @@ class _PorfilePageState extends State<PorfilePage> {
                             children: [
                               Container(
                                   child: Text(
-                                userData["displayName"],
+                                (userData["displayName"].length > 14)
+                                    ? "${userData["displayName"].substring(0, 17)}..."
+                                    : userData["displayName"],
                                 textAlign: TextAlign.start,
                                 style: TextStyle(
                                     fontSize: 17,
@@ -131,7 +133,10 @@ class _PorfilePageState extends State<PorfilePage> {
                                 height: 5,
                               ),
                               Container(
-                                  child: Text(userData["email"],
+                                  child: Text(
+                                      (userData["email"].length > 17)
+                                          ? "${userData["email"].substring(0, 18)}..."
+                                          : userData["email"],
                                       textAlign: TextAlign.start,
                                       style: TextStyle(
                                           color: Colors.white,
@@ -327,14 +332,14 @@ class _PorfilePageState extends State<PorfilePage> {
         return Expanded(
           child: FutureBuilder(
               future: productService.getProductsofUser(),
-              builder: (context, AsyncSnapshot<List<Product_Model>> snapshot) {
+              builder: (context, AsyncSnapshot<List<ProductModel>> snapshot) {
                 if (snapshot.hasData) {
                   //items = snapshot.data;
                   data = snapshot.data;
                   return GridView.builder(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                        childAspectRatio: 0.9,
+                        childAspectRatio: 0.85,
                         crossAxisCount: 2,
                       ),
                       itemCount: snapshot.data.length,
@@ -434,7 +439,7 @@ class _PorfilePageState extends State<PorfilePage> {
                   return GridView.builder(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                        childAspectRatio: 0.9,
+                        childAspectRatio: 0.85,
                         crossAxisCount: 2,
                       ),
                       itemCount: snapshot.data.length,

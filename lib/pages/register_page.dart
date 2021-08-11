@@ -2,12 +2,10 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 
-import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:custom_switch_button/custom_switch_button.dart';
-import 'package:handicraft_app/pages/login_page.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
 
 import 'package:handicraft_app/utils/util.dart' as utils;
@@ -41,10 +39,10 @@ class _RegisterPageState extends State<RegisterPage> {
   bool vefiryEmail = false;
   bool nowCompanie = false;
   bool sendingVerification = false;
-  TextEditingController _textDescriptionController = TextEditingController();
   double currentOpacity = 1.0;
   double currentOpacityPage = 1.0;
   bool _validateDescription = false;
+
   final dio = Dio();
   int currentPage = 0;
 
@@ -59,6 +57,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void initState() {
+    print(_validateDescription);
+
     super.initState();
     locationService = Provider.of<LocationService>(context, listen: false);
     _services();
@@ -80,7 +80,7 @@ class _RegisterPageState extends State<RegisterPage> {
     });
 
     setState(() {
-      contries;
+      // contries;
     });
   }
 
@@ -365,7 +365,13 @@ class _RegisterPageState extends State<RegisterPage> {
                 SizedBox(
                   height: 20,
                 ),
-                RaisedButton(
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0)),
+                      elevation: 2.0,
+                      primary: Colors.black,
+                      textStyle: TextStyle(color: Colors.white)),
                   child: Container(
                       width: size.width * 0.75,
                       padding: EdgeInsets.symmetric(vertical: 18.0),
@@ -373,11 +379,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [Text('Continuar')])),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                  elevation: 2.0,
-                  color: Colors.black,
-                  textColor: Colors.white,
                   onPressed: () {
                     Navigator.popAndPushNamed(context, "login");
                   },
@@ -472,13 +473,6 @@ class _RegisterPageState extends State<RegisterPage> {
     });
   }
 
-  void _clearImage() {
-    setState(() {
-      image = null;
-    });
-  }
-
-/**/
   Widget _createForm() {
     return SingleChildScrollView(
       child: Form(
@@ -625,7 +619,6 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _createPassword() {
-    bool ban = false;
     return Container(
         width: size.width * 0.75,
         child: TextFormField(
@@ -782,7 +775,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _viewEventSignUpOrCompanie() {
+  _viewEventSignUpOrCompanie() {
     if (_typeAcount && !nowCompanie) {
       if (formkey.currentState.validate()) {
         formkey.currentState.save();
@@ -1229,18 +1222,6 @@ class _RegisterPageState extends State<RegisterPage> {
         });
         return false;
       }
-
-      _mostrarFoto(data) {
-        if (data == '' || data.fotoUrl == null) {
-          return AssetImage('assets/images/unnamed.png');
-        } else {
-          return NetworkImage(
-            data.fotoUrl,
-          );
-        }
-      }
-
-      _navigateAndDisplaySelection(BuildContext context) async {}
     });
   }
 }

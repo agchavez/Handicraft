@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:handicraft_app/models/product.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
-import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:handicraft_app/provider/user_service.dart';
-import 'package:handicraft_app/widgets/productNew.dart';
 
 class SellerPage extends StatefulWidget {
   final String uid;
@@ -487,40 +484,6 @@ class _SellerPageState extends State<SellerPage> {
           return Container();
         }
       },
-    );
-  }
-
-  Widget _createinformaction() {
-    return Expanded(
-      child: FutureBuilder(
-          future: ProductService().getProductsofUser(),
-          builder: (context, AsyncSnapshot<List<Product_Model>> snapshot) {
-            if (snapshot.hasData) {
-              //items = snapshot.data;
-              data = snapshot.data;
-              return GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    childAspectRatio: 0.9,
-                    crossAxisCount: 2,
-                  ),
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      height: 180,
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      margin: EdgeInsets.only(bottom: 15),
-                      child: ProductNew(
-                        product: data[index],
-                      ),
-                    );
-                  });
-            } else {
-              return Center(
-                  child: CircularProgressIndicator(
-                color: Colors.black,
-              ));
-            }
-          }),
     );
   }
 }

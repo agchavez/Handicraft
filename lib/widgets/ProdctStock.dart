@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:handicraft_app/models/product.dart';
 import 'package:handicraft_app/models/product_stock.dart';
 
 class ProductStockWidget extends StatelessWidget {
@@ -8,7 +7,6 @@ class ProductStockWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return Container(
       child: Column(
         children: [
@@ -19,7 +17,7 @@ class ProductStockWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 5.0,
+                height: 1.0,
               ),
               Text(
                 this.product.name,

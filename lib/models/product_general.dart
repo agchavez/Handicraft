@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:handicraft_app/models/model_details.dart';
 import 'package:handicraft_app/models/product.dart';
 
 Product productModelFromJson(dynamic str) => Product.fromJson(str);
@@ -13,12 +12,12 @@ class Product {
     this.message,
   });
 
-  List<Product_Model> data;
+  List<ProductModel> data;
   String message;
 
   factory Product.fromJson(Map<dynamic, dynamic> json) => Product(
-        data: List<Product_Model>.from(
-            json["data"].map((x) => Product_Model.fromJson(x))),
+        data: List<ProductModel>.from(
+            json["data"].map((x) => ProductModel.fromJson(x))),
         message: json["message"],
       );
   Map<dynamic, dynamic> toJson() => {

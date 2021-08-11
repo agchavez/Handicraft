@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-List<Product_Model> dat2 = [];
-Product_Model productFromJson(String str) =>
-    Product_Model.fromJson(json.decode(str));
+List<ProductModel> dat2 = [];
+ProductModel productFromJson(String str) =>
+    ProductModel.fromJson(json.decode(str));
 
-String productToJson(Product_Model data) => json.encode(data.toJson());
+String productToJson(ProductModel data) => json.encode(data.toJson());
 
-class Product_Model {
-  Product_Model(
+class ProductModel {
+  ProductModel(
       {this.idProduct,
       this.idUser,
       this.name,
@@ -24,7 +24,7 @@ class Product_Model {
   String urlImage;
   String datep;
 
-  factory Product_Model.fromJson(Map<dynamic, dynamic> json) => Product_Model(
+  factory ProductModel.fromJson(Map<dynamic, dynamic> json) => ProductModel(
         idProduct: json["idProduct"],
         idUser: json["idUser"],
         name: json["name"],

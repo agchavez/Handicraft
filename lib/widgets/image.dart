@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:handicraft_app/pages/register_page.dart' as register;
 //import 'package:handicraft_app/widgets/image.dart' as imageWid;
 
 // ignore: import_of_legacy_library_into_null_safe
