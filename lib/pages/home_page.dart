@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:handicraft_app/pages/detailsProduct.dart';
+
 import 'package:handicraft_app/pages/menssange_pages.dart';
 import 'package:handicraft_app/pages/newProduct_page.dart';
 import 'package:handicraft_app/pages/notification_page.dart';
@@ -70,27 +70,27 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
       floatingActionButton: FutureBuilder(
         future: auth.stateAuth(),
         builder: (context, snapshot) {
-          if ( auth.authState ) {
-              return Container(
-                margin: EdgeInsets.only(bottom: 25),
-                width: 50,
-                height: 50,
-                child: FittedBox(
-                  alignment: Alignment.center,
-                  child: FloatingActionButton(
-                      elevation: 3,
-                      backgroundColor: Colors.white,
-                      onPressed: () {
-                        setState(() {
-                          _selectedIndex = 4;
-                        });
-                      },
-                      child: Image.asset(
-                        'assets/icons/plus-icon.png',
-                        width: 15.0,
-                      )),
-                ),
-              );
+          if (auth.authState) {
+            return Container(
+              margin: EdgeInsets.only(bottom: 25),
+              width: 50,
+              height: 50,
+              child: FittedBox(
+                alignment: Alignment.center,
+                child: FloatingActionButton(
+                    elevation: 3,
+                    backgroundColor: Colors.white,
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 4;
+                      });
+                    },
+                    child: Image.asset(
+                      'assets/icons/plus-icon.png',
+                      width: 15.0,
+                    )),
+              ),
+            );
           } else {
             return Container();
           }
@@ -295,7 +295,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                             : FutureBuilder(
                                 future: auth.stateAuth(),
                                 builder: (context, snapshot) {
-                                  if ( auth.authState ) {
+                                  if (auth.authState) {
                                     return _buildNavBarContent(size);
                                   } else {
                                     return _buildMenuContent();
@@ -441,9 +441,9 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                                                       fontFamily: 'Montserrat',
                                                       fontWeight:
                                                           FontWeight.w800,
-                                                      fontSize: 14,
+                                                      fontSize: 11.6,
                                                     ),
-                                                  )
+                                                  ),
                                                 ],
                                               )
                                             : Container(

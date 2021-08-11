@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:handicraft_app/models/model_comments.dart';
+
 Product_Info_Model productInfoFromJson(String str) =>
     Product_Info_Model.fromJson(json.decode(str));
 
@@ -37,7 +39,7 @@ class Product_Info_Model {
   int calification;
   int company;
   List<dynamic> images;
-  List<dynamic> comments;
+  List<Product_Comments_Model> comments;
   int idCompany;
   String nameCompany;
   String descCompany;
@@ -56,7 +58,8 @@ class Product_Info_Model {
         calification: json["calification"],
         company: json["company"],
         images: json["images"],
-        comments: json["comments"],
+        comments: List<Product_Comments_Model>.from(
+            json["comments"].map((x) => Product_Comments_Model.fromJson(x))),
         idCompany: json["idCompany"],
         nameCompany: json["nameCompany"],
         descCompany: json["descCompany"],
