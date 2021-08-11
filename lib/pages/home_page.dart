@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:handicraft_app/pages/menssange_pages.dart';
 import 'package:handicraft_app/pages/newProduct_page.dart';
 import 'package:handicraft_app/pages/notification_page.dart';
@@ -12,8 +11,6 @@ import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:provider/provider.dart';
 
-const _cardColor = Color(0xFFFFFF);
-const _cardColorExpanded = Color(0X000000);
 const _maxHeight = 380.0;
 const _minHeigth = 60.0;
 
@@ -33,14 +30,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
   AuthService auth;
   bool loadingGoogleIn = false;
 
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-
   int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    print(index);
-  }
 
   @override
   void initState() {
@@ -114,6 +104,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
       case 4:
         return NewpProductPage();
       default:
+        return ProductsPages();
     }
   }
 
@@ -380,7 +371,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                           height: MediaQuery.of(context).size.height * 0.1,
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: RaisedButton(
+                            child: ElevatedButton(
                                 child: Container(
                                     padding:
                                         EdgeInsets.symmetric(vertical: 15.0),
@@ -398,11 +389,13 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                                             ),
                                           ),
                                         ])),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5.0)),
-                                elevation: 2.0,
-                                color: Colors.black,
-                                textColor: Colors.white,
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.0)),
+                                  elevation: 2.0,
+                                  primary: Colors.black,
+                                  textStyle: TextStyle(color: Colors.white),
+                                ),
                                 onPressed: () {
                                   if (!loadingGoogleIn) {
                                     Navigator.popAndPushNamed(context, "login");

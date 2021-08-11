@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-Product_Comments_Model productCommentsFromJson(String str) =>
-    Product_Comments_Model.fromJson(json.decode(str));
+ProductCommentsModel productCommentsFromJson(String str) =>
+    ProductCommentsModel.fromJson(json.decode(str));
 
-String productCommentsToJson(Product_Comments_Model data) =>
+String productCommentsToJson(ProductCommentsModel data) =>
     json.encode(data.toJson());
 
-class Product_Comments_Model {
-  Product_Comments_Model({
+class ProductCommentsModel {
+  ProductCommentsModel({
     this.idUser,
     this.name,
     this.photoProfile,
@@ -25,8 +25,8 @@ class Product_Comments_Model {
   String date;
   String time;
 
-  factory Product_Comments_Model.fromJson(Map<dynamic, dynamic> json) =>
-      Product_Comments_Model(
+  factory ProductCommentsModel.fromJson(Map<dynamic, dynamic> json) =>
+      ProductCommentsModel(
         idUser: json["idUser"],
         name: json["name"],
         photoProfile: json["photoProfile"],

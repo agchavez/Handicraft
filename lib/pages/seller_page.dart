@@ -529,11 +529,12 @@ class _SellerPageState extends State<SellerPage> {
     );
   }
 
+
   Widget _createinformaction() {
     return Expanded(
       child: FutureBuilder(
           future: UserService().getProductsSeller(this.uid),
-          builder: (context, AsyncSnapshot<List<Product_Model>> snapshot) {
+          builder: (context, AsyncSnapshot<List<ProductModel>> snapshot) {
             if (snapshot.hasData) {
               //items = snapshot.data;
               data = snapshot.data;

@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:handicraft_app/models/product_stock.dart';
 
-Product_Stock productStockModelFromJson(dynamic str) =>
-    Product_Stock.fromJson(str);
+ProductStockModel productStockModelFromJson(dynamic str) =>
+    ProductStockModel.fromJson(str);
 
-String productStockModelToJson(Product_Stock data) =>
+String productStockModelToJson(ProductStockModel data) =>
     json.encode(data.toJson());
 
-class Product_Stock {
-  Product_Stock({
+class ProductStockModel {
+  ProductStockModel({
     this.data,
     this.message,
   });
@@ -16,7 +16,8 @@ class Product_Stock {
   List<ProductStock> data;
   String message;
 
-  factory Product_Stock.fromJson(Map<dynamic, dynamic> json) => Product_Stock(
+  factory ProductStockModel.fromJson(Map<dynamic, dynamic> json) =>
+      ProductStockModel(
         data: List<ProductStock>.from(
             json["data"].map((x) => ProductStock.fromJson(x))),
         message: json["message"],

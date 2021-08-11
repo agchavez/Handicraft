@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/product.dart';
 
 class ProductNew extends StatelessWidget {
-  final Product_Model product;
+  final ProductModel product;
   const ProductNew({Key key, @required this.product}) : super(key: key);
 
   @override
@@ -15,7 +15,7 @@ class ProductNew extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 5.0,
+                height: 1.0,
               ),
               Text(
                 (this.product.name.length > 19)

@@ -23,7 +23,6 @@ class _PorfilePageState extends State<PorfilePage> {
   List<String> categoriesSuscribe = [];
   int _selectedIndex = 0;
   ProductService productService;
-  ScrollController _scrollController;
   AuthService _authService;
 
   @override
@@ -136,8 +135,10 @@ class _PorfilePageState extends State<PorfilePage> {
                               ),
                               Container(
                                   child: Text(
-                                      (userData["email"].length > 26)
-                                          ? "${userData["email"].substring(0, 22)}..."
+
+                                      (userData["email"].length > 17)
+                                          ? "${userData["email"].substring(0, 18)}..."
+
                                           : userData["email"],
                                       textAlign: TextAlign.start,
                                       style: TextStyle(
@@ -265,6 +266,7 @@ class _PorfilePageState extends State<PorfilePage> {
     );
   }
 
+//Navbar
   Widget _createNavbar() {
     return Container(
       height: 60,
@@ -334,7 +336,7 @@ class _PorfilePageState extends State<PorfilePage> {
         return Expanded(
           child: FutureBuilder(
               future: productService.getProductsofUser(),
-              builder: (context, AsyncSnapshot<List<Product_Model>> snapshot) {
+              builder: (context, AsyncSnapshot<List<ProductModel>> snapshot) {
                 if (snapshot.hasData) {
                   //items = snapshot.data;
                   data = snapshot.data;

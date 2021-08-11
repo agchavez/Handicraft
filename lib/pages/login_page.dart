@@ -19,7 +19,7 @@ class LoginPage extends StatefulWidget {
 final formkey = GlobalKey<FormState>();
 
 bool _showpasword = true, check = false;
-LoginAccountModel login_user = new LoginAccountModel();
+LoginAccountModel loginUser = new LoginAccountModel();
 AuthService auth;
 List<Widget> actions = [];
 bool _sendingEmail = false;
@@ -212,7 +212,7 @@ class _LoginPageState extends State<LoginPage> {
                 borderRadius: BorderRadius.circular(10.0)),
             hintText: 'Correo electrónico',
           ),
-          onSaved: (value) => {login_user.email = value.toString()},
+          onSaved: (value) => {loginUser.email = value.toString()},
           validator: (value) {
             if (!utils.validatorEmail(value.toString())) {
               return 'Correo no válido';
@@ -226,7 +226,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _password() {
-    bool ban = false;
     return Container(
         width: size.width * 0.75,
         child: TextFormField(
@@ -269,7 +268,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             hintText: 'Contraseña',
           ),
-          onSaved: (value) => {login_user.password = value.toString()},
+          onSaved: (value) => {loginUser.password = value.toString()},
           validator: (value) {
             if (value.isEmpty) {
               return 'Se requiere de una contraseña.';
@@ -280,15 +279,14 @@ class _LoginPageState extends State<LoginPage> {
         ));
   }
 
-  _error() {
-    if (check == false) {
-      return Text(' X');
-    } else
-      return Text('jh');
-  }
-
   Widget _createBottom(BuildContext context) {
-    return RaisedButton(
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
+          elevation: 2.0,
+          primary: Colors.black,
+          textStyle: TextStyle(color: Colors.white)),
       child: Container(
           width: size.width * 0.65,
           padding: EdgeInsets.symmetric(vertical: 18.0),
@@ -300,10 +298,6 @@ class _LoginPageState extends State<LoginPage> {
                   'Iniciar Sesión',
                 ),
               ])),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
-      elevation: 2.0,
-      color: Colors.black,
-      textColor: Colors.white,
       onPressed: () => _logIn(),
     );
   }
@@ -321,7 +315,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     formkey.currentState.save();
-    final resp = await auth.login(login_user.email, login_user.password);
+    final resp = await auth.login(loginUser.email, loginUser.password);
 
     if (resp) {
       await auth.stateAuth();
@@ -347,13 +341,13 @@ class _LoginPageState extends State<LoginPage> {
       _alert['content'] =
           'Tu correo aun no ha sido verificado, para iniciar sesión verifica tu correo.';
       actions = [
-        FlatButton(
+        ElevatedButton(
             onPressed: () async {
               await auth.signOut();
               Navigator.pop(context);
             },
             child: Text('Ok')),
-        FlatButton(
+        ElevatedButton(
             onPressed: () async {
               _sendingEmail = true;
               setState(() {});

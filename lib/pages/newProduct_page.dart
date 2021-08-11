@@ -406,7 +406,6 @@ class _NewpProductPageState extends State<NewpProductPage> {
             Row(
               children: [
                 Stack(
-                  overflow: Overflow.visible,
                   children: [
                     Container(
                       width: 175,
@@ -591,7 +590,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
                       int temp = 0;
                       amountCtrl.text != ""
                           ? temp = int.parse(amountCtrl.text)
-                          : null;
+                          : temp = temp;
                       temp += 1;
                       amountCtrl.text = temp.toString();
                     },
@@ -609,7 +608,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
                       int temp = 0;
                       amountCtrl.text != ""
                           ? temp = int.parse(amountCtrl.text)
-                          : null;
+                          : temp = temp;
                       temp == 0 ? null : temp -= 1;
                       amountCtrl.text = temp.toString();
                     },

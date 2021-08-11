@@ -13,11 +13,11 @@ class ProductInfor {
     this.message,
   });
 
-  Product_Info_Model data;
+  ProductInfoModel data;
   String message;
 
   factory ProductInfor.fromJson(Map<dynamic, dynamic> json) => ProductInfor(
-        data: Product_Info_Model.fromJson(json["data"]),
+        data: ProductInfoModel.fromJson(json["data"]),
         message: json["message"],
       );
   Map<dynamic, dynamic> toJson() => {

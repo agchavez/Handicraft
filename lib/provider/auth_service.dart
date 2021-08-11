@@ -84,7 +84,8 @@ class AuthService with ChangeNotifier {
   }
 
   Future<void> stateAuth() async {
-    final user = await FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
+
     if (user != null) {
       authState = true;
     } else {
@@ -98,6 +99,7 @@ class AuthService with ChangeNotifier {
       await FirebaseAuth.instance.signOut();
       await stateAuth();
       await storage.deleteAll();
+      return true;
     } catch (e) {
       return false;
     }
