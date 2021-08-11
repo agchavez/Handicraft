@@ -76,13 +76,13 @@ class _PorfilePageState extends State<PorfilePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              GestureDetector(
-                onTap: () async {
-                  await AuthService().signOut();
-                  Navigator.popAndPushNamed(context, "home");
-                },
-                child: Container(
-                  alignment: Alignment.bottomRight,
+              Container(
+                alignment: Alignment.bottomRight,
+                child: GestureDetector(
+                  onTap: () async {
+                    await AuthService().signOut();
+                    Navigator.popAndPushNamed(context, "home");
+                  },
                   child: Image.asset(
                     'assets/icons/menu-icon.png',
                     width: 3,
@@ -120,7 +120,9 @@ class _PorfilePageState extends State<PorfilePage> {
                             children: [
                               Container(
                                   child: Text(
-                                userData["displayName"],
+                                (userData["displayName"].length > 14)
+                                    ? "${userData["displayName"].substring(0, 17)}..."
+                                    : userData["displayName"],
                                 textAlign: TextAlign.start,
                                 style: TextStyle(
                                     fontSize: 17,
@@ -132,7 +134,10 @@ class _PorfilePageState extends State<PorfilePage> {
                                 height: 5,
                               ),
                               Container(
-                                  child: Text(userData["email"],
+                                  child: Text(
+                                      (userData["email"].length > 26)
+                                          ? "${userData["email"].substring(0, 22)}..."
+                                          : userData["email"],
                                       textAlign: TextAlign.start,
                                       style: TextStyle(
                                           color: Colors.white,
@@ -335,7 +340,7 @@ class _PorfilePageState extends State<PorfilePage> {
                   return GridView.builder(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                        childAspectRatio: 0.9,
+                        childAspectRatio: 0.85,
                         crossAxisCount: 2,
                       ),
                       itemCount: snapshot.data.length,
@@ -435,7 +440,7 @@ class _PorfilePageState extends State<PorfilePage> {
                   return GridView.builder(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                        childAspectRatio: 0.9,
+                        childAspectRatio: 0.85,
                         crossAxisCount: 2,
                       ),
                       itemCount: snapshot.data.length,
