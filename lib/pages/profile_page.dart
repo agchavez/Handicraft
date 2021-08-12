@@ -135,10 +135,8 @@ class _PorfilePageState extends State<PorfilePage> {
                               ),
                               Container(
                                   child: Text(
-
-                                      (userData["email"].length > 17)
-                                          ? "${userData["email"].substring(0, 18)}..."
-
+                                      (userData["email"].length > 29)
+                                          ? "${userData["email"].substring(0, 26)}..."
                                           : userData["email"],
                                       textAlign: TextAlign.start,
                                       style: TextStyle(
