@@ -37,6 +37,8 @@ class PhotoHero extends StatelessWidget {
 
 Widget carousel(List<dynamic> images) {
   return Container(
+    height: 300,
+    width: 400,
     child: CarouselSlider(
       options: CarouselOptions(height: 300.0),
       items: images.map((i) {

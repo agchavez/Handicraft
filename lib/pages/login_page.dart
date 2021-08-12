@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/login_user.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
-import 'package:handicraft_app/utils/alerts.dart';
 import 'package:handicraft_app/utils/util.dart' as utils;
 import 'package:handicraft_app/global/enviroment.dart';
 import 'package:provider/provider.dart';
@@ -318,8 +317,7 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       formkey.currentState.save();
-      final resp = await auth.login(login_user.email, login_user.password);
-
+      final resp = await auth.login(loginUser.email, loginUser.password);
 
       if (!resp) {
         utils.showTopSnackBar(context, size, '¡Algo ha fallado!.',

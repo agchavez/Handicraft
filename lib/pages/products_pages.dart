@@ -11,7 +11,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 RefreshController _refreshController = RefreshController(initialRefresh: false);
 
-
 class ProductsPages extends StatefulWidget {
   @override
   _ProductsPgaesState createState() => _ProductsPgaesState();
@@ -24,6 +23,7 @@ int cont = 0;
 class _ProductsPgaesState extends State<ProductsPages> {
   ScrollController _hideButtonController;
   AuthService auth;
+  Size size;
 
   //List<dynamic> items;
   void _onLoading() async {
@@ -52,7 +52,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
     _hideButtonController.addListener(() {
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.reverse) {
-        if(auth.navbarVisible)
+        if (auth.navbarVisible)
           setState(() {
             auth.navbarVisible = false;
             print(auth.navbarVisible);
@@ -60,7 +60,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
       }
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.forward) {
-        if(!auth.navbarVisible)
+        if (!auth.navbarVisible)
           setState(() {
             auth.navbarVisible = true;
             print(auth.navbarVisible);
@@ -160,7 +160,6 @@ class _ProductsPgaesState extends State<ProductsPages> {
                             ),
                           );
                         }));
-
               }
               return Center(
                 child: CircularProgressIndicator(
@@ -254,7 +253,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
         },
         child: Container(
           height: size.height * 0.2,
-          width: size.width * 0.40,
+          width: size.width * 0.38,
           alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
               image: DecorationImage(
