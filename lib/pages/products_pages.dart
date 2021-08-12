@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:handicraft_app/models/product.dart';
+
 import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 import 'package:flutter/rendering.dart';
@@ -9,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 RefreshController _refreshController = RefreshController(initialRefresh: false);
+
 
 class ProductsPages extends StatefulWidget {
   @override
@@ -69,7 +71,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    size = MediaQuery.of(context).size;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -112,7 +114,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
               child: FutureBuilder(
             future: ProductService().getPosts(cont),
             builder: (BuildContext context,
-                AsyncSnapshot<List<Product_Model>> snapshot) {
+                AsyncSnapshot<List<ProductModel>> snapshot) {
               if (snapshot.hasError) {
               } else if (snapshot.hasData) {
                 return SmartRefresher(
@@ -158,6 +160,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
                             ),
                           );
                         }));
+
               }
               return Center(
                 child: CircularProgressIndicator(
@@ -171,7 +174,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
     );
   }
 
-  Widget _information(Product_Model data) {
+  Widget _information(ProductModel data) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -188,7 +191,9 @@ class _ProductsPgaesState extends State<ProductsPages> {
             Padding(
               padding: EdgeInsets.only(top: 5.0, left: 5.0),
               child: Text(
-                data.name,
+                (data.name.length > 14)
+                    ? "${data.name.substring(0, 14)}..."
+                    : data.name,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 13.5,
@@ -208,7 +213,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
                 data.location,
                 style: TextStyle(
                   fontWeight: FontWeight.w100,
-                  fontSize: 13,
+                  fontSize: 12,
                   fontFamily: 'Montserrat',
                   decoration: TextDecoration.underline,
                 ),
@@ -227,7 +232,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
                 'Precio: ${data.cost}',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 13,
+                  fontSize: 12,
                   fontFamily: 'Montserrat',
                   color: Color(0xFFC4C4C4),
                 ),
@@ -237,53 +242,28 @@ class _ProductsPgaesState extends State<ProductsPages> {
         )
       ],
     );
-
-    Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 1.0,
-            ),
-            Text(
-              data.name,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
-            ),
-            Text(
-              data.location,
-              style: TextStyle(fontWeight: FontWeight.normal, fontSize: 10),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  data.cost,
-                  style: TextStyle(fontWeight: FontWeight.w200, fontSize: 10),
-                ),
-              ],
-            ),
-          ],
-        )
-      ],
-    );
   }
 
-  Widget _image(String url, BuildContext context, Product_Model data) {
-    timeDilation = 0.5;
+  Widget _image(String url, BuildContext context, ProductModel data) {
+    timeDilation = 0.8;
 
     //getHttp();
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, 'details', arguments: data.idProduct);
-      },
-      child: Image(
-        image: NetworkImage(url),
-        width: 135,
-        height: 130,
-      ),
-    );
+        onTap: () {
+          Navigator.pushNamed(context, 'details', arguments: data.idProduct);
+        },
+        child: Container(
+          height: size.height * 0.2,
+          width: size.width * 0.40,
+          alignment: Alignment.centerLeft,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: NetworkImage(
+                  url,
+                ),
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(8.0))),
+        ));
   }
 }

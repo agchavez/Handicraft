@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:handicraft_app/global/enviroment.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
-import 'package:handicraft_app/provider/storage_service.dart';
 
 class GoogleSignInProvider extends ChangeNotifier {
   final googleSignIn = GoogleSignIn();
@@ -67,6 +66,8 @@ class GoogleSignInProvider extends ChangeNotifier {
       } else {
         return false;
       }
+    } else {
+      return false;
     }
   }
 }

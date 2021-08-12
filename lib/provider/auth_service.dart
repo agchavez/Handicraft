@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:handicraft_app/global/enviroment.dart';
 import 'package:handicraft_app/models/acount_user.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:handicraft_app/utils/util.dart' as utils;
@@ -93,7 +95,8 @@ class AuthService with ChangeNotifier {
   }
 
   Future<void> stateAuth() async {
-    final user = await FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
+
     if (user != null) {
       authState = true;
     } else {
@@ -107,9 +110,19 @@ class AuthService with ChangeNotifier {
       await FirebaseAuth.instance.signOut();
       await stateAuth();
       await storage.deleteAll();
+      return true;
     } catch (e) {
       return false;
     }
+  }
+
+  Future<Map<dynamic, dynamic>> getUserId(String uid) async {
+    Response responseInfoUser = await dio.get(
+        '${Enviroment.apiurl}/user/profile/$uid',
+        options: Options(
+            headers: {HttpHeaders.contentTypeHeader: "application/json"}));
+    Map<String, dynamic> userData = jsonDecode(responseInfoUser.toString());
+    return userData["data"];
   }
 
   Future<bool> sendEmailVerification() async {

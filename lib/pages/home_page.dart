@@ -11,8 +11,6 @@ import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:provider/provider.dart';
 
-const _cardColor = Color(0xFFFFFF);
-const _cardColorExpanded = Color(0X000000);
 const _maxHeight = 380.0;
 const _minHeigth = 60.0;
 
@@ -32,14 +30,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
   AuthService auth;
   bool loadingGoogleIn = false;
 
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-
   int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    print(index);
-  }
 
   @override
   void initState() {
@@ -69,27 +60,27 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
       floatingActionButton: FutureBuilder(
         future: auth.stateAuth(),
         builder: (context, snapshot) {
-          if ( auth.authState ) {
-              return Container(
-                margin: EdgeInsets.only(bottom: 25),
-                width: 50,
-                height: 50,
-                child: FittedBox(
-                  alignment: Alignment.center,
-                  child: FloatingActionButton(
-                      elevation: 3,
-                      backgroundColor: Colors.white,
-                      onPressed: () {
-                        setState(() {
-                          _selectedIndex = 4;
-                        });
-                      },
-                      child: Image.asset(
-                        'assets/icons/plus-icon.png',
-                        width: 15.0,
-                      )),
-                ),
-              );
+          if (auth.authState) {
+            return Container(
+              margin: EdgeInsets.only(bottom: 25),
+              width: 50,
+              height: 50,
+              child: FittedBox(
+                alignment: Alignment.center,
+                child: FloatingActionButton(
+                    elevation: 3,
+                    backgroundColor: Colors.white,
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 4;
+                      });
+                    },
+                    child: Image.asset(
+                      'assets/icons/plus-icon.png',
+                      width: 15.0,
+                    )),
+              ),
+            );
           } else {
             return Container();
           }
@@ -113,6 +104,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
       case 4:
         return NewpProductPage();
       default:
+        return ProductsPages();
     }
   }
 
@@ -294,7 +286,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                             : FutureBuilder(
                                 future: auth.stateAuth(),
                                 builder: (context, snapshot) {
-                                  if ( auth.authState ) {
+                                  if (auth.authState) {
                                     return _buildNavBarContent(size);
                                   } else {
                                     return _buildMenuContent();
@@ -379,7 +371,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                           height: MediaQuery.of(context).size.height * 0.1,
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: RaisedButton(
+                            child: ElevatedButton(
                                 child: Container(
                                     padding:
                                         EdgeInsets.symmetric(vertical: 15.0),
@@ -397,11 +389,13 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                                             ),
                                           ),
                                         ])),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5.0)),
-                                elevation: 2.0,
-                                color: Colors.black,
-                                textColor: Colors.white,
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.0)),
+                                  elevation: 2.0,
+                                  primary: Colors.black,
+                                  textStyle: TextStyle(color: Colors.white),
+                                ),
                                 onPressed: () {
                                   if (!loadingGoogleIn) {
                                     Navigator.popAndPushNamed(context, "login");
@@ -440,9 +434,9 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                                                       fontFamily: 'Montserrat',
                                                       fontWeight:
                                                           FontWeight.w800,
-                                                      fontSize: 14,
+                                                      fontSize: 11.6,
                                                     ),
-                                                  )
+                                                  ),
                                                 ],
                                               )
                                             : Container(

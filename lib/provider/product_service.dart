@@ -8,8 +8,9 @@ import 'package:handicraft_app/models/model_Product_Infor.dart';
 import 'package:handicraft_app/models/model_details.dart';
 import 'package:handicraft_app/models/product.dart';
 import 'package:handicraft_app/models/product_general.dart';
+import 'package:handicraft_app/models/product_stock.dart';
+import 'package:handicraft_app/models/product_stock_model.dart';
 
-import 'package:handicraft_app/pages/login_page.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 
@@ -155,6 +156,7 @@ class ProductService with ChangeNotifier {
     /*
         /app/coines
     */
+
     List<LocationModel> list = [];
     Response response = await dio.get(
       '${Enviroment.apiurl}/app/coines',
@@ -171,38 +173,52 @@ class ProductService with ChangeNotifier {
   }
 
   //Obtener productos sin logearse
-  Future<List<Product_Model>> getPosts(int cont) async {
+  Future<List<ProductModel>> getPosts(int cont) async {
     // print(endArray);
-    final response = await http.get(Uri.parse(
-        "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/2/${cont}/6"));
-    final resp = productModelFromJson(jsonDecode(response.body)).data;
-    if (cont != 0) {
-      dat2 = [...dat2, ...resp];
-      return dat2;
+    String uid = await StorageService().getValue("uid");
+    print("uid == $uid");
+    if (uid == null || uid == "") {
+      final response = await http.get(Uri.parse(
+          "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/$cont/12"));
+      final resp = productModelFromJson(jsonDecode(response.body)).data;
+      if (cont != 0) {
+        dat2 = [...dat2, ...resp];
+        return dat2;
+      } else {
+        dat2 = resp;
+        return resp;
+      }
     } else {
-      dat2 = resp;
-      return resp;
+      final response = await http.get(Uri.parse(
+          "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/$uid/$cont/12"));
+      final resp = productModelFromJson(jsonDecode(response.body)).data;
+      if (cont != 0) {
+        dat2 = [...dat2, ...resp];
+        return dat2;
+      } else {
+        dat2 = resp;
+        return resp;
+      }
     }
   }
 
-  Future<List<Product_Info_Model>> getPostsDetail(int idProduct) async {
+  Future<List<ProductInfoModel>> getPostsDetail(int idProduct) async {
     // print(endArray);
-    List<Product_Info_Model> detail = [];
+    List<ProductInfoModel> detail = [];
     final response = await http.get(Uri.parse(
         "https://hechoencasa-backend.herokuapp.com/product/getInfo/${idProduct}"));
-    print(response.body);
+    //print(response.body);
     final resp = productInforModelFromJson(response.body).data;
-    print('***********************');
-    print(resp.idProduct);
     detail.add(resp);
 
     return detail;
   }
 
-  Future<List<Product_Model>> getProductsofUser() async {
+  Future<List<ProductModel>> getProductsofUser() async {
     Product resp;
     try {
       String token = await authService.refreshUserToken();
+
       Response response = await dio.get(
         '${Enviroment.apiurl}/user/product',
         options: Options(headers: {
@@ -211,6 +227,48 @@ class ProductService with ChangeNotifier {
         }),
       );
       resp = productModelFromJson(response.data);
+      if (response.statusCode == 200) {
+        return resp.data;
+      } else {
+        return resp.data;
+      }
+    } catch (e) {
+      print("Error al obtener los productos de un usuario $e");
+      return [];
+    }
+  }
+
+  Future<bool> addComentary(Map<String, dynamic> body, int idProduct) async {
+    final idUser = await StorageService().getValue("uid");
+    try {
+      Response response = await dio.post(
+          '${Enviroment.apiurl}/comment/product/$idUser/$idProduct',
+          options: Options(headers: {
+            HttpHeaders.contentTypeHeader: "application/json",
+          }),
+          data: jsonEncode(body));
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<List<ProductStock>> getHistoryProductUser() async {
+    ProductStockModel resp;
+    try {
+      String token = await authService.refreshUserToken();
+      Response response = await dio.get(
+        '${Enviroment.apiurl}/user/products-history',
+        options: Options(headers: {
+          HttpHeaders.contentTypeHeader: "application/json",
+          "token": token
+        }),
+      );
+      resp = productStockModelFromJson(response.data);
       if (response.statusCode == 200) {
         return resp.data;
       } else {

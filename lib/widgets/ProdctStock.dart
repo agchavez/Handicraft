@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:handicraft_app/models/product.dart';
+import 'package:handicraft_app/models/product_stock.dart';
 
-class ProductNew extends StatelessWidget {
-  final ProductModel product;
-  const ProductNew({Key key, @required this.product}) : super(key: key);
+class ProductStockWidget extends StatelessWidget {
+  final ProductStock product;
+  const ProductStockWidget({Key key, @required this.product}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Column(
         children: [
-          _image(this.product.urlImage),
+          this.product.status == 1
+              ? _image(this.product.urlImage, true)
+              : _image(this.product.urlImage, false),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -53,12 +55,19 @@ class ProductNew extends StatelessWidget {
                   ),
                 ],
               ),
-              Text("Nuevo",
-                  style: TextStyle(
-                      fontWeight: FontWeight.w300,
-                      fontSize: 10,
-                      color: Colors.grey[400],
-                      fontFamily: 'Montserrat')),
+              this.product.status == 1
+                  ? Text("Activo",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w300,
+                          fontSize: 10,
+                          color: Colors.green,
+                          fontFamily: 'Montserrat'))
+                  : Text("Inactivo",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w300,
+                          fontSize: 10,
+                          color: Colors.red,
+                          fontFamily: 'Montserrat'))
             ],
           )
         ],
@@ -66,7 +75,7 @@ class ProductNew extends StatelessWidget {
     );
   }
 
-  Widget _image(String url) {
+  Widget _image(String url, bool status) {
     //getHttp();
     return Container(
       height: 130,
@@ -74,6 +83,9 @@ class ProductNew extends StatelessWidget {
       decoration: BoxDecoration(
           image: DecorationImage(
             fit: BoxFit.cover,
+            colorFilter: !status
+                ? ColorFilter.mode(Colors.grey[600], BlendMode.modulate)
+                : null,
             image: NetworkImage(
               url,
             ),

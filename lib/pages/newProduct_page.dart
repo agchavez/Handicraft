@@ -1,9 +1,7 @@
 import 'dart:io';
 
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/location_model.dart';
-import 'package:handicraft_app/pages/login_page.dart';
 import 'package:handicraft_app/provider/location_service.dart';
 import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/utils/selectImage.dart';
@@ -19,7 +17,6 @@ class NewpProductPage extends StatefulWidget {
 }
 
 class _NewpProductPageState extends State<NewpProductPage> {
-  @override
   LocationModel _countryValue, _cityValue, _provincesValue, categorie, coin;
   List<LocationModel> citys = [],
       contries = [],
@@ -39,6 +36,8 @@ class _NewpProductPageState extends State<NewpProductPage> {
       coinError = false,
       categorieError = false,
       contrieError = false,
+      cityError = false,
+      provinceError = false,
       descError = false,
       amountError = false,
       priceErro = false;
@@ -63,12 +62,9 @@ class _NewpProductPageState extends State<NewpProductPage> {
       categories.addAll(value);
     });
     await productService.getCoins().then((value) {
-      print(value);
       coines.addAll(value);
     });
-    setState(() {
-      contries;
-    });
+    setState(() {});
   }
 
   Widget build(BuildContext context) {
@@ -122,6 +118,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
                           fontWeight: FontWeight.bold
                       ),
                     ),
+
                   ),
                   onPressed: () {
                     setState(() {
@@ -228,107 +225,18 @@ class _NewpProductPageState extends State<NewpProductPage> {
     return Container(
       width: size.width * 0.9,
       child: DropdownButtonFormField<LocationModel>(
-        value: _countryValue,
-        itemHeight: size.height * 0.07,
-        decoration: InputDecoration(
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(
-              width: 2.5,
-              color: Colors.black
-            )
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(
-              width: 2.5,
-              color: Colors.black
-            )
-          ),
-          border: OutlineInputBorder(
-            borderSide: BorderSide(
-                width: 100,
-                color: Colors.white10
-            )
-          )
-        ),
-        items: contries.map((LocationModel location) {
-          return new DropdownMenuItem<LocationModel>(
-            value: location,
-            child: new Text(
-              location.name,
-              style: new TextStyle(color: Colors.black),
-            ),
-          );
-        }).toList(),
-        onChanged: (value) async {
-          FocusScope.of(context).requestFocus(new FocusNode());
-          _provincesValue = null;
-          provinces = [];
-          _countryValue = value;
-          await locationService
-              .getProvinces(_countryValue.id)
-              .then((value) => provinces.addAll(value));
-          setState(() {});
-        },
-        isExpanded: true,
-        hint: Text("Seleccione pais"),
-        style: TextStyle(color: Colors.black, fontSize: 16),
-        icon: Row(
-          children: [
-            Icon(
-              Icons.arrow_drop_down,
-              size: 32,
-            ),
-            contrieError
-                ? Icon(
-              Icons.error_outline_outlined,
-              color: Colors.red,
-            )
-                : Container()
-          ],
-        ),
-        iconEnabledColor: Colors.black,
-        validator: (value) {
-          if (value == null) {
-            return "Campo requerido";
-          } else {
-            return null;
-          }
-        }
-      ),
-    );
-  }
-
-  Widget _createProvinces() {
-    return Container(
-      width: size.width * 0.9,
-        child: DropdownButtonFormField<LocationModel>(
-          value: _provincesValue,
+          value: _countryValue,
           itemHeight: size.height * 0.07,
           decoration: InputDecoration(
               enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide(
-                      width: 2.5,
-                      color: Colors.black
-                  )
-              ),
+                  borderSide: BorderSide(width: 2.5, color: Colors.black)),
               focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide(
-                      width: 2.5,
-                      color: Colors.black
-                  )
-              ),
+                  borderSide: BorderSide(width: 2.5, color: Colors.black)),
               border: OutlineInputBorder(
-                  borderSide: BorderSide(
-                      width: 100,
-                      color: Colors.white10
-                  )
-              )
-          ),
-          items: provinces.map((LocationModel location) {
+                  borderSide: BorderSide(width: 100, color: Colors.white10))),
+          items: contries.map((LocationModel location) {
             return new DropdownMenuItem<LocationModel>(
               value: location,
               child: new Text(
@@ -338,20 +246,31 @@ class _NewpProductPageState extends State<NewpProductPage> {
             );
           }).toList(),
           onChanged: (value) async {
-            citys = [];
-            _cityValue = null;
-            _provincesValue = value;
+            FocusScope.of(context).requestFocus(new FocusNode());
+            _provincesValue = null;
+            provinces = [];
+            _countryValue = value;
             await locationService
-                .getCity(_countryValue.id, _provincesValue.id)
-                .then((value) => citys.addAll(value));
+                .getProvinces(_countryValue.id)
+                .then((value) => provinces.addAll(value));
             setState(() {});
           },
           isExpanded: true,
-          hint: Text("Seleccione provincia"),
+          hint: Text("Seleccione pais"),
           style: TextStyle(color: Colors.black, fontSize: 16),
-          icon: Icon(
-            Icons.arrow_drop_down,
-            size: 32,
+          icon: Row(
+            children: [
+              Icon(
+                Icons.arrow_drop_down,
+                size: 32,
+              ),
+              contrieError
+                  ? Icon(
+                      Icons.error_outline_outlined,
+                      color: Colors.red,
+                    )
+                  : Container()
+            ],
           ),
           iconEnabledColor: Colors.black,
           validator: (value) {
@@ -360,69 +279,124 @@ class _NewpProductPageState extends State<NewpProductPage> {
             } else {
               return null;
             }
-          }
-        )
+          }),
     );
+  }
+
+  Widget _createProvinces() {
+    return Container(
+        width: size.width * 0.9,
+        child: DropdownButtonFormField<LocationModel>(
+            value: _provincesValue,
+            itemHeight: size.height * 0.07,
+            decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(width: 2.5, color: Colors.black)),
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(width: 2.5, color: Colors.black)),
+                border: OutlineInputBorder(
+                    borderSide: BorderSide(width: 100, color: Colors.white10))),
+            items: provinces.map((LocationModel location) {
+              return new DropdownMenuItem<LocationModel>(
+                value: location,
+                child: new Text(
+                  location.name,
+                  style: new TextStyle(color: Colors.black),
+                ),
+              );
+            }).toList(),
+            onChanged: (value) async {
+              citys = [];
+              _cityValue = null;
+              _provincesValue = value;
+              await locationService
+                  .getCity(_countryValue.id, _provincesValue.id)
+                  .then((value) => citys.addAll(value));
+              setState(() {});
+            },
+            isExpanded: true,
+            hint: Text("Seleccione provincia"),
+            style: TextStyle(color: Colors.black, fontSize: 16),
+            icon: Row(
+              children: [
+                Icon(
+                  Icons.arrow_drop_down,
+                  size: 32,
+                ),
+                provinceError
+                    ? Icon(
+                        Icons.error_outline_outlined,
+                        color: Colors.red,
+                      )
+                    : Container()
+              ],
+            ),
+            iconEnabledColor: Colors.black,
+            validator: (value) {
+              if (value == null) {
+                return "Campo requerido";
+              } else {
+                return null;
+              }
+            }));
   }
 
   Widget _createCity() {
     return Container(
       width: size.width * 0.9,
       child: DropdownButtonFormField<LocationModel>(
-        decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: BorderSide(
-                    width: 2.5,
-                    color: Colors.black
-                )
-            ),
-            focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: BorderSide(
-                    width: 2.5,
-                    color: Colors.black
-                )
-            ),
-            border: OutlineInputBorder(
-                borderSide: BorderSide(
-                    width: 100,
-                    color: Colors.white10
-                )
-            )
-        ),
-        value: _cityValue,
-        itemHeight: size.height * 0.07,
-        items: citys.map((LocationModel location) {
-          return new DropdownMenuItem<LocationModel>(
-            value: location,
-            child: new Text(
-              location.name,
-              style: new TextStyle(color: Colors.black),
-            ),
-          );
-        }).toList(),
-        onChanged: (value) {
-          setState(() {
-            _cityValue = value;
-          });
-        },
-        isExpanded: true,
-        hint: Text("Seleccione ciudad"),
-        style: TextStyle(color: Colors.black, fontSize: 16),
-        icon: Icon(
-          Icons.arrow_drop_down,
-          size: 32,
-        ),
-        iconEnabledColor: Colors.black,
-        validator: (value) {
-          if (value == null) {
-            return "Campo requerido";
-          } else {
-            return null;
-          }
-        }
-      ),
+          decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(width: 2.5, color: Colors.black)),
+              focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(width: 2.5, color: Colors.black)),
+              border: OutlineInputBorder(
+                  borderSide: BorderSide(width: 100, color: Colors.white10))),
+          value: _cityValue,
+          itemHeight: size.height * 0.07,
+          items: citys.map((LocationModel location) {
+            return new DropdownMenuItem<LocationModel>(
+              value: location,
+              child: new Text(
+                location.name,
+                style: new TextStyle(color: Colors.black),
+              ),
+            );
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              _cityValue = value;
+            });
+          },
+          isExpanded: true,
+          hint: Text("Seleccione ciudad"),
+          style: TextStyle(color: Colors.black, fontSize: 16),
+          icon: Row(
+            children: [
+              Icon(
+                Icons.arrow_drop_down,
+                size: 32,
+              ),
+              cityError
+                  ? Icon(
+                      Icons.error_outline_outlined,
+                      color: Colors.red,
+                    )
+                  : Container()
+            ],
+          ),
+          iconEnabledColor: Colors.black,
+          validator: (value) {
+            if (value == null) {
+              return "Campo requerido";
+            } else {
+              return null;
+            }
+          }),
     );
   }
 
@@ -433,115 +407,126 @@ class _NewpProductPageState extends State<NewpProductPage> {
         scrollDirection: Axis.horizontal,
         shrinkWrap: false,
         children: [
-          for ( var product in productImages ) Row(
-            children: [
-              Stack(
-                overflow: Overflow.visible,
-                children: [
-                  Container(
-                    width: 175,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
-                        image: DecorationImage(
-                            image: FileImage(product),
-                            fit: BoxFit.fill
-                        )
+          for (var product in productImages)
+            Row(
+              children: [
+                Stack(
+                  children: [
+                    Container(
+                      width: 175,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          image: DecorationImage(
+                              image: FileImage(product), fit: BoxFit.fill)),
                     ),
-                  ),
-                  Positioned(
-                    width: size.width * 0.94,
-                    top: -0.2,
-                    child: GestureDetector(
-                      onTap: () {
-                        _removeItem(product);
-                      },
-                      child: Container(
-                        width: 25.0,
-                        height: 25.0,
-                        child: Image.asset('assets/icons/remove-icon.png'),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                width: 10.0,
-              )
-            ],
-          ),
-          productImages.length != 4 ?
-          GestureDetector(
-            onTap: () async {
-              String path = await showPicker(context);
-              if ( path != null ) {
-                productImages.add(await cropImage(path));
-                setState(() {});
-              }
-            },
-            child: Container(
-              child: Stack(
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        decoration: image1 != null
-                            ? null
-                            : BoxDecoration(
-                            color: Color(0xFF08E6F4),
-                            border: Border.all(
-                              color: Color(0xFF08E6F4),
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.circular(12)),
-                        width: size.width * 0.5,
-                        height: size.height * 0.25,
-                        child: image1 != null
-                            ? ClipRRect(
-                          borderRadius: BorderRadius.circular(15.0),
-                          child: Image(
-                            width: size.width * 0.6,
-                            height: size.height * 0.3,
-                            image: FileImage(image1),
-                          ),
-                        )
-                            : Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: size.width * 0.14,
-                                      ),
-                                      Image.asset('assets/images/add-picture.png')
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 5.0),
-                                    child: Text("Agregar imagen",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: "Montserrat",
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  )
-                          ],
+                    Positioned(
+                      width: size.width * 0.94,
+                      top: -0.2,
+                      child: GestureDetector(
+                        onTap: () {
+                          _removeItem(product);
+                        },
+                        child: Container(
+                          width: 25.0,
+                          height: 25.0,
+                          child: Image.asset('assets/icons/remove-icon.png'),
                         ),
                       ),
-                      SizedBox(
-                        width: size.width * 0.02,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  width: 10.0,
+                )
+              ],
             ),
-          ): Container(),
+          productImages.length != 4
+              ? GestureDetector(
+                  onTap: () async {
+                    String path = await showPicker(context);
+                    if (path != null) {
+                      productImages.add(await cropImage(path));
+                      setState(() {
+                        image1Error = false;
+                      });
+                    }
+                  },
+                  child: Container(
+                    child: Stack(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              decoration: image1Error
+                                  ? BoxDecoration(
+                                      color: Color(0xFF08E6F4),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(10)),
+                                      border: Border.all(
+                                        color: Colors.red,
+                                        width: 2,
+                                      ))
+                                  : BoxDecoration(
+                                      color: Color(0xFF08E6F4),
+                                      border: Border.all(
+                                        color: Color(0xFF08E6F4),
+                                        width: 1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12)),
+                              width: size.width * 0.5,
+                              height: size.height * 0.25,
+                              child: image1 != null
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      child: Image(
+                                        width: size.width * 0.6,
+                                        height: size.height * 0.3,
+                                        image: FileImage(image1),
+                                      ),
+                                    )
+                                  : Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            SizedBox(
+                                              width: size.width * 0.14,
+                                            ),
+                                            Image.asset(
+                                                'assets/images/add-picture.png')
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 10.0,
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 5.0),
+                                          child: Text(
+                                            "Agregar imagen",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: "Montserrat",
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                            ),
+                            SizedBox(
+                              width: size.width * 0.02,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : Container(),
         ],
       ),
     );
@@ -549,8 +534,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
 
   _removeItem(value) {
     productImages.remove(value);
-    setState(() {
-    });
+    setState(() {});
   }
 
   Widget _createFormProduct() {
@@ -581,6 +565,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
             height: size.height * 0.12,
             width: size.width,
             child: DropdownHan(
+                height: size.height * 0.12,
                 hint: "Modena",
                 error: coinError,
                 value: coin,
@@ -610,7 +595,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
                       int temp = 0;
                       amountCtrl.text != ""
                           ? temp = int.parse(amountCtrl.text)
-                          : null;
+                          : temp = temp;
                       temp += 1;
                       amountCtrl.text = temp.toString();
                     },
@@ -628,7 +613,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
                       int temp = 0;
                       amountCtrl.text != ""
                           ? temp = int.parse(amountCtrl.text)
-                          : null;
+                          : temp = temp;
                       temp == 0 ? null : temp -= 1;
                       amountCtrl.text = temp.toString();
                     },
@@ -679,44 +664,42 @@ class _NewpProductPageState extends State<NewpProductPage> {
                     alignment: WrapAlignment.center,
                     children: data
                         .map((item) => GestureDetector(
-                      onTap: () async {
-                        if (categoriesSuscribe.contains(item.name)) {
-                          categoriesSuscribe.remove(item.name);
-                          selectedCategory = null;
-                        } else if ( categoriesSuscribe.length == 1 ) {
-                          print('Solo puede seleccionar una categoria');
-                          return;
-                        } else {
-                          categoriesSuscribe.add(item.name);
-                          selectedCategory = item.id;
-                          print(selectedCategory);
-                        }
-                        setState(() {});
-                      },
-                      child: Container(
-                          height: 40,
-                          margin: EdgeInsets.all(5),
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              color:
-                              categoriesSuscribe.contains(item.name)
-                                  ? Colors.black
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                  color: Colors.black, width: 2)),
-                          child: Text(
-                            item.name,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color:
-                                categoriesSuscribe.contains(item.name)
-                                    ? Colors.white
-                                    : Colors.black,
-                                fontFamily: 'Montserrat',
-                                fontWeight: FontWeight.bold),
-                          )),
-                    ))
+                              onTap: () async {
+                                if (categoriesSuscribe.contains(item.name)) {
+                                  categoriesSuscribe.remove(item.name);
+                                  selectedCategory = null;
+                                } else if (categoriesSuscribe.length == 1) {
+                                  return;
+                                } else {
+                                  categoriesSuscribe.add(item.name);
+                                  selectedCategory = item.id;
+                                }
+                                setState(() {});
+                              },
+                              child: Container(
+                                  height: 40,
+                                  margin: EdgeInsets.all(5),
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      color:
+                                          categoriesSuscribe.contains(item.name)
+                                              ? Colors.black
+                                              : Colors.white,
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                          color: Colors.black, width: 2)),
+                                  child: Text(
+                                    item.name,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: categoriesSuscribe
+                                                .contains(item.name)
+                                            ? Colors.white
+                                            : Colors.black,
+                                        fontFamily: 'Montserrat',
+                                        fontWeight: FontWeight.bold),
+                                  )),
+                            ))
                         .toList()
                         .cast<Widget>(),
                   ),
@@ -763,6 +746,7 @@ class _NewpProductPageState extends State<NewpProductPage> {
           'Credenciales invalidas',
           'Verifique sus credenciales.',
           utils.alertsStyles['warningAlert']);
+
       setState(() {
         check = false;
       });
@@ -809,7 +793,9 @@ class _NewpProductPageState extends State<NewpProductPage> {
     descripCtrl.text = "";
     priceCtrl.text = "";
     amountCtrl.text = "";
+    productImages = [];
     coin = null;
+    categoriesSuscribe = [];
     categorie = null;
     _countryValue = null;
     _provincesValue = null;
@@ -840,6 +826,16 @@ class _NewpProductPageState extends State<NewpProductPage> {
     } else {
       contrieError = true;
     }
+    if (_provincesValue != null) {
+      provinceError = false;
+    } else {
+      provinceError = true;
+    }
+    if (_cityValue != null) {
+      cityError = false;
+    } else {
+      cityError = true;
+    }
 
     if (selectedCategory != null) {
       categorieError = false;
@@ -869,6 +865,8 @@ class _NewpProductPageState extends State<NewpProductPage> {
         priceErro ||
         image1Error ||
         contrieError ||
+        provinceError ||
+        cityError ||
         coinError) {
       return false;
     } else {
