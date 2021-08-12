@@ -9,13 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:handicraft_app/global/enviroment.dart';
 import 'package:handicraft_app/models/acount_user.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
+import 'package:handicraft_app/utils/util.dart' as utils;
 
 class AuthService with ChangeNotifier {
   FirebaseAuth auth = FirebaseAuth.instance;
   bool authState = false;
+  final dio = Dio();
   Widget navbarProfile;
   StorageService storage = new StorageService();
-  final dio = Dio();
+  bool navbarVisible = true;
 
   Future<bool> login(String email, String password) async {
     try {
@@ -37,7 +39,7 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  Future<bool> register(UserAccountModel user) async {
+  Future<bool> register(UserAccountModel user, BuildContext context, Size size) async {
     try {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
           email: user.email, password: user.password);
@@ -47,11 +49,20 @@ class AuthService with ChangeNotifier {
         return false;
       }
     } on FirebaseAuthException catch (e) {
-      print(e);
       if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
+        utils.showTopSnackBar(
+            context,
+            size,
+            'Advertencia.',
+            'Contraseña débil.',
+            utils.alertsStyles['warningAlert']);
       } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
+        utils.showTopSnackBar(
+            context,
+            size,
+            'Email.',
+            'El correo ya esta en uso.',
+            utils.alertsStyles['fatalError']);
       }
 
       return false;
@@ -122,26 +133,27 @@ class AuthService with ChangeNotifier {
     return false;
   }
 
-  Future<bool> setUserStorage(Map<dynamic, dynamic> user) async {
+  Future<bool> setUserStorage(Map<String, dynamic> user) async {
     user = user['data'];
     await storage.deleteAll();
     String name = '${user["name"]} ${user['lastname']}';
     if (user['idCompany'] == null) {
-      print(name);
       await storage.setValue(user["idUser"], 'uid');
       await storage.setValue(name, 'displayName');
       await storage.setValue(user["email"], 'email');
       await storage.setValue(user["photoProfile"], 'photoProfile');
       await storage.setValue(user['State_idState'].toString(), 'state');
+      await storage.setValue(user['Verification'].toString(), 'verified');
       await storage.setValue(user["phone"], 'phone');
     } else {
       await storage.setValue(user["idUser"], 'uid');
-      await storage.setValue(user["idCompany"], 'idCompany');
+      await storage.setValue(user["idCompany"].toString(), 'idCompany');
       await storage.setValue(user["nameCompany"], 'displayName');
       await storage.setValue(user["email"], 'email');
       await storage.setValue(user['State_idState'].toString(), 'state');
       await storage.setValue(user["description"], "companyDescription");
       await storage.setValue(user["photoProfile"], 'photoProfile');
+      await storage.setValue(user['Verification'].toString(), 'verified');
       await storage.setValue(user["phone"], 'phone');
     }
 

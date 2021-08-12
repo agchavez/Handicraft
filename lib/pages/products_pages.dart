@@ -2,7 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:handicraft_app/models/product.dart';
+
+import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/provider/product_service.dart';
+import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+RefreshController _refreshController = RefreshController(initialRefresh: false);
+
 
 class ProductsPages extends StatefulWidget {
   @override
@@ -14,7 +22,53 @@ double heightScreen, widthScreen;
 int cont = 0;
 
 class _ProductsPgaesState extends State<ProductsPages> {
-  Size size;
+  ScrollController _hideButtonController;
+  AuthService auth;
+
+  //List<dynamic> items;
+  void _onLoading() async {
+    // monitor network fetch
+    await Future.delayed(Duration(milliseconds: 1000));
+
+    // if failed,use loadFailed(),if no data return,use LoadNodata()
+    //items.add((items.length + 1).toString());
+    //PostsRepository().getPosts(1);
+    //ProductService().getPosts(2);
+    cont = cont + 6;
+    if (mounted) setState(() {});
+    _refreshController.loadComplete();
+  }
+
+  void _onRefresh() async {
+    if (mounted) setState(() {});
+    _refreshController.refreshCompleted();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    auth = Provider.of<AuthService>(context, listen: false);
+    _hideButtonController = new ScrollController();
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if(auth.navbarVisible)
+          setState(() {
+            auth.navbarVisible = false;
+            print(auth.navbarVisible);
+          });
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if(!auth.navbarVisible)
+          setState(() {
+            auth.navbarVisible = true;
+            print(auth.navbarVisible);
+          });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
@@ -26,10 +80,15 @@ class _ProductsPgaesState extends State<ProductsPages> {
           bottomOpacity: 0.0,
           elevation: 0.0,
           actions: [
-            Container(
-              margin: EdgeInsets.only(right: 22),
-              child:
-                  Image.asset('assets/icons/search-black-icon.png', width: 20),
+            GestureDetector(
+              onTap: () async {
+                print(await auth.refreshUserToken());
+              },
+              child: Container(
+                margin: EdgeInsets.only(right: 22),
+                child: Image.asset('assets/icons/search-black-icon.png',
+                    width: 20),
+              ),
             ),
           ],
           title:
@@ -58,20 +117,50 @@ class _ProductsPgaesState extends State<ProductsPages> {
                 AsyncSnapshot<List<ProductModel>> snapshot) {
               if (snapshot.hasError) {
               } else if (snapshot.hasData) {
-                return GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2, childAspectRatio: 0.78),
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20, right: 10, bottom: 20),
-                        child: Container(
-                          child: _information(snapshot.data[index]),
-                        ),
-                      );
-                    });
+                return SmartRefresher(
+                    enablePullDown: true,
+                    enablePullUp: true,
+                    header: WaterDropHeader(),
+                    footer: CustomFooter(
+                      builder: (BuildContext context, LoadStatus mode) {
+                        Widget body;
+                        if (mode == LoadStatus.idle) {
+                          body = Text("pull up load");
+                        } else if (mode == LoadStatus.loading) {
+                          body = CupertinoActivityIndicator();
+                        } else if (mode == LoadStatus.failed) {
+                          body = Text("Load Failed!Click retry!");
+                        } else if (mode == LoadStatus.canLoading) {
+                          body = Text("release to load more");
+                        } else {
+                          body = Text("No more Data");
+                        }
+                        return Container(
+                          height: 55.0,
+                          child: Center(child: body),
+                        );
+                      },
+                    ),
+                    controller: _refreshController,
+                    onRefresh: _onRefresh,
+                    onLoading: _onLoading,
+                    physics: ScrollPhysics(),
+                    child: GridView.builder(
+                        controller: _hideButtonController,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2, childAspectRatio: 0.78),
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(
+                                left: 20, right: 20, bottom: 20),
+                            child: Container(
+                              child: _information(snapshot.data[index]),
+                            ),
+                          );
+                        }));
+
               }
               return Center(
                 child: CircularProgressIndicator(

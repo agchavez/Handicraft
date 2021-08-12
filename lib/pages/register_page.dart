@@ -234,13 +234,16 @@ class _RegisterPageState extends State<RegisterPage> {
           // if (_typeAcount) _createFormCompanies(),
           !check
               ? _createBottom(context)
-              : Container(
-                  height: 10.0,
-                  width: 10.0,
-                  child: CircularProgressIndicator(
-                    color: Colors.black,
-                  ),
+              : Padding(
+              padding: EdgeInsets.only(top: 15, bottom: 15),
+              child: Container(
+                height: 10.0,
+                width: 10.0,
+                child: CircularProgressIndicator(
+                  color: Colors.black,
                 ),
+              )
+          ),
           SizedBox(
             height: 10.0,
           ),
@@ -1170,7 +1173,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
     final authService = Provider.of<AuthService>(context, listen: false);
 
-    await authService.register(_user).then((userResponse) async {
+    bool resp = await authService.register(_user, context, size);
+
+    if ( resp ) {
       Map<String, dynamic> body = {
         'idUser': FirebaseAuth.instance.currentUser.uid,
         'firstName': _user.firstname.trim(),
@@ -1178,7 +1183,7 @@ class _RegisterPageState extends State<RegisterPage> {
         'email': _user.email.trim(),
         'phoneNumber': _user.phone.trim(),
         'photoProfile':
-            'https://firebasestorage.googleapis.com/v0/b/handicraft-app.appspot.com/o/image%2Fprofile_pictures%2Fdefault_profile.png?alt=media&token=3610e4eb-44a4-4357-b877-f6bd16904aff'
+        'https://firebasestorage.googleapis.com/v0/b/handicraft-app.appspot.com/o/image%2Fprofile_pictures%2Fdefault_profile.png?alt=media&token=3610e4eb-44a4-4357-b877-f6bd16904aff'
       };
 
       if (_typeAcount) {
@@ -1222,6 +1227,12 @@ class _RegisterPageState extends State<RegisterPage> {
         });
         return false;
       }
-    });
+    } else {
+      setState(() {
+        check = !check;
+      });
+      return false;
+    }
+
   }
 }

@@ -118,8 +118,9 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
   }
 
   Widget _buildNavBarContent(size) {
+    final spaceBetweenIcons = (size.width * 0.75) / 4;
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 2, horizontal: size.width * 0.03),
+      margin: EdgeInsets.symmetric(vertical: 2, horizontal: size.width * 0.01),
       child: BottomAppBar(
         elevation: 0,
         color: Colors.transparent,
@@ -143,7 +144,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                         _selectedIndex = 0;
                       });
                     },
-                    minWidth: 50,
+                    minWidth: spaceBetweenIcons,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -160,7 +161,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                         _selectedIndex = 1;
                       });
                     },
-                    minWidth: 50,
+                    minWidth: spaceBetweenIcons,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -173,7 +174,6 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                   ),
                 ],
               ),
-              SizedBox(width: 20.0),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -183,7 +183,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                         _selectedIndex = 2;
                       });
                     },
-                    minWidth: 50,
+                    minWidth: spaceBetweenIcons,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -200,7 +200,7 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
                         _selectedIndex = 3;
                       });
                     },
-                    minWidth: 50,
+                    minWidth: spaceBetweenIcons,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

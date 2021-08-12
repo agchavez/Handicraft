@@ -6,6 +6,7 @@ import 'package:handicraft_app/pages/detailsProduct.dart';
 import 'package:handicraft_app/pages/home_page.dart';
 import 'package:handicraft_app/pages/login_page.dart';
 import 'package:handicraft_app/pages/register_page.dart';
+import 'package:handicraft_app/pages/first-steps.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/provider/google_sign_in.dart';
 import 'package:handicraft_app/provider/location_service.dart';
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
           'register': (BuildContext context) => RegisterPage(),
           'login': (BuildContext context) => LoginPage(),
           'details': (BuildContext context) => ProductsDetail(),
+          'tips': (BuildContext context) => FlowPager(),
         },
 
         // Tema de la aplicacion, poder cambiar los colores por defecto de la aplicacion
