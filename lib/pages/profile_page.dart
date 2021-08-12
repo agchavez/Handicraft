@@ -135,8 +135,10 @@ class _PorfilePageState extends State<PorfilePage> {
                               ),
                               Container(
                                   child: Text(
+
                                       (userData["email"].length > 17)
                                           ? "${userData["email"].substring(0, 18)}..."
+
                                           : userData["email"],
                                       textAlign: TextAlign.start,
                                       style: TextStyle(
@@ -219,19 +221,9 @@ class _PorfilePageState extends State<PorfilePage> {
                     SizedBox(
                       width: 5,
                     ),
-                    FutureBuilder(
-                      future: StorageService().getValue("verified"),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (snapshot.hasData) {
-                          return snapshot.data == 1
-                              ? Image.asset(
-                                  'assets/icons/secure-icon.png',
-                                  width: 18,
-                                )
-                              : Container();
-                        }
-                        return Container();
-                      },
+                    Image.asset(
+                      'assets/icons/secure-icon.png',
+                      width: 18,
                     ),
                   ],
                 ),
