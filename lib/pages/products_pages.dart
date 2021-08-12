@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:handicraft_app/models/product.dart';
-import 'package:handicraft_app/pages/photoHero.dart';
+import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/provider/product_service.dart';
-import 'package:handicraft_app/widgets/image.dart';
-
+import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 RefreshController _refreshController = RefreshController(initialRefresh: false);
@@ -20,6 +20,9 @@ double heightScreen, widthScreen;
 int cont = 0;
 
 class _ProductsPgaesState extends State<ProductsPages> {
+  ScrollController _hideButtonController;
+  AuthService auth;
+
   //List<dynamic> items;
   void _onLoading() async {
     // monitor network fetch
@@ -40,6 +43,31 @@ class _ProductsPgaesState extends State<ProductsPages> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    auth = Provider.of<AuthService>(context, listen: false);
+    _hideButtonController = new ScrollController();
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if(auth.navbarVisible)
+          setState(() {
+            auth.navbarVisible = false;
+            print(auth.navbarVisible);
+          });
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if(!auth.navbarVisible)
+          setState(() {
+            auth.navbarVisible = true;
+            print(auth.navbarVisible);
+          });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
@@ -51,8 +79,8 @@ class _ProductsPgaesState extends State<ProductsPages> {
           elevation: 0.0,
           actions: [
             GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, 'tips');
+              onTap: () async {
+                print(await auth.refreshUserToken());
               },
               child: Container(
                 margin: EdgeInsets.only(right: 22),
@@ -116,6 +144,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
                     onLoading: _onLoading,
                     physics: ScrollPhysics(),
                     child: GridView.builder(
+                        controller: _hideButtonController,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2, childAspectRatio: 0.78),

@@ -36,6 +36,7 @@ class _FlowPageState extends State<FlowPager> {
   AuthService auth;
   final dio = Dio();
   FirebaseStorageService firebaseStorage = new FirebaseStorageService();
+  String profilePictureExist = '';
 
   @override
   void initState() {
@@ -51,6 +52,15 @@ class _FlowPageState extends State<FlowPager> {
     _pageController.dispose();
     _notifier.dispose();
     super.dispose();
+  }
+
+  Future<bool> _profilePicure() async {
+    profilePictureExist = await auth.storage.getValue('photoProfile');
+    profilePictureExist = profilePictureExist !=
+            'https://firebasestorage.googleapis.com/v0/b/handicraft-app.appspot.com/o/image%2Fprofile_pictures%2Fdefault_profile.png?alt=media&token=3610e4eb-44a4-4357-b877-f6bd16904aff'
+        ? profilePictureExist
+        : null;
+    return true;
   }
 
   @override
@@ -197,20 +207,21 @@ class _FlowPageState extends State<FlowPager> {
               uploadingImage = true;
               setState(() {});
               final uid = await auth.storage.getValue('uid');
-              final urlPhotoProfile = await firebaseStorage.uploadImg(profileImage, uid);
+              final urlPhotoProfile =
+                  await firebaseStorage.uploadImg(profileImage, uid);
               final token = await auth.refreshUserToken();
               Map<String, dynamic> data = {
                 "uid": uid,
                 "urlPicture": urlPhotoProfile,
               };
-              Response response = await dio.put('${Enviroment.ipAddressLocalhost}/user/profile/updateImage',
+              Response response = await dio.put(
+                  '${Enviroment.apiurl}/user/profile/updateImage',
                   options: Options(headers: {
                     HttpHeaders.contentTypeHeader: "application/json",
                     'token': token
                   }),
-                data: jsonEncode(data)
-              );
-              if ( response.statusCode == 200 ) {
+                  data: jsonEncode(data));
+              if (response.statusCode == 200) {
                 await auth.storage.setValue(urlPhotoProfile, 'photoProfile');
                 uploadingImage = false;
                 setState(() {});
@@ -220,50 +231,58 @@ class _FlowPageState extends State<FlowPager> {
               }
             }
           },
-          child: profileImage != null
-              ? Stack(
-                  children: [
-                    Container(
-                      height: 200,
-                      width: 200,
-                      child: CircleAvatar(
-                        backgroundImage: FileImage(profileImage),
+          child: FutureBuilder(
+              future: _profilePicure(),
+              builder: (context, snapshot) {
+                if (profilePictureExist != null || profileImage != null) {
+                  return Stack(
+                    children: [
+                      Container(
+                        height: 200,
+                        width: 200,
+                        child: CircleAvatar(
+                          backgroundImage: profileImage != null
+                              ? FileImage(profileImage)
+                              : NetworkImage(profilePictureExist),
+                        ),
                       ),
-                    ),
-                    Container(
-                      height: 200,
-                      width: 200,
-                      decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(100)),
-                      child: Center(
-                        child: uploadingImage
-                            ? Container(
-                                width: 10,
-                                height: 10,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
+                      Container(
+                        height: 200,
+                        width: 200,
+                        decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(100)),
+                        child: Center(
+                          child: uploadingImage
+                              ? Container(
+                                  width: 10,
+                                  height: 10,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Container(
+                                  width: 20,
+                                  height: 20,
+                                  child:
+                                      Image.asset("assets/icons/edit-icon.png"),
                                 ),
-                              )
-                            : Container(
-                                width: 20,
-                                height: 20,
-                                child:
-                                    Image.asset("assets/icons/edit-icon.png"),
-                              ),
-                      ),
-                    )
-                  ],
-                )
-              : Container(
-                  height: 200,
-                  width: 200,
-                  margin: EdgeInsets.only(left: 30),
-                  child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Image.asset('assets/images/add-picture-2.png'),
-                  ),
-                ),
+                        ),
+                      )
+                    ],
+                  );
+                } else {
+                  return Container(
+                    height: 200,
+                    width: 200,
+                    margin: EdgeInsets.only(left: 30),
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Image.asset('assets/images/add-picture-2.png'),
+                    ),
+                  );
+                }
+              }),
         ),
         SizedBox(
           height: 15,
@@ -471,14 +490,15 @@ class _FlowPageState extends State<FlowPager> {
               "uid": uid,
               "newStatus": 0,
             };
-            Response response = await dio.put('${Enviroment.ipAddressLocalhost}/user/profile/setStatusTips',
+            Response response = await dio.put(
+                '${Enviroment.apiurl}/user/profile/setStatusTips',
                 options: Options(headers: {
                   HttpHeaders.contentTypeHeader: "application/json",
                   'token': token
                 }),
-                data: jsonEncode( data )
-            );
-            if ( response.statusCode == 200 ) {
+                data: jsonEncode(data));
+            if (response.statusCode == 200) {
+              Navigator.pop(context, 'tips');
               Navigator.pushNamed(context, 'home');
             }
           },

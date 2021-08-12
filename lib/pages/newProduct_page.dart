@@ -11,6 +11,7 @@ import 'package:handicraft_app/utils/util.dart';
 import 'package:handicraft_app/widgets/custon_input.dart';
 import 'package:handicraft_app/widgets/dropdown_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:handicraft_app/utils/util.dart' as utils;
 
 class NewpProductPage extends StatefulWidget {
   @override
@@ -107,8 +108,12 @@ class _NewpProductPageState extends State<NewpProductPage> {
                     height: size.height * 0.02,
                     color: Colors.black,
                     width: size.width * 0.2,
-                    child: check ? CircularProgressIndicator(
-                      color: Colors.white,
+                    child: check ? Container(
+                      height: 10,
+                      width: 10,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
                     ) : Text(
                       "Publicar",
                       style: TextStyle(
@@ -143,10 +148,10 @@ class _NewpProductPageState extends State<NewpProductPage> {
             child: Text(
               'Imagenes del producto',
               style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFFC4C4C4),
-                  fontSize: 15,
-                  fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w500,
+                color: Color(0xFFC4C4C4),
+                fontSize: 15,
+                fontFamily: 'Montserrat',
               ),
             ),
           ),
@@ -752,7 +757,12 @@ class _NewpProductPageState extends State<NewpProductPage> {
 
   _addProduct() async {
     if (!_validate()) {
-      showSnacbar(Text('Error! Datos obligatorios!'), Colors.red, context);
+      utils.showTopSnackBar(
+          context,
+          size,
+          'Credenciales invalidas',
+          'Verifique sus credenciales.',
+          utils.alertsStyles['warningAlert']);
       setState(() {
         check = false;
       });
@@ -773,17 +783,25 @@ class _NewpProductPageState extends State<NewpProductPage> {
     final resp = await productService.addProduct(images, body);
     if (resp) {
       clearData();
-      showSnacbar(
-          Text(
-            'Producto agregado',
-            style: TextStyle(color: Colors.black),
-          ),
-          Colors.white,
-          context);
+      utils.showTopSnackBar(
+          context,
+          size,
+          '¡Enhorabuena!',
+          'Su producto fue agregado.',
+          utils.alertsStyles['successAlert']);
+      setState(() {
+        check = false;
+      });
     } else {}
     setState(() {
       check = false;
     });
+    utils.showTopSnackBar(
+        context,
+        size,
+        'Lo sentimos.',
+        'El producto no ha sido agregado.',
+        utils.alertsStyles['successAlert']);
   }
 
   void clearData() {

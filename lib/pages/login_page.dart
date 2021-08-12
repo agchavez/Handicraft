@@ -309,84 +309,93 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   _logIn() async {
-    setState(() {
-      check = !check;
-    });
-
-    if (!formkey.currentState.validate()) {
+    try {
       setState(() {
         check = !check;
       });
-      return;
-    }
 
-    formkey.currentState.save();
-    final resp = await auth.login(login_user.email, login_user.password);
+      if (!formkey.currentState.validate()) {
+        utils.showTopSnackBar(context, size, 'Ingrese sus credenciales',
+            'Credenciales obligatorias.', utils.alertsStyles['warningAlert']);
+        setState(() {
+          check = !check;
+        });
+        return;
+      }
 
-    if (resp) {
-      await auth.stateAuth();
-      if (auth.authState) {
-        Response responseInfoUser = await dio.get(
-            '${Enviroment.ipAddressLocalhost}/user/profile/${FirebaseAuth.instance.currentUser.uid}',
-            options: Options(
-                headers: {HttpHeaders.contentTypeHeader: "application/json"}));
-        Map<String, dynamic> userData = jsonDecode(responseInfoUser.toString());
+      formkey.currentState.save();
+      final resp = await auth.login(login_user.email, login_user.password);
 
-        await auth.setUserStorage(userData).then((value) async {
-          setState(() {
-            check = !check;
-          });
+      if (!resp) {
+        utils.showTopSnackBar(context, size, '¡Algo ha fallado!.',
+            'Verifique sus credenciales.', utils.alertsStyles['warningAlert']);
+        setState(() {
+          check = true;
+        });
+      }
+
+      if (resp) {
+        await auth.stateAuth();
+        if (auth.authState) {
+          Response responseInfoUser = await dio.get(
+              '${Enviroment.apiurl}/user/profile/${FirebaseAuth.instance.currentUser.uid}',
+              options: Options(headers: {
+                HttpHeaders.contentTypeHeader: "application/json"
+              }));
+          Map<String, dynamic> userData =
+              jsonDecode(responseInfoUser.toString());
+          await auth.setUserStorage(userData);
           final state = await auth.storage.getValue('state');
-          print(state);
-          if ( state == "1" ) {
+          if (state == "1") {
             Navigator.popAndPushNamed(context, 'tips');
           } else {
             Navigator.popAndPushNamed(context, "home");
           }
+          setState(() {
+            check = !check;
+          });
+        }
+      } else if (!FirebaseAuth.instance.currentUser.emailVerified) {
+        setState(() {
+          check = !check;
         });
-      }
-    } else if (!FirebaseAuth.instance.currentUser.emailVerified) {
-      setState(() {
-        check = !check;
-      });
-      _alert['title'] = 'Verificación de correo';
-      _alert['content'] =
-          'Tu correo aun no ha sido verificado, para iniciar sesión verifica tu correo.';
-      actions = [
-        FlatButton(
-            onPressed: () async {
-              await auth.signOut();
-              Navigator.pop(context);
-            },
-            child: Text('Ok')),
-        FlatButton(
-            onPressed: () async {
-              _sendingEmail = true;
-              setState(() {});
-              if (FirebaseAuth.instance.currentUser != null) {
-                await auth.sendEmailVerification();
-                _sendingEmail = false;
+        _alert['title'] = 'Verificación de correo';
+        _alert['content'] =
+            'Tu correo aun no ha sido verificado, para iniciar sesión verifica tu correo.';
+        actions = [
+          FlatButton(
+              onPressed: () async {
+                await auth.signOut();
                 Navigator.pop(context);
+              },
+              child: Text('Ok')),
+          FlatButton(
+              onPressed: () async {
+                _sendingEmail = true;
                 setState(() {});
-              }
-            },
-            child: _sendingEmail
-                ? CircularProgressIndicator(
-                    color: Colors.black,
-                  )
-                : Text('Reenviar verificacion.')),
-      ];
-      setState(() {});
-      showDialog(
-        context: context,
-        builder: (_) => alert(_alert['title'], _alert['content'], actions),
-      );
-    } else {
+                if (FirebaseAuth.instance.currentUser != null) {
+                  await auth.sendEmailVerification();
+                  _sendingEmail = false;
+                  Navigator.pop(context);
+                  setState(() {});
+                }
+              },
+              child: _sendingEmail
+                  ? CircularProgressIndicator(
+                      color: Colors.black,
+                    )
+                  : Text('Reenviar verificacion.')),
+        ];
+        setState(() {});
+        showDialog(
+          context: context,
+          builder: (_) => alert(_alert['title'], _alert['content'], actions),
+        );
+      }
+    } catch (e) {
       setState(() {
         check = !check;
       });
-      showAlert(
-          context, "Error", "Datos incorrectos - Verifique la informacion");
     }
   }
 
