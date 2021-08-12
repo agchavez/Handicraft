@@ -122,7 +122,6 @@ class AuthService with ChangeNotifier {
 
   Future<bool> setUserStorage(Map<String, dynamic> user) async {
     user = user['data'];
-    print(user);
     await storage.deleteAll();
     String name = '${user["name"]} ${user['lastname']}';
     if (user['idCompany'] == null) {
