@@ -77,9 +77,11 @@ class _PorfilePageState extends State<PorfilePage> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Container(
-                alignment: Alignment.bottomRight,
-                child: GestureDetector(
-                  onTap: () async {
+                child: MaterialButton(
+                  height: 5,
+                  minWidth: 5,
+                  elevation: 0.0,
+                  onPressed: () async {
                     await AuthService().signOut();
                     Navigator.popAndPushNamed(context, "home");
                   },
@@ -105,6 +107,7 @@ class _PorfilePageState extends State<PorfilePage> {
                           width: size.width * 0.1,
                         ),
                         Container(
+                            margin: EdgeInsets.only(right: 10),
                             width: 95.0,
                             height: 95.0,
                             decoration: new BoxDecoration(
@@ -135,8 +138,8 @@ class _PorfilePageState extends State<PorfilePage> {
                               ),
                               Container(
                                   child: Text(
-                                      (userData["email"].length > 17)
-                                          ? "${userData["email"].substring(0, 18)}..."
+                                      (userData["email"].length > 29)
+                                          ? "${userData["email"].substring(0, 26)}..."
                                           : userData["email"],
                                       textAlign: TextAlign.start,
                                       style: TextStyle(

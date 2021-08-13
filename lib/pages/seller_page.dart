@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/product.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/provider/product_service.dart';
+import 'package:handicraft_app/provider/report_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:handicraft_app/provider/user_service.dart';
 import 'package:handicraft_app/widgets/productNew.dart';
@@ -21,6 +22,7 @@ class _SellerPageState extends State<SellerPage> {
   String uidUser;
   bool _like = false;
   Map<dynamic, dynamic> userData;
+  ReportService reportService = ReportService();
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
@@ -243,7 +245,7 @@ class _SellerPageState extends State<SellerPage> {
 
   _report() {
     int _selectReport;
-    bool _report = false;
+    bool _report = false, _loadingreport = false;
     showDialog(
         context: context,
         builder: (context) =>
@@ -274,163 +276,121 @@ class _SellerPageState extends State<SellerPage> {
                               color: Colors.black,
                               fontWeight: FontWeight.bold)),
                       content: Container(
-                        height: 140,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                _selectReport == 0
-                                    ? _selectReport = null
-                                    : _selectReport = 0;
+                        height: 200,
+                        child: FutureBuilder(
+                          future: reportService.getReportSeller(),
+                          builder:
+                              (BuildContext context, AsyncSnapshot snapshot) {
+                            if (snapshot.hasData) {
+                              data = snapshot.data;
+                              return Container(
+                                height: 180,
+                                width: double.maxFinite,
+                                child: ListView.builder(
+                                  itemCount: data.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        _selectReport == data[index]["id"]
+                                            ? _selectReport = null
+                                            : _selectReport = data[index]["id"];
 
-                                setState(() {});
-                              },
-                              child: Row(
-                                children: [
-                                  _selectReport == 0
-                                      ? Icon(Icons.brightness_1_rounded)
-                                      : Icon(Icons.brightness_1_outlined),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text("Contenido Sexual",
-                                      style: TextStyle(
-                                          fontSize: 13,
-                                          fontFamily: 'Montserrat',
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.normal)),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            GestureDetector(
-                              onTap: () {
-                                _selectReport == 1
-                                    ? _selectReport = null
-                                    : _selectReport = 1;
-                                setState(() {});
-                              },
-                              child: Row(
-                                children: [
-                                  _selectReport == 1
-                                      ? Icon(Icons.brightness_1_rounded)
-                                      : Icon(Icons.brightness_1_outlined),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text("Contenido violento",
-                                      style: TextStyle(
-                                          fontSize: 13,
-                                          fontFamily: 'Montserrat',
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.normal)),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            GestureDetector(
-                              onTap: () {
-                                _selectReport == 2
-                                    ? _selectReport = null
-                                    : _selectReport = 2;
-                                setState(() {});
-                              },
-                              child: Row(
-                                children: [
-                                  _selectReport == 2
-                                      ? Icon(Icons.brightness_1_rounded)
-                                      : Icon(Icons.brightness_1_outlined),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text("Acsoso o intimidacion",
-                                      style: TextStyle(
-                                          fontSize: 13,
-                                          fontFamily: 'Montserrat',
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.normal)),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            GestureDetector(
-                              onTap: () {
-                                _selectReport == 3
-                                    ? _selectReport = null
-                                    : _selectReport = 3;
-                                setState(() {});
-                              },
-                              child: Row(
-                                children: [
-                                  _selectReport == 3
-                                      ? Icon(Icons.brightness_1_rounded)
-                                      : Icon(Icons.brightness_1_outlined),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text("Inflije derechos",
-                                      style: TextStyle(
-                                          fontSize: 13,
-                                          fontFamily: 'Montserrat',
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.normal)),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            GestureDetector(
-                              onTap: () {
-                                _selectReport == 4
-                                    ? _selectReport = null
-                                    : _selectReport = 4;
-                                setState(() {});
-                              },
-                              child: Row(
-                                children: [
-                                  _selectReport == 4
-                                      ? Icon(Icons.brightness_1_rounded)
-                                      : Icon(Icons.brightness_1_outlined),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text("Engañoso o spam",
-                                      style: TextStyle(
-                                          fontSize: 13,
-                                          fontFamily: 'Montserrat',
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.normal)),
-                                ],
-                              ),
-                            )
-                          ],
+                                        setState(() {});
+                                      },
+                                      child: Row(
+                                        children: [
+                                          _selectReport == data[index]["id"]
+                                              ? Icon(Icons.brightness_1_rounded)
+                                              : Icon(
+                                                  Icons.brightness_1_outlined),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          Text(data[index]["name"],
+                                              style: TextStyle(
+                                                  fontSize: 13,
+                                                  fontFamily: 'Montserrat',
+                                                  color: Colors.black,
+                                                  fontWeight:
+                                                      FontWeight.normal)),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            } else {
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.black,
+                                ),
+                              );
+                            }
+                          },
                         ),
                       ),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                       actions: [
-                        MaterialButton(
-                            child: Text(
-                              "Cancelar",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            elevation: 3,
-                            onPressed: () => Navigator.pop(context)),
-                        MaterialButton(
-                            child: Text(
-                              "Reportar",
-                              style: TextStyle(
-                                  color: _selectReport == null
-                                      ? Colors.grey
-                                      : Colors.black),
-                            ),
-                            elevation: 3,
-                            onPressed: _selectReport == null
-                                ? null
-                                : () {
-                                    _report = true;
-                                    setState(() {});
-                                  })
+                        Divider(
+                          color: Colors.black,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            MaterialButton(
+                                child: Text(
+                                  "Cancelar",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                elevation: 3,
+                                onPressed: () => Navigator.pop(context)),
+                            _loadingreport
+                                ? Container(
+                                    margin:
+                                        EdgeInsets.only(right: 46, left: 20),
+                                    child: SizedBox(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.black,
+                                      ),
+                                      height: 20.0,
+                                      width: 20.0,
+                                    ),
+                                  )
+                                : MaterialButton(
+                                    child: Text(
+                                      "Reportar",
+                                      style: TextStyle(
+                                          color: _selectReport == null
+                                              ? Colors.grey
+                                              : Colors.white),
+                                    ),
+                                    color: Colors.black,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(5.0)),
+                                    elevation: 3,
+                                    onPressed: _selectReport == null
+                                        ? null
+                                        : () async {
+                                            setState(() {
+                                              _loadingreport = true;
+                                            });
+
+                                            final resp = await reportService
+                                                .postReportUser(_selectReport);
+                                            if (resp) {
+                                              _report = true;
+                                              setState(() {});
+                                            } else {
+                                              setState(() {
+                                                _loadingreport = false;
+                                              });
+                                            }
+                                          })
+                          ],
+                        )
                       ],
                     );
             }));
@@ -528,7 +488,6 @@ class _SellerPageState extends State<SellerPage> {
       },
     );
   }
-
 
   Widget _createinformaction() {
     return Expanded(

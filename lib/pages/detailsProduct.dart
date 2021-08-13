@@ -38,172 +38,174 @@ class _ProductsDetailState extends State<ProductsDetail> {
     existUserbool();
 
     return Scaffold(
-        body: SingleChildScrollView(
-      child: FutureBuilder(
-        future: ProductService().getPostsDetail(idProduct),
-        builder: (BuildContext context,
-            AsyncSnapshot<List<ProductInfoModel>> snapshot) {
-          if (snapshot.hasError) {
-          } else if (snapshot.hasData) {
-            data = snapshot.data[0];
-            //items = snapshot.data;
-            return Column(
-              // The blue background emphasizes that it's a new route.
+        body: SafeArea(
+      child: SingleChildScrollView(
+        child: FutureBuilder(
+          future: ProductService().getPostsDetail(idProduct),
+          builder: (BuildContext context,
+              AsyncSnapshot<List<ProductInfoModel>> snapshot) {
+            if (snapshot.hasError) {
+            } else if (snapshot.hasData) {
+              data = snapshot.data[0];
+              //items = snapshot.data;
+              return Column(
+                // The blue background emphasizes that it's a new route.
 
-              children: [
-                carousel(data.images),
-                SizedBox(
-                  height: 6,
-                ),
-                Container(
-                    padding: EdgeInsets.fromLTRB(30, 10, 6, 10),
-                    height: size.height * 0.20,
-                    width: size.height * 0.47,
+                children: [
+                  carousel(data.images),
+                  SizedBox(
+                    height: 6,
+                  ),
+                  Container(
+                      padding: EdgeInsets.fromLTRB(30, 10, 6, 10),
+                      height: size.height * 0.20,
+                      width: size.height * 0.47,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                      ),
+                      child: Column(children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 60,
+                                          height: 60,
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image: NetworkImage(
+                                                    data.profilePicture)),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(30.0)),
+                                          ),
+                                          alignment: Alignment.topCenter,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Container(
+                                            //color: Colors.amber,
+                                            child: Column(
+                                          children: [
+                                            Text(
+                                              (data.name.length > 17)
+                                                  ? "${data.name.substring(0, 17)}..."
+                                                  : data.name,
+                                              style: TextStyle(
+                                                  fontFamily: "Montserrat",
+                                                  fontSize: 19,
+                                                  color: Colors.white),
+                                            ),
+                                          ],
+                                        )),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            IconButton(
+                                onPressed: () async {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            SellerPage(uid: data.idUser)),
+                                  );
+                                },
+                                icon: Icon(
+                                  Icons.arrow_forward_ios_outlined,
+                                  size: 20,
+                                  color: Colors.white,
+                                )),
+                          ],
+                        ),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            data.email,
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontFamily: 'Montserrat',
+                                color: Colors.white,
+                                decoration: TextDecoration.underline),
+                          ),
+                        ),
+                        Container(
+                          width: size.height,
+                          child: Text(
+                            data.description,
+                            style: TextStyle(fontSize: 15, color: Colors.white),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          width: size.height,
+                          child: Text(
+                            data.cost,
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontFamily: 'Montserrat',
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ])),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(30, 10, 6, 8),
+                    height: size.height * 0.052,
+                    width: size.height * 0.44,
                     decoration: BoxDecoration(
-                      color: Colors.black,
+                      color: Colors.grey[200],
                       borderRadius: BorderRadius.all(Radius.circular(15)),
                     ),
-                    child: Column(children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: 60,
-                                        height: 60,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: NetworkImage(
-                                                  data.profilePicture)),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(30.0)),
-                                        ),
-                                        alignment: Alignment.topCenter,
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Container(
-                                          //color: Colors.amber,
-                                          child: Column(
-                                        children: [
-                                          Text(
-                                            (data.name.length > 17)
-                                                ? "${data.name.substring(0, 17)}..."
-                                                : data.name,
-                                            style: TextStyle(
-                                                fontFamily: "Montserrat",
-                                                fontSize: 19,
-                                                color: Colors.white),
-                                          ),
-                                        ],
-                                      )),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          IconButton(
-                              onPressed: () async {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          SellerPage(uid: data.idUser)),
-                                );
-                              },
-                              icon: Icon(
-                                Icons.arrow_forward_ios_outlined,
-                                size: 20,
-                                color: Colors.white,
-                              )),
-                        ],
-                      ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          data.email,
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontFamily: 'Montserrat',
-                              color: Colors.white,
-                              decoration: TextDecoration.underline),
+                    child: TextFormField(
+                      keyboardType: TextInputType.text,
+                      initialValue: 'Hola, sigue disponible?',
+                      style: TextStyle(color: Colors.grey[600]),
+                      decoration: InputDecoration(
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        suffixIcon: Image.asset(
+                          'assets/icons/chat2.png',
                         ),
-                      ),
-                      Container(
-                        width: size.height,
-                        child: Text(
-                          data.description,
-                          style: TextStyle(fontSize: 15, color: Colors.white),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Container(
-                        width: size.height,
-                        child: Text(
-                          data.cost,
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontFamily: 'Montserrat',
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ])),
-                SizedBox(
-                  height: 15,
-                ),
-                Container(
-                  padding: EdgeInsets.fromLTRB(30, 10, 6, 8),
-                  height: size.height * 0.052,
-                  width: size.height * 0.44,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                  ),
-                  child: TextFormField(
-                    keyboardType: TextInputType.text,
-                    initialValue: 'Hola, sigue disponible?',
-                    style: TextStyle(color: Colors.grey[600]),
-                    decoration: InputDecoration(
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      suffixIcon: Image.asset(
-                        'assets/icons/chat2.png',
                       ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                comments(size, context),
-              ],
+                  SizedBox(
+                    height: 15,
+                  ),
+                  comments(size, context),
+                ],
+              );
+            }
+            return Center(
+              child: CircularProgressIndicator(
+                color: Colors.black,
+              ),
             );
-          }
-          return Center(
-            child: CircularProgressIndicator(
-              color: Colors.black,
-            ),
-          );
-        },
+          },
+        ),
       ),
     ));
   }
 
 //agregar comentarios
- _addCommentary(String data) async {
+  _addCommentary(String data) async {
     if (data != '') {
       setState(() {});
       myController.clear();

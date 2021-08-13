@@ -104,21 +104,21 @@ class _NewpProductPageState extends State<NewpProductPage> {
                     height: size.height * 0.02,
                     color: Colors.black,
                     width: size.width * 0.2,
-                    child: check ? Container(
-                      height: 10,
-                      width: 10,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                      ),
-                    ) : Text(
-                      "Publicar",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: "Montserrat",
-                          fontWeight: FontWeight.bold
-                      ),
-                    ),
-
+                    child: check
+                        ? Container(
+                            height: 10,
+                            width: 10,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            "Publicar",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: "Montserrat",
+                                fontWeight: FontWeight.bold),
+                          ),
                   ),
                   onPressed: () {
                     setState(() {
@@ -740,12 +740,8 @@ class _NewpProductPageState extends State<NewpProductPage> {
 
   _addProduct() async {
     if (!_validate()) {
-      utils.showTopSnackBar(
-          context,
-          size,
-          'Credenciales invalidas',
-          'Verifique sus credenciales.',
-          utils.alertsStyles['warningAlert']);
+      utils.showTopSnackBar(context, size, 'Credenciales invalidas',
+          'Verifique sus credenciales.', utils.alertsStyles['warningAlert']);
 
       setState(() {
         check = false;
@@ -767,25 +763,22 @@ class _NewpProductPageState extends State<NewpProductPage> {
     final resp = await productService.addProduct(images, body);
     if (resp) {
       clearData();
-      utils.showTopSnackBar(
-          context,
-          size,
-          '¡Enhorabuena!',
-          'Su producto fue agregado.',
-          utils.alertsStyles['successAlert']);
+      utils.showTopSnackBar(context, size, '¡Enhorabuena!',
+          'Su producto fue agregado.', utils.alertsStyles['successAlert']);
       setState(() {
         check = false;
       });
-    } else {}
-    setState(() {
-      check = false;
-    });
-    utils.showTopSnackBar(
-        context,
-        size,
-        'Lo sentimos.',
-        'El producto no ha sido agregado.',
-        utils.alertsStyles['successAlert']);
+    } else {
+      setState(() {
+        check = false;
+      });
+      utils.showTopSnackBar(
+          context,
+          size,
+          'Lo sentimos.',
+          'El producto no ha sido agregado.',
+          utils.alertsStyles['successAlert']);
+    }
   }
 
   void clearData() {

@@ -39,9 +39,11 @@ class ProductService with ChangeNotifier {
         }
       }
       body["images"] = imgUrl;
+      String token = await authService.refreshUserToken();
       Response response = await dio.post('${Enviroment.apiurl}/product/$idUser',
           options: Options(headers: {
             HttpHeaders.contentTypeHeader: "application/json",
+            "token": token
           }),
           data: jsonEncode(body));
       if (response.statusCode == 200) {
@@ -179,7 +181,7 @@ class ProductService with ChangeNotifier {
     print("uid == $uid");
     if (uid == null || uid == "") {
       final response = await http.get(Uri.parse(
-          "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/$cont/12"));
+          "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/0/20"));
       final resp = productModelFromJson(jsonDecode(response.body)).data;
       if (cont != 0) {
         dat2 = [...dat2, ...resp];
@@ -190,7 +192,7 @@ class ProductService with ChangeNotifier {
       }
     } else {
       final response = await http.get(Uri.parse(
-          "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/$uid/$cont/12"));
+          "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/$uid/0/20"));
       final resp = productModelFromJson(jsonDecode(response.body)).data;
       if (cont != 0) {
         dat2 = [...dat2, ...resp];
