@@ -203,7 +203,7 @@ class _ProductsDetailState extends State<ProductsDetail> {
   }
 
 //agregar comentarios
- _addCommentary(String data) async {
+  _addCommentary(String data) async {
     if (data != '') {
       setState(() {});
       myController.clear();
@@ -243,23 +243,6 @@ class _ProductsDetailState extends State<ProductsDetail> {
     );
   }
 
-  existUserbool() async {
-    //idUser = false;
-    final user = await StorageService().getValue("uid");
-
-    if (user == null || user == '') {
-      idUser = false;
-      print('USUSARIO ' + idUser.toString());
-
-      return false;
-    } else {
-      idUser = true;
-      print('USUSARIO ' + idUser.toString());
-
-      return true;
-    }
-  }
-
   Widget _comentary(Size size) {
     if (idUser == true) {
       return Container(
@@ -296,16 +279,23 @@ class _ProductsDetailState extends State<ProductsDetail> {
       return Text('');
     }
   }
+  /* final MyList<ProductCommentsModel> on List<ProductCommentsModel> {
+  List<ProductCommentsModel> sortedBy(Comparable Function(ProductCommentsModel) fn) {
+    sort((a, b) => fn(a).compareTo(fn(b)));
+    return this;
+  }
+}*/
 
   Widget _showComments(
       Size size, List<ProductCommentsModel> data, BuildContext context) {
-    return Flex(
-      direction: Axis.vertical,
-      children: <Widget>[
-        ListBody(
-          mainAxis: Axis.vertical,
-          children: <Widget>[
-            for (var i = 0; i < data.length; i++)
+    if (data.length >= 1) {
+      return Flex(
+        direction: Axis.vertical,
+        children: <Widget>[
+          ListBody(
+            mainAxis: Axis.vertical,
+            children: <Widget>[
+              //for (var i = 0; i < data.length; i++)
               Column(children: [
                 Container(
                     padding: EdgeInsets.fromLTRB(10, 3, 6, 10),
@@ -321,11 +311,10 @@ class _ProductsDetailState extends State<ProductsDetail> {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
+                              shape: BoxShape.circle,
                               image: DecorationImage(
                                   fit: BoxFit.cover,
-                                  image: NetworkImage(data[i].photoProfile)),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(30.0)),
+                                  image: NetworkImage(data[0].photoProfile)),
                             ),
                             alignment: Alignment.topCenter,
                           ),
@@ -336,9 +325,9 @@ class _ProductsDetailState extends State<ProductsDetail> {
                               child: Column(
                             children: [
                               Text(
-                                (data[i].name.length > 14)
-                                    ? "${data[i].name.substring(0, 14)}..."
-                                    : data[i].name,
+                                (data[0].name.length > 14)
+                                    ? "${data[0].name.substring(0, 14)}..."
+                                    : data[0].name,
                                 style: TextStyle(
                                     fontFamily: 'Montserrat',
                                     fontSize: 12,
@@ -346,7 +335,7 @@ class _ProductsDetailState extends State<ProductsDetail> {
                                     fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                data[i].date + '   ' + data[i].time,
+                                data[0].date + '   ' + data[0].time,
                                 style: TextStyle(
                                   fontFamily: 'Montserrat',
                                   fontSize: 10,
@@ -364,16 +353,56 @@ class _ProductsDetailState extends State<ProductsDetail> {
                     color: Colors.white,
                   ),
                   child: Text(
-                    data[i].comentary,
+                    data[0].comentary,
                     style: TextStyle(
                       fontFamily: 'Montserrat',
                     ),
                   ),
                 ),
               ])
-          ],
-        )
-      ],
+            ],
+          ),
+          GestureDetector(
+            onTap: () {
+              dynamic arr = [];
+              arr.add(data);
+              arr.add(idProduct);
+              Navigator.pushNamed(context, 'allcomentary', arguments: arr);
+            },
+            child: textAll(data.length),
+          ),
+        ],
+      );
+    } else {
+      return Text('');
+    }
+  }
+}
+
+Widget textAll(int len) {
+  if (len != 1) {
+    return Text(
+      'Ver los ' + len.toString() + ' comentarios',
+      style: TextStyle(fontFamily: 'Montserrat', color: Colors.grey),
     );
+  } else {
+    return Text('');
+  }
+}
+
+existUserbool() async {
+  //idUser = false;
+  final user = await StorageService().getValue("uid");
+
+  if (user == null || user == '') {
+    idUser = false;
+    print('USUSARIO ' + idUser.toString());
+
+    return false;
+  } else {
+    idUser = true;
+    print('USUSARIO ' + idUser.toString());
+
+    return true;
   }
 }

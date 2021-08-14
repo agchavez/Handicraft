@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:flutter/material.dart';
+import 'package:handicraft_app/pages/allComments.dart';
 import 'package:handicraft_app/pages/detailsProduct.dart';
 
 import 'package:handicraft_app/pages/home_page.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
           'login': (BuildContext context) => LoginPage(),
           'details': (BuildContext context) => ProductsDetail(),
           'tips': (BuildContext context) => FlowPager(),
+          'allcomentary': (BuildContext context) => AllComments(),
         },
 
         // Tema de la aplicacion, poder cambiar los colores por defecto de la aplicacion
