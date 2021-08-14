@@ -35,7 +35,6 @@ class _MainExpandableNavBarState extends State<MainExpandableNavBar>
   @override
   void initState() {
     auth = Provider.of<AuthService>(context, listen: false);
-    auth.stateAuth();
     _photoProfile();
     _controller = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 600));

@@ -145,6 +145,7 @@ class AuthService with ChangeNotifier {
       await storage.setValue(user['State_idState'].toString(), 'state');
       await storage.setValue(user['Verification'].toString(), 'verified');
       await storage.setValue(user["phone"], 'phone');
+      await storage.setValue(user['new'].toString(), 'new');
     } else {
       await storage.setValue(user["idUser"], 'uid');
       await storage.setValue(user["idCompany"].toString(), 'idCompany');
@@ -155,6 +156,7 @@ class AuthService with ChangeNotifier {
       await storage.setValue(user["photoProfile"], 'photoProfile');
       await storage.setValue(user['Verification'].toString(), 'verified');
       await storage.setValue(user["phone"], 'phone');
+      await storage.setValue(user['new'].toString(), 'new');
     }
 
     return true;

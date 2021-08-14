@@ -176,7 +176,6 @@ class ProductService with ChangeNotifier {
   Future<List<ProductModel>> getPosts(int cont) async {
     // print(endArray);
     String uid = await StorageService().getValue("uid");
-    print("uid == $uid");
     if (uid == null || uid == "") {
       final response = await http.get(Uri.parse(
           "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/$cont/12"));
