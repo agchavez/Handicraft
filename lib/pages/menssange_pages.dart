@@ -12,25 +12,16 @@ class _MenssagePagesState extends State<MenssagePages> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        toolbarHeight: size.height * 0.2,
-        bottomOpacity: 0.0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(15),
-            bottomRight: Radius.circular(15),
-          ),),
-        title: Text(
-          "Mensajes",
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: 'Gilroy_ExtraBold',
-            fontWeight: FontWeight.bold,
-            fontSize: 22.0,
-          ),
-        ),
-        centerTitle: true,
-      ),
+          backgroundColor: Colors.black,
+          bottomOpacity: 0.0,
+          elevation: 0.0,
+          title:  Text(
+            'Chats',
+            style: TextStyle(
+              fontFamily: 'Montserrat',
+              fontWeight: FontWeight.bold
+            ),
+          )),
     );
   }
 }
