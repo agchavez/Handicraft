@@ -335,18 +335,18 @@ class _LoginPageState extends State<LoginPage> {
               options: Options(headers: {
                 HttpHeaders.contentTypeHeader: "application/json"
               }));
+          setState(() {
+            check = !check;
+          });
           Map<String, dynamic> userData =
               jsonDecode(responseInfoUser.toString());
           await auth.setUserStorage(userData);
-          final state = await auth.storage.getValue('state');
-          if (state == "1") {
+          final first_login = await auth.storage.getValue('new');
+          if (first_login == "1") {
             Navigator.popAndPushNamed(context, 'tips');
           } else {
             Navigator.popAndPushNamed(context, "home");
           }
-          setState(() {
-            check = !check;
-          });
         }
       } else if (!FirebaseAuth.instance.currentUser.emailVerified) {
         setState(() {

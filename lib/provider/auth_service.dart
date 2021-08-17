@@ -15,9 +15,7 @@ class AuthService with ChangeNotifier {
   FirebaseAuth auth = FirebaseAuth.instance;
   bool authState = false;
   final dio = Dio();
-  Widget navbarProfile;
   StorageService storage = new StorageService();
-  bool navbarVisible = true;
 
   Future<bool> login(String email, String password) async {
     try {
@@ -94,7 +92,7 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  Future<void> stateAuth() async {
+  Future<bool> stateAuth() async {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
@@ -102,7 +100,7 @@ class AuthService with ChangeNotifier {
     } else {
       authState = false;
     }
-    notifyListeners();
+    return authState;
   }
 
   Future<bool> signOut() async {
@@ -145,6 +143,7 @@ class AuthService with ChangeNotifier {
       await storage.setValue(user['State_idState'].toString(), 'state');
       await storage.setValue(user['Verification'].toString(), 'verified');
       await storage.setValue(user["phone"], 'phone');
+      await storage.setValue(user['new'].toString(), 'new');
     } else {
       await storage.setValue(user["idUser"], 'uid');
       await storage.setValue(user["idCompany"].toString(), 'idCompany');
@@ -155,6 +154,7 @@ class AuthService with ChangeNotifier {
       await storage.setValue(user["photoProfile"], 'photoProfile');
       await storage.setValue(user['Verification'].toString(), 'verified');
       await storage.setValue(user["phone"], 'phone');
+      await storage.setValue(user['new'].toString(), 'new');
     }
 
     return true;
