@@ -54,7 +54,7 @@ class _SellerPageState extends State<SellerPage> {
     return Container(
       width: size.width * 1,
       padding: EdgeInsets.all(15),
-      height: size.height * 0.35,
+      height: size.height * 0.30,
       decoration: BoxDecoration(
           color: Colors.black,
           borderRadius: BorderRadius.only(
@@ -196,6 +196,9 @@ class _SellerPageState extends State<SellerPage> {
                                   );
                                 }
                               },
+                            ),
+                            SizedBox(
+                              height: 30,
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -379,9 +382,11 @@ class _SellerPageState extends State<SellerPage> {
                                             });
 
                                             final resp = await reportService
-                                                .postReportUser(_selectReport);
+                                                .postReportUser(
+                                                    _selectReport, this.uid);
                                             if (resp) {
                                               _report = true;
+                                              _loadingreport = false;
                                               setState(() {});
                                             } else {
                                               setState(() {

@@ -173,6 +173,9 @@ class _PorfilePageState extends State<PorfilePage> {
               }
             },
           ),
+          SizedBox(
+            height: 15,
+          ),
           Container(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

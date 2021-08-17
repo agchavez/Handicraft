@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -7,7 +8,7 @@ import 'package:handicraft_app/provider/auth_service.dart';
 
 class ReportService with ChangeNotifier {
   Dio dio = Dio();
-  AuthService authService;
+  final AuthService authService = AuthService();
 
   Future<List> getReportSeller() async {
     try {
@@ -26,23 +27,23 @@ class ReportService with ChangeNotifier {
     }
   }
 
-  Future<bool> postReportUser(int id) async {
-    print("here");
-    try {
-      String token = await authService.refreshUserToken();
-      final resp = await dio.post("${Enviroment.apiurl}/complaint/user/$id",
-          options: Options(headers: {
-            HttpHeaders.contentTypeHeader: "application/json",
-            "token": token
-          }));
-      print(resp);
+  Future<bool> postReportUser(int idReport, String idUser) async {
+    final body = {
+      'description': '',
+      'idReport': idReport,
+    };
+    String token = await authService.refreshUserToken();
+    final resp = await dio.post("${Enviroment.apiurl}/complaint/user/$idUser",
+        options: Options(headers: {
+          HttpHeaders.contentTypeHeader: "application/json",
+          "token": token
+        }),
+        data: body);
+    print(resp);
 
-      if (resp.statusCode == 200) {
-        return true;
-      }
-      return false;
-    } catch (e) {
-      return false;
+    if (resp.statusCode == 200) {
+      return true;
     }
+    return false;
   }
 }
