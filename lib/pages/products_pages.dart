@@ -22,7 +22,6 @@ int cont = 0;
 
 class _ProductsPgaesState extends State<ProductsPages> {
   ScrollController _hideButtonController;
-  AuthService auth;
   Size size;
 
   //List<dynamic> items;
@@ -47,26 +46,25 @@ class _ProductsPgaesState extends State<ProductsPages> {
   @override
   void initState() {
     super.initState();
-    auth = Provider.of<AuthService>(context, listen: false);
     _hideButtonController = new ScrollController();
-    _hideButtonController.addListener(() {
-      if (_hideButtonController.position.userScrollDirection ==
-          ScrollDirection.reverse) {
-        if (auth.navbarVisible)
-          setState(() {
-            auth.navbarVisible = false;
-            print(auth.navbarVisible);
-          });
-      }
-      if (_hideButtonController.position.userScrollDirection ==
-          ScrollDirection.forward) {
-        if (!auth.navbarVisible)
-          setState(() {
-            auth.navbarVisible = true;
-            print(auth.navbarVisible);
-          });
-      }
-    });
+    // _hideButtonController.addListener(() {
+    //   if (_hideButtonController.position.userScrollDirection ==
+    //       ScrollDirection.reverse) {
+    //     if (auth.navbarVisible)
+    //       setState(() {
+    //         auth.navbarVisible = false;
+    //         print(auth.navbarVisible);
+    //       });
+    //   }
+    //   if (_hideButtonController.position.userScrollDirection ==
+    //       ScrollDirection.forward) {
+    //     if (!auth.navbarVisible)
+    //       setState(() {
+    //         auth.navbarVisible = true;
+    //         print(auth.navbarVisible);
+    //       });
+    //   }
+    // });
   }
 
   @override
@@ -81,9 +79,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
           elevation: 0.0,
           actions: [
             GestureDetector(
-              onTap: () async {
-                print(await auth.refreshUserToken());
-              },
+              onTap: (){},
               child: Container(
                 margin: EdgeInsets.only(right: 22),
                 child: Image.asset('assets/icons/search-black-icon.png',

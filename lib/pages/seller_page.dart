@@ -72,7 +72,7 @@ class _SellerPageState extends State<SellerPage> {
                   },
                   icon: Icon(
                     Icons.arrow_back_ios,
-                    size: 20,
+                    size: 23,
                     color: Colors.white,
                   )),
               GestureDetector(
