@@ -6,6 +6,7 @@ import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/provider/user_service.dart';
+import 'package:handicraft_app/utils/util.dart';
 import 'package:handicraft_app/widgets/ProdctStock.dart';
 import 'package:handicraft_app/widgets/productNew.dart';
 import 'package:provider/provider.dart';
@@ -46,6 +47,10 @@ class _PorfilePageState extends State<PorfilePage> {
     return Scaffold(body: _createBody());
   }
 
+  void _test() {
+    print("object");
+  }
+
   Widget _createBody() {
     return SafeArea(
         child: Column(
@@ -82,8 +87,35 @@ class _PorfilePageState extends State<PorfilePage> {
                   minWidth: 5,
                   elevation: 0.0,
                   onPressed: () async {
-                    await AuthService().signOut();
-                    Navigator.popAndPushNamed(context, "home");
+                    modal(context, 0.25, [
+                      {
+                        "icon":
+                            Icon(Icons.settings_outlined, color: Colors.black),
+                        "title": Text("Configuracion",
+                            style: TextStyle(
+                                fontSize: 14, fontFamily: 'Montserrat')),
+                        "fnc": _test
+                      },
+                      {
+                        "icon": Icon(Icons.edit_outlined, color: Colors.black),
+                        "title": Text("Editar perfil",
+                            style: TextStyle(
+                                fontSize: 14, fontFamily: 'Montserrat')),
+                        "fnc": _test
+                      },
+                      {
+                        "icon": Icon(
+                          Icons.logout_outlined,
+                          color: Colors.red,
+                        ),
+                        "title": Text("Cerar sesion",
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontFamily: 'Montserrat',
+                                color: Colors.red)),
+                        "fnc": _test
+                      }
+                    ]);
                   },
                   child: Image.asset(
                     'assets/icons/menu-icon.png',

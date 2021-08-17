@@ -32,18 +32,21 @@ class ReportService with ChangeNotifier {
       'description': '',
       'idReport': idReport,
     };
-    String token = await authService.refreshUserToken();
-    final resp = await dio.post("${Enviroment.apiurl}/complaint/user/$idUser",
-        options: Options(headers: {
-          HttpHeaders.contentTypeHeader: "application/json",
-          "token": token
-        }),
-        data: body);
-    print(resp);
+    try {
+      String token = await authService.refreshUserToken();
+      final resp = await dio.post("${Enviroment.apiurl}/complaint/user/$idUser",
+          options: Options(headers: {
+            HttpHeaders.contentTypeHeader: "application/json",
+            "token": token
+          }),
+          data: body);
+      print(resp);
 
-    if (resp.statusCode == 200) {
-      return true;
+      if (resp.statusCode == 200) {
+        return true;
+      }
+    } catch (e) {
+      return false;
     }
-    return false;
   }
 }

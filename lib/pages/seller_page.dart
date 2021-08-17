@@ -248,29 +248,47 @@ class _SellerPageState extends State<SellerPage> {
 
   _report() {
     int _selectReport;
-    bool _report = false, _loadingreport = false;
+    bool _report = false, _loadingreport = false, _error = false;
     showDialog(
         context: context,
         builder: (context) =>
             StatefulBuilder(builder: (context, StateSetter setState) {
               return _report
-                  ? AlertDialog(
-                      title: Text("Gracias por reportar"),
-                      content: Text("Se ha enviado el reporte "),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      actions: [
-                        MaterialButton(
-                            child: Text(
-                              "ok",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            elevation: 3,
-                            onPressed: () {
-                              Navigator.pop(context);
-                            })
-                      ],
-                    )
+                  ? _error
+                      ? AlertDialog(
+                          title: Text("Error al reportar"),
+                          content: Text("Ya denunciaste al usuario"),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          actions: [
+                            MaterialButton(
+                                child: Text(
+                                  "ok",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                elevation: 3,
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                })
+                          ],
+                        )
+                      : AlertDialog(
+                          title: Text("Gracias por reportar"),
+                          content: Text("Se ha enviado el reporte "),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          actions: [
+                            MaterialButton(
+                                child: Text(
+                                  "ok",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                elevation: 3,
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                })
+                          ],
+                        )
                   : AlertDialog(
                       title: Text("Denunciar vendedor",
                           style: TextStyle(
@@ -385,12 +403,15 @@ class _SellerPageState extends State<SellerPage> {
                                                 .postReportUser(
                                                     _selectReport, this.uid);
                                             if (resp) {
+                                              _error = true;
                                               _report = true;
                                               _loadingreport = false;
                                               setState(() {});
                                             } else {
                                               setState(() {
+                                                _error = true;
                                                 _loadingreport = false;
+                                                setState(() {});
                                               });
                                             }
                                           })
