@@ -4,6 +4,7 @@ import 'package:flutter_carousel_slider/carousel_slider.dart';
 import 'package:flutter_carousel_slider/carousel_slider_indicators.dart';
 import 'package:flutter_carousel_slider/carousel_slider_transforms.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:handicraft_app/utils/util.dart';
 
 class CarouserlWidget extends StatelessWidget {
   List<dynamic> images = [];
@@ -13,6 +14,7 @@ class CarouserlWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _test() {}
     return Stack(
       children: <Widget>[
         Container(
@@ -51,7 +53,7 @@ class CarouserlWidget extends StatelessWidget {
               itemCount: this.images.length),
         ),
         Positioned(
-          bottom: 310,
+          bottom: 300,
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 10),
             width: MediaQuery.of(context).size.width * 1,
@@ -68,7 +70,17 @@ class CarouserlWidget extends StatelessWidget {
                       color: Colors.white,
                     )),
                 GestureDetector(
-                  onTap: () async {},
+                  onTap: () async {
+                    modal(context, 0.10, [
+                      {
+                        "icon": Icon(Icons.report_rounded, color: Colors.black),
+                        "title": Text("Reportar",
+                            style: TextStyle(
+                                fontSize: 14, fontFamily: 'Montserrat')),
+                        "fnc": _test
+                      },
+                    ]);
+                  },
                   child: Image.asset(
                     'assets/icons/menu-icon.png',
                     width: 4,

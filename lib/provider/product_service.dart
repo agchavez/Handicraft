@@ -39,7 +39,7 @@ class ProductService with ChangeNotifier {
         }
       }
       body["images"] = imgUrl;
-      String token = await authService.refreshUserToken();
+      String token = await AuthService().refreshUserToken();
       Response response = await dio.post('${Enviroment.apiurl}/product/$idUser',
           options: Options(headers: {
             HttpHeaders.contentTypeHeader: "application/json",
