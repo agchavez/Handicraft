@@ -54,6 +54,7 @@ class _ProductsDetailState extends State<ProductsDetail> {
 
                 children: [
                   CarouserlWidget(
+                    uid: idProduct,
                     images: data.images,
                   ),
                   SizedBox(
