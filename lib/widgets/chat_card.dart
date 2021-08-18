@@ -35,7 +35,7 @@ class ChatCard extends StatelessWidget {
                       height: 16,
                       width: 16,
                       decoration: BoxDecoration(
-                        color: Color(0xffFFD414),
+                        color: Color(0xfff50057),
                         shape: BoxShape.circle,
                         border: Border.all(
                             color: Theme.of(context).scaffoldBackgroundColor,
@@ -70,9 +70,43 @@ class ChatCard extends StatelessWidget {
                 ),
               ),
             ),
-            Opacity(
-              opacity: 0.64,
-              child: Text(chat.time)
+            Column(
+              children: [
+                Opacity(
+                    opacity: 0.64,
+                    child: Text(
+                        chat.time,
+                        style: TextStyle(
+                          fontFamily: 'Montserrat',
+                          fontSize: 10
+                        ),
+                    )
+                ),
+                chat.read ?
+                    Column(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.015,
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.height * 0.045,
+                            ),
+                            Container(
+                              height: 10,
+                              width: 10,
+                              decoration: BoxDecoration(
+                                  color: Color(0xff41DBBB),
+                                  borderRadius: BorderRadius.all(Radius.circular(15))
+                              ),
+                            )
+                          ],
+                        )
+                      ],
+                    ) : Container()
+              ],
             ),
           ],
         ),

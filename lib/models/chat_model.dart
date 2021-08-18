@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Chat {
   final String name, lastMessage, image;
   final String time;
-  final bool isActive;
+  final bool isActive, read;
 
   Chat({
     this.name = '',
@@ -11,6 +11,7 @@ class Chat {
     this.image = '',
     this.time,
     this.isActive = false,
+    this.read
   });
 }
 

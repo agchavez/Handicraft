@@ -1,6 +1,7 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:handicraft_app/provider/chat_provider.dart';
 import 'package:handicraft_app/widgets/filled_outline_button.dart';
 import 'package:handicraft_app/utils/constants.dart';
@@ -65,11 +66,9 @@ class Body extends StatelessWidget {
                  }
 
                  return Chat(
-                   name: doc['name'],
                    lastMessage: doc['lastMessage'],
-                   image: doc['image'],
                    time: messageDate,
-                   isActive: doc['isActive'],
+                   read: doc['read']
                  );
                }).toList();
                  return Expanded(child:
