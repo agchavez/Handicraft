@@ -16,6 +16,7 @@ List<ProductCommentsModel> data;
 bool idUser = false;
 int idProduct;
 dynamic data0;
+bool focus;
 
 class _AllCommentsState extends State<AllComments> {
   //List<dynamic> items;
@@ -33,6 +34,7 @@ class _AllCommentsState extends State<AllComments> {
     data0 = ModalRoute.of(context).settings.arguments;
     data = data0[0];
     idProduct = data0[1];
+    focus = data0[2];
 
     final size = MediaQuery.of(context).size;
     existUserbool();
@@ -177,6 +179,7 @@ class _AllCommentsState extends State<AllComments> {
           controller: myController,
           keyboardType: TextInputType.text,
           style: TextStyle(color: Colors.grey[600]),
+          autofocus: focus,
           decoration: InputDecoration(
               hintText: 'Escribe un comentario...',
               focusedBorder: InputBorder.none,

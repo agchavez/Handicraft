@@ -192,7 +192,7 @@ class _ProductsDetailState extends State<ProductsDetail> {
                   SizedBox(
                     height: 15,
                   ),
-                  comments(size, context),
+                  comments(size, context, data.comments),
                 ],
               );
             }
@@ -220,22 +220,37 @@ class _ProductsDetailState extends State<ProductsDetail> {
     }
   }
 
-  Widget comments(Size size, BuildContext context) {
+  Widget comments(
+      Size size, BuildContext context, List<ProductCommentsModel> dataC) {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.fromLTRB(10, 10, 6, 10),
-          height: size.height * 0.052,
-          width: size.height * 0.44,
-          decoration: BoxDecoration(
-            color: Colors.white,
-          ),
-          child: Text('Comentarios',
-              style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  color: Colors.grey[400],
-                  fontWeight: FontWeight.bold)),
-        ),
+            padding: EdgeInsets.fromLTRB(10, 10, 6, 0),
+            height: size.height * 0.078,
+            width: size.height * 0.44,
+            decoration: BoxDecoration(
+              color: Colors.white,
+            ),
+            child: Column(
+              children: [
+                Text('Comentarios',
+                    style: TextStyle(
+                        fontFamily: 'Montserrat',
+                        color: Colors.grey[400],
+                        fontWeight: FontWeight.bold)),
+                GestureDetector(
+                    onTap: () {
+                      final focus = true;
+                      dynamic arr = [];
+                      arr.add(dataC);
+                      arr.add(idProduct);
+                      arr.add(focus);
+                      Navigator.pushNamed(context, 'allcomentary',
+                          arguments: arr);
+                    },
+                    child: Icon(Icons.comment)),
+              ],
+            )),
         SizedBox(
           height: 15,
         ),
@@ -243,7 +258,7 @@ class _ProductsDetailState extends State<ProductsDetail> {
         Container(
           height: 20,
         ),
-        _comentary(size),
+        //_comentary(size),
       ],
     );
   }
@@ -369,9 +384,11 @@ class _ProductsDetailState extends State<ProductsDetail> {
           ),
           GestureDetector(
             onTap: () {
+              final focus = false;
               dynamic arr = [];
               arr.add(data);
               arr.add(idProduct);
+              arr.add(focus);
               Navigator.pushNamed(context, 'allcomentary', arguments: arr);
             },
             child: textAll(data.length),

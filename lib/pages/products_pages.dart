@@ -47,24 +47,6 @@ class _ProductsPgaesState extends State<ProductsPages> {
   void initState() {
     super.initState();
     _hideButtonController = new ScrollController();
-    // _hideButtonController.addListener(() {
-    //   if (_hideButtonController.position.userScrollDirection ==
-    //       ScrollDirection.reverse) {
-    //     if (auth.navbarVisible)
-    //       setState(() {
-    //         auth.navbarVisible = false;
-    //         print(auth.navbarVisible);
-    //       });
-    //   }
-    //   if (_hideButtonController.position.userScrollDirection ==
-    //       ScrollDirection.forward) {
-    //     if (!auth.navbarVisible)
-    //       setState(() {
-    //         auth.navbarVisible = true;
-    //         print(auth.navbarVisible);
-    //       });
-    //   }
-    // });
   }
 
   @override
@@ -79,7 +61,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
           elevation: 0.0,
           actions: [
             GestureDetector(
-              onTap: (){},
+              onTap: () {},
               child: Container(
                 margin: EdgeInsets.only(right: 22),
                 child: Image.asset('assets/icons/search-black-icon.png',
@@ -121,8 +103,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
                     itemCount: snapshot.data.length,
                     itemBuilder: (context, index) {
                       return Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20, right: 20, bottom: 20),
+                        padding: const EdgeInsets.only(left: 20, right: 20),
                         child: Container(
                           child: _information(snapshot.data[index]),
                         ),
