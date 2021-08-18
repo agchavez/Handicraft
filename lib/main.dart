@@ -11,6 +11,7 @@ import 'package:handicraft_app/provider/auth_service.dart';
 import 'package:handicraft_app/provider/google_sign_in.dart';
 import 'package:handicraft_app/provider/location_service.dart';
 import 'package:handicraft_app/provider/product_service.dart';
+import 'package:handicraft_app/provider/chat_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -27,7 +28,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthService()),
         ChangeNotifierProvider(create: (_) => ProductService()),
         ChangeNotifierProvider(create: (_) => LocationService()),
-        ChangeNotifierProvider(create: (context) => GoogleSignInProvider())
+        ChangeNotifierProvider(create: (context) => GoogleSignInProvider()),
+        ChangeNotifierProvider(create: (_) => ChatService()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
