@@ -183,10 +183,8 @@ class ProductService with ChangeNotifier {
           "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/0/20"));
       final resp = productModelFromJson(jsonDecode(response.body)).data;
       if (cont != 0) {
-        dat2 = [...dat2, ...resp];
-        return dat2;
+        return resp;
       } else {
-        dat2 = resp;
         return resp;
       }
     } else {
@@ -194,10 +192,8 @@ class ProductService with ChangeNotifier {
           "https://hechoencasa-backend.herokuapp.com/product/getAllProducts/$uid/0/20"));
       final resp = productModelFromJson(jsonDecode(response.body)).data;
       if (cont != 0) {
-        dat2 = [...dat2, ...resp];
-        return dat2;
+        return resp;
       } else {
-        dat2 = resp;
         return resp;
       }
     }

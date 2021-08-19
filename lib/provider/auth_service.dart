@@ -37,7 +37,8 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  Future<bool> register(UserAccountModel user, BuildContext context, Size size) async {
+  Future<bool> register(
+      UserAccountModel user, BuildContext context, Size size) async {
     try {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
           email: user.email, password: user.password);
@@ -48,19 +49,11 @@ class AuthService with ChangeNotifier {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        utils.showTopSnackBar(
-            context,
-            size,
-            'Advertencia.',
-            'Contraseña débil.',
-            utils.alertsStyles['warningAlert']);
+        utils.showTopSnackBar(context, size, 'Advertencia.',
+            'Contraseña débil.', utils.alertsStyles['warningAlert']);
       } else if (e.code == 'email-already-in-use') {
-        utils.showTopSnackBar(
-            context,
-            size,
-            'Email.',
-            'El correo ya esta en uso.',
-            utils.alertsStyles['fatalError']);
+        utils.showTopSnackBar(context, size, 'Email.',
+            'El correo ya esta en uso.', utils.alertsStyles['fatalError']);
       }
 
       return false;
@@ -106,7 +99,7 @@ class AuthService with ChangeNotifier {
   Future<bool> signOut() async {
     try {
       await FirebaseAuth.instance.signOut();
-      await stateAuth();
+      // await stateAuth();
       await storage.deleteAll();
       return true;
     } catch (e) {

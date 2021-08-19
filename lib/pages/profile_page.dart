@@ -53,7 +53,8 @@ class _PorfilePageState extends State<PorfilePage> {
 
   void signOut() async {
     if (await AuthService().signOut()) {
-      Navigator.popAndPushNamed(context, "home");
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('home', (Route<dynamic> route) => false);
     }
   }
 

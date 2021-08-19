@@ -65,6 +65,9 @@ class CarouserlWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
+                    color: Colors.black,
+                    padding: EdgeInsets.only(left: 5),
+                    alignment: Alignment.center,
                     onPressed: () async {
                       Navigator.pop(context);
                     },
@@ -97,9 +100,12 @@ class CarouserlWidget extends StatelessWidget {
                       }
                     ]);
                   },
-                  child: Image.asset(
-                    'assets/icons/menu-icon.png',
-                    width: 4,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.transparent,
+                    child: Image.asset(
+                      'assets/icons/menu-icon.png',
+                      width: 4,
+                    ),
                   ),
                 ),
               ],
