@@ -226,7 +226,6 @@ class _NewpProductPageState extends State<NewpProductPage> {
       width: size.width * 0.9,
       child: DropdownButtonFormField<LocationModel>(
           value: _countryValue,
-          itemHeight: size.height * 0.07,
           decoration: InputDecoration(
               enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
@@ -288,7 +287,6 @@ class _NewpProductPageState extends State<NewpProductPage> {
         width: size.width * 0.9,
         child: DropdownButtonFormField<LocationModel>(
             value: _provincesValue,
-            itemHeight: size.height * 0.07,
             decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
