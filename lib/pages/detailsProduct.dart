@@ -25,13 +25,6 @@ class _ProductsDetailState extends State<ProductsDetail> {
   final myController = TextEditingController();
 
   @override
-  void dispose() {
-    // Limpia el controlador cuando el Widget se descarte
-    myController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     idProduct = ModalRoute.of(context).settings.arguments;
 
@@ -147,7 +140,9 @@ class _ProductsDetailState extends State<ProductsDetail> {
                         Container(
                           width: size.height,
                           child: Text(
-                            data.description,
+                            (data.description.length > 30)
+                                ? "${data.description.substring(0, 30)}..."
+                                : data.description,
                             style: TextStyle(fontSize: 15, color: Colors.white),
                           ),
                         ),
@@ -226,32 +221,41 @@ class _ProductsDetailState extends State<ProductsDetail> {
     return Column(
       children: [
         Container(
-            padding: EdgeInsets.fromLTRB(10, 10, 6, 0),
+            padding: EdgeInsets.fromLTRB(10, 10, 6, 20),
             height: size.height * 0.078,
             width: size.height * 0.44,
             decoration: BoxDecoration(
               color: Colors.white,
             ),
-            child: Column(
+            child: Center(
+                child: Row(
               children: [
-                Text('Comentarios',
-                    style: TextStyle(
-                        fontFamily: 'Montserrat',
-                        color: Colors.grey[400],
-                        fontWeight: FontWeight.bold)),
                 GestureDetector(
-                    onTap: () {
-                      final focus = true;
-                      dynamic arr = [];
-                      arr.add(dataC);
-                      arr.add(idProduct);
-                      arr.add(focus);
-                      Navigator.pushNamed(context, 'allcomentary',
-                          arguments: arr);
-                    },
-                    child: Icon(Icons.comment)),
+                  onTap: () {
+                    final focus = true;
+                    dynamic arr = [];
+                    arr.add(dataC);
+                    arr.add(idProduct);
+                    arr.add(focus);
+                    Navigator.pushNamed(context, 'allcomentary',
+                        arguments: arr);
+                  },
+                  child: Row(
+                    children: [
+                      Text('Comentarios',
+                          style: TextStyle(
+                              fontFamily: 'Montserrat',
+                              color: Colors.grey[400],
+                              fontWeight: FontWeight.bold)),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Icon(Icons.send)
+                    ],
+                  ),
+                )
               ],
-            )),
+            ))),
         SizedBox(
           height: 15,
         ),
@@ -263,6 +267,8 @@ class _ProductsDetailState extends State<ProductsDetail> {
       ],
     );
   }
+
+  void navigator() {}
 
   Widget _comentary(Size size) {
     if (idUser == true) {
@@ -385,7 +391,7 @@ class _ProductsDetailState extends State<ProductsDetail> {
           ),
           GestureDetector(
             onTap: () {
-              final focus = false;
+              final focus = true;
               dynamic arr = [];
               arr.add(data);
               arr.add(idProduct);
