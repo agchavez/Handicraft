@@ -47,24 +47,6 @@ class _ProductsPgaesState extends State<ProductsPages> {
   void initState() {
     super.initState();
     _hideButtonController = new ScrollController();
-    // _hideButtonController.addListener(() {
-    //   if (_hideButtonController.position.userScrollDirection ==
-    //       ScrollDirection.reverse) {
-    //     if (auth.navbarVisible)
-    //       setState(() {
-    //         auth.navbarVisible = false;
-    //         print(auth.navbarVisible);
-    //       });
-    //   }
-    //   if (_hideButtonController.position.userScrollDirection ==
-    //       ScrollDirection.forward) {
-    //     if (!auth.navbarVisible)
-    //       setState(() {
-    //         auth.navbarVisible = true;
-    //         print(auth.navbarVisible);
-    //       });
-    //   }
-    // });
   }
 
   @override
@@ -79,7 +61,7 @@ class _ProductsPgaesState extends State<ProductsPages> {
           elevation: 0.0,
           actions: [
             GestureDetector(
-              onTap: (){},
+              onTap: () {},
               child: Container(
                 margin: EdgeInsets.only(right: 22),
                 child: Image.asset('assets/icons/search-black-icon.png',
@@ -113,49 +95,20 @@ class _ProductsPgaesState extends State<ProductsPages> {
                 AsyncSnapshot<List<ProductModel>> snapshot) {
               if (snapshot.hasError) {
               } else if (snapshot.hasData) {
-                return SmartRefresher(
-                    enablePullDown: true,
-                    enablePullUp: true,
-                    header: WaterDropHeader(),
-                    footer: CustomFooter(
-                      builder: (BuildContext context, LoadStatus mode) {
-                        Widget body;
-                        if (mode == LoadStatus.idle) {
-                          body = Text("pull up load");
-                        } else if (mode == LoadStatus.loading) {
-                          body = CupertinoActivityIndicator();
-                        } else if (mode == LoadStatus.failed) {
-                          body = Text("Load Failed!Click retry!");
-                        } else if (mode == LoadStatus.canLoading) {
-                          body = Text("release to load more");
-                        } else {
-                          body = Text("No more Data");
-                        }
-                        return Container(
-                          height: 55.0,
-                          child: Center(child: body),
-                        );
-                      },
-                    ),
-                    controller: _refreshController,
-                    onRefresh: _onRefresh,
-                    onLoading: _onLoading,
-                    physics: ScrollPhysics(),
-                    child: GridView.builder(
-                        controller: _hideButtonController,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2, childAspectRatio: 0.78),
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                                left: 20, right: 20, bottom: 20),
-                            child: Container(
-                              child: _information(snapshot.data[index]),
-                            ),
-                          );
-                        }));
+                return GridView.builder(
+                    controller: _hideButtonController,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2, childAspectRatio: 0.78),
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 20, right: 20),
+                        child: Container(
+                          child: _information(snapshot.data[index]),
+                        ),
+                      );
+                    });
               }
               return Center(
                 child: CircularProgressIndicator(

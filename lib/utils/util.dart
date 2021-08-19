@@ -68,6 +68,47 @@ bool passwordValid(String pass) {
   }
 }
 
+void modal(
+    BuildContext context, double height, List<Map<String, dynamic>> options) {
+  Size size = MediaQuery.of(context).size;
+  List<Widget> _list = [
+    Center(
+      child: Container(
+        margin: EdgeInsets.only(top: 8),
+        width: size.width * 0.2,
+        height: 2,
+        color: Colors.black,
+      ),
+    )
+  ];
+  for (var item in options) {
+    _list.add(ListTile(
+        minVerticalPadding: 0,
+        horizontalTitleGap: 0,
+        leading: item["icon"],
+        title: item["title"],
+        onTap: () {
+          item["fnc"]();
+        }));
+  }
+  showModalBottomSheet(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(20)), // <-- Radius
+      ),
+      context: context,
+      builder: (BuildContext bc) {
+        return SafeArea(
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: 20),
+            height: size.height * height,
+            child: new Wrap(children: _list),
+          ),
+        );
+      });
+}
+
 void showTopSnackBar(BuildContext context, Size size, String title,
         String message, AlertNotificationModel alertStyle) =>
     Flushbar(
