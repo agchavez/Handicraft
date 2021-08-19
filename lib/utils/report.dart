@@ -10,13 +10,16 @@ void reportDialog(BuildContext context, dynamic uid, int type) async {
   int _selectReport;
   print(uid);
   bool _report = false, _loadingreport = false, _error = false;
-  _error = type == 1 ? await reportService.findOutReportUser(uid) : false;
+  _error = type == 1
+      ? await reportService.findOutReportUser(uid)
+      : await reportService.findOutReportProduct(uid);
   _error
       ? showDialog(
           context: context,
           builder: (context) => AlertDialog(
                 title: Text("Error!"),
-                content: Text("Ya denunciaste al usuario"),
+                content: Text(
+                    "Ya denunciaste el ${type == 1 ? "usuario" : "producto"}"),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
                 actions: [

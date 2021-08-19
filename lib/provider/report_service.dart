@@ -120,12 +120,12 @@ class ReportService with ChangeNotifier {
     }
   }
 
-  Future<bool> findOutReportProduct(dynamic idUser) async {
+  Future<bool> findOutReportProduct(dynamic idProduct) async {
     try {
       String token = await authService.refreshUserToken();
 
       final resp = await dio.get(
-        "${Enviroment.apiurl}/complaint/verifyComplaintUser/$idUser",
+        "${Enviroment.apiurl}/complaint/verifyComplaintProduct/$idProduct",
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
           "token": token
