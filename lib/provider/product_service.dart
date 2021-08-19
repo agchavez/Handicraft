@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:dio/dio.dart';
 import 'package:handicraft_app/models/model_Product_Infor.dart';
+import 'package:handicraft_app/models/model_comments.dart';
 import 'package:handicraft_app/models/model_details.dart';
 import 'package:handicraft_app/models/product.dart';
 import 'package:handicraft_app/models/product_general.dart';
@@ -207,6 +208,18 @@ class ProductService with ChangeNotifier {
     //print(response.body);
     final resp = productInforModelFromJson(response.body).data;
     detail.add(resp);
+
+    return detail;
+  }
+
+  Future<List<ProductCommentsModel>> getComentary(int idProduct) async {
+    //List<ProductCommentsModel> detail = [];
+    final response = await http.get(Uri.parse(
+        "https://hechoencasa-backend.herokuapp.com/product/getInfo/${idProduct}"));
+    //print(response.body);
+    final detail = productInforModelFromJson(response.body).data.comments;
+    print(detail);
+    // detail.add(resp);
 
     return detail;
   }
