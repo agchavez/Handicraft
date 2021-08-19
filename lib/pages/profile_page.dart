@@ -51,6 +51,13 @@ class _PorfilePageState extends State<PorfilePage> {
     print("object");
   }
 
+  void signOut() async {
+    if (await AuthService().signOut()) {
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('home', (Route<dynamic> route) => false);
+    }
+  }
+
   Widget _createBody() {
     return SafeArea(
         child: Column(
@@ -113,7 +120,7 @@ class _PorfilePageState extends State<PorfilePage> {
                                 fontSize: 14,
                                 fontFamily: 'Montserrat',
                                 color: Colors.red)),
-                        "fnc": _test
+                        "fnc": signOut
                       }
                     ]);
                   },

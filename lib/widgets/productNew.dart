@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:handicraft_app/models/product.dart';
+import 'package:handicraft_app/utils/util.dart';
 
 class ProductNew extends StatelessWidget {
   final ProductModel product;

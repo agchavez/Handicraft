@@ -5,6 +5,7 @@ import 'package:handicraft_app/provider/product_service.dart';
 import 'package:handicraft_app/provider/report_service.dart';
 import 'package:handicraft_app/provider/storage_service.dart';
 import 'package:handicraft_app/provider/user_service.dart';
+import 'package:handicraft_app/utils/report.dart';
 import 'package:handicraft_app/widgets/productNew.dart';
 
 class SellerPage extends StatefulWidget {
@@ -77,7 +78,9 @@ class _SellerPageState extends State<SellerPage> {
                   )),
               GestureDetector(
                 onTap: () {
-                  uidUser == null ? _alert() : _report();
+                  uidUser == null
+                      ? _alert()
+                      : reportDialog(context, this.uid, 1);
                 },
                 child: Container(
                     alignment: Alignment.bottomRight,
@@ -166,7 +169,7 @@ class _SellerPageState extends State<SellerPage> {
                             ],
                           )),
                       SizedBox(
-                        height: size.height * 0.04,
+                        height: size.height * 0.01,
                       ),
                       Container(
                         child: Row(
@@ -244,182 +247,6 @@ class _SellerPageState extends State<SellerPage> {
     uidUser = uid;
 
     return {"uid": uid, "megusta": _like};
-  }
-
-  _report() {
-    int _selectReport;
-    bool _report = false, _loadingreport = false, _error = false;
-    showDialog(
-        context: context,
-        builder: (context) =>
-            StatefulBuilder(builder: (context, StateSetter setState) {
-              return _report
-                  ? _error
-                      ? AlertDialog(
-                          title: Text("Error al reportar"),
-                          content: Text("Ya denunciaste al usuario"),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          actions: [
-                            MaterialButton(
-                                child: Text(
-                                  "ok",
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                                elevation: 3,
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                })
-                          ],
-                        )
-                      : AlertDialog(
-                          title: Text("Gracias por reportar"),
-                          content: Text("Se ha enviado el reporte "),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          actions: [
-                            MaterialButton(
-                                child: Text(
-                                  "ok",
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                                elevation: 3,
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                })
-                          ],
-                        )
-                  : AlertDialog(
-                      title: Text("Denunciar vendedor",
-                          style: TextStyle(
-                              fontSize: 13,
-                              fontFamily: 'Montserrat',
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold)),
-                      content: Container(
-                        height: 200,
-                        child: FutureBuilder(
-                          future: reportService.getReportSeller(),
-                          builder:
-                              (BuildContext context, AsyncSnapshot snapshot) {
-                            if (snapshot.hasData) {
-                              data = snapshot.data;
-                              return Container(
-                                height: 180,
-                                width: double.maxFinite,
-                                child: ListView.builder(
-                                  itemCount: data.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        _selectReport == data[index]["id"]
-                                            ? _selectReport = null
-                                            : _selectReport = data[index]["id"];
-
-                                        setState(() {});
-                                      },
-                                      child: Row(
-                                        children: [
-                                          _selectReport == data[index]["id"]
-                                              ? Icon(Icons.brightness_1_rounded)
-                                              : Icon(
-                                                  Icons.brightness_1_outlined),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text(data[index]["name"],
-                                              style: TextStyle(
-                                                  fontSize: 13,
-                                                  fontFamily: 'Montserrat',
-                                                  color: Colors.black,
-                                                  fontWeight:
-                                                      FontWeight.normal)),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                ),
-                              );
-                            } else {
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  color: Colors.black,
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      actions: [
-                        Divider(
-                          color: Colors.black,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            MaterialButton(
-                                child: Text(
-                                  "Cancelar",
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                                elevation: 3,
-                                onPressed: () => Navigator.pop(context)),
-                            _loadingreport
-                                ? Container(
-                                    margin:
-                                        EdgeInsets.only(right: 46, left: 20),
-                                    child: SizedBox(
-                                      child: CircularProgressIndicator(
-                                        color: Colors.black,
-                                      ),
-                                      height: 20.0,
-                                      width: 20.0,
-                                    ),
-                                  )
-                                : MaterialButton(
-                                    child: Text(
-                                      "Reportar",
-                                      style: TextStyle(
-                                          color: _selectReport == null
-                                              ? Colors.grey
-                                              : Colors.white),
-                                    ),
-                                    color: Colors.black,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(5.0)),
-                                    elevation: 3,
-                                    onPressed: _selectReport == null
-                                        ? null
-                                        : () async {
-                                            setState(() {
-                                              _loadingreport = true;
-                                            });
-
-                                            final resp = await reportService
-                                                .postReportUser(
-                                                    _selectReport, this.uid);
-                                            if (resp) {
-                                              _error = true;
-                                              _report = true;
-                                              _loadingreport = false;
-                                              setState(() {});
-                                            } else {
-                                              setState(() {
-                                                _error = true;
-                                                _loadingreport = false;
-                                                setState(() {});
-                                              });
-                                            }
-                                          })
-                          ],
-                        )
-                      ],
-                    );
-            }));
   }
 
   _alert() async {
