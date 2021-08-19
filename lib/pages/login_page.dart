@@ -37,6 +37,7 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
   }
 
+  @override
   void dispose() {
     super.dispose();
     check = false;
@@ -47,7 +48,8 @@ class _LoginPageState extends State<LoginPage> {
     size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Container(
+        title: !check ?
+        Container(
           child: FloatingActionButton(
             child: Image.asset(
               'assets/icons/back-black-icon.png',
@@ -60,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           height: 43.0,
           width: 43.0,
-        ),
+        ) : Container(),
         backgroundColor: Colors.white,
         bottomOpacity: 0.0,
         elevation: 0,
@@ -410,6 +412,7 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } catch (e) {
+      await auth.signOut();
       setState(() {
         check = !check;
       });

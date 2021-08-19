@@ -99,7 +99,7 @@ class AuthService with ChangeNotifier {
   Future<bool> signOut() async {
     try {
       await FirebaseAuth.instance.signOut();
-      // await stateAuth();
+      await stateAuth();
       await storage.deleteAll();
       return true;
     } catch (e) {
@@ -125,29 +125,33 @@ class AuthService with ChangeNotifier {
   }
 
   Future<bool> setUserStorage(Map<String, dynamic> user) async {
-    user = user['data'];
-    await storage.deleteAll();
-    String name = '${user["name"]} ${user['lastname']}';
-    if (user['idCompany'] == null) {
-      await storage.setValue(user["idUser"], 'uid');
-      await storage.setValue(name, 'displayName');
-      await storage.setValue(user["email"], 'email');
-      await storage.setValue(user["photoProfile"], 'photoProfile');
-      await storage.setValue(user['State_idState'].toString(), 'state');
-      await storage.setValue(user['Verification'].toString(), 'verified');
-      await storage.setValue(user["phone"], 'phone');
-      await storage.setValue(user['new'].toString(), 'new');
-    } else {
-      await storage.setValue(user["idUser"], 'uid');
-      await storage.setValue(user["idCompany"].toString(), 'idCompany');
-      await storage.setValue(user["nameCompany"], 'displayName');
-      await storage.setValue(user["email"], 'email');
-      await storage.setValue(user['State_idState'].toString(), 'state');
-      await storage.setValue(user["description"], "companyDescription");
-      await storage.setValue(user["photoProfile"], 'photoProfile');
-      await storage.setValue(user['Verification'].toString(), 'verified');
-      await storage.setValue(user["phone"], 'phone');
-      await storage.setValue(user['new'].toString(), 'new');
+    try {
+      user = user['data'];
+      await storage.deleteAll();
+      String name = '${user["name"]} ${user['lastname']}';
+      if (user['idCompany'] == null) {
+        await storage.setValue(user["idUser"], 'uid');
+        await storage.setValue(name, 'displayName');
+        await storage.setValue(user["email"], 'email');
+        await storage.setValue(user["photoProfile"], 'photoProfile');
+        await storage.setValue(user['State_idState'].toString(), 'state');
+        await storage.setValue(user['Verification'].toString(), 'verified');
+        await storage.setValue(user["phone"], 'phone');
+        await storage.setValue(user['new'].toString(), 'new');
+      } else {
+        await storage.setValue(user["idUser"], 'uid');
+        await storage.setValue(user["idCompany"].toString(), 'idCompany');
+        await storage.setValue(user["nameCompany"], 'displayName');
+        await storage.setValue(user["email"], 'email');
+        await storage.setValue(user['State_idState'].toString(), 'state');
+        await storage.setValue(user["description"], "companyDescription");
+        await storage.setValue(user["photoProfile"], 'photoProfile');
+        await storage.setValue(user['Verification'].toString(), 'verified');
+        await storage.setValue(user["phone"], 'phone');
+        await storage.setValue(user['new'].toString(), 'new');
+      }
+    } catch (e) {
+      await signOut();
     }
 
     return true;

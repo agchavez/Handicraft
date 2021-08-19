@@ -1,0 +1,36 @@
+import 'package:flutter/material.dart';
+
+import 'package:handicraft_app/utils/constants.dart';
+
+class FillOutlineButton extends StatelessWidget {
+
+  final bool isFilled;
+  final VoidCallback press;
+  final String text;
+
+  FillOutlineButton(
+      this.isFilled,
+      this.press,
+      this.text,
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
+        side: BorderSide(color: Colors.white),
+      ),
+      elevation: isFilled ? 2 : 0,
+      color: isFilled ? Colors.white : Colors.transparent,
+      onPressed: press,
+      child: Text(
+        text,
+        style: TextStyle(
+          color: isFilled ? kContentColorLightTheme : Colors.white,
+          fontSize: 12,
+        ),
+      ),
+    );
+  }
+}

@@ -171,7 +171,7 @@ class _ProductsDetailState extends State<ProductsDetail> {
                   ),
                   Container(
                     padding: EdgeInsets.fromLTRB(30, 10, 6, 8),
-                    height: size.height * 0.052,
+                    height: size.height * 0.065,
                     width: size.height * 0.44,
                     decoration: BoxDecoration(
                       color: Colors.grey[200],

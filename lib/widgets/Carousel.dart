@@ -69,7 +69,7 @@ class CarouserlWidget extends StatelessWidget {
                     padding: EdgeInsets.only(left: 5),
                     alignment: Alignment.center,
                     onPressed: () async {
-                      Navigator.pop(context);
+                      Navigator.pushReplacementNamed(context, 'home');
                     },
                     icon: Icon(
                       Icons.arrow_back_ios,
