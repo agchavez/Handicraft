@@ -74,12 +74,6 @@ class _AllCommentsState extends State<AllComments> {
                       return Container(
                         child: _information(snapshot.data[index], size),
                       );
-                      print(snapshot.data[index]);
-                      return //Padding(
-                          //padding: const EdgeInsets.only(left: 20, right: 20),
-                          Container(
-                        child: _information(snapshot.data[index], size),
-                      );
                       // );
                     });
               }
