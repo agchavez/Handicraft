@@ -31,7 +31,7 @@ class _MenssagePagesState extends State<MenssagePages> {
 
     return Scaffold(
       appBar: buildAppBar(),
-      body: Body()
+      body: BodyMessage()
     );
   }
 
