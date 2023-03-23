@@ -230,7 +230,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _createBottom(BuildContext context) {
-    return RaisedButton(
+    return OutlinedButton(
       child: Container(
           width: size.width * 0.56,
           padding: EdgeInsets.symmetric(vertical: 15.0),
@@ -242,10 +242,6 @@ class _LoginPageState extends State<LoginPage> {
                   'Iniciar Sesión',
                 ),
               ])),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
-      elevation: 2.0,
-      color: Colors.black,
-      textColor: Colors.white,
       onPressed: () => _logIn(),
     );
   }
